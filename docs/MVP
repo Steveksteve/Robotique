@@ -1,0 +1,33 @@
+MVP 
+Robot d’Assistance Autonome (RAA) 
+
+1. Objectif 
+  Démontrer que le robot peut effectuer un transport simple entre deux points de manière autonome. 
+
+2. Fonctionnalités minimales 
+
+  Navigation:
+   Se déplacer d’un point A à un point B. 
+   Éviter un obstacle simple. 
+   S’arrêter en cas de situation anormale. 
+
+  Transport:
+   Déplacer un objet ou un bac léger. 
+   Déposer l’objet à l’emplacement prévu. 
+
+  Interface:
+   Permettre le déclenchement d’une mission. 
+   Afficher l’état de la mission.
+
+3. Workflow minimal 
+  Created 
+  Navigating 
+  Completed 
+  Error 
+
+4. Validation
+
+  Le MVP est validé si : 
+   Le robot réalise un transport simple sans intervention. 
+   La mission est déclenchée depuis l’interface. 
+   L’état final est correctement affiché. 
