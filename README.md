@@ -11,7 +11,7 @@ Développer une plateforme robotique low-cost (< 500€) destinée à l’optimi
   **Manipulation**
    Saisie d’objets à l’aide d’un bras motorisé et d’une cinématique inverse.
   **Interface**
-   Dashboard opérateur en React conforme aux normes WCAG AA.
+   Dashboard opérateur en React.
   **Sécurité**
    Vitesse maximale de 0.3 m/s et arrêt d’urgence matériel et logiciel.
 
