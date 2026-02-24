@@ -28,7 +28,7 @@ Interface
 
 4. Conditions de validation
   Le MVP est considéré comme validé si :
-   * Le robot se déplace de manière autonome.
-   * Le robot utilise sa pince pour saisir un objet.
-   * Le robot transporte et dépose l’objet correctement.
-   * L’interface reflète l’état réel de la mission.
+   *Le robot se déplace correctement entre deux points.
+   *Le robot utilise sa pince pour saisir un objet.
+   *Le robot transporte et dépose l’objet.
+   *L’interface affiche correctement l’état de la mission.
