@@ -6,6 +6,8 @@ class MissionController
 {
     public static function index()
     {
+        header('Content-Type: application/json');
+
         $pdo = Database::connect();
 
         $stmt = $pdo->query("SELECT * FROM missions");
@@ -16,6 +18,8 @@ class MissionController
 
     public static function store()
     {
+        header('Content-Type: application/json');
+
         $pdo = Database::connect();
 
         $data = json_decode(file_get_contents("php://input"), true);
