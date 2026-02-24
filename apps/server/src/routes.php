@@ -12,5 +12,5 @@ $router->post('/', function() {
     echo json_encode(["status" => "Commande robot reçue"]);
 });
 
-$router->add('GET', '/api/missions', ['MissionController', 'index']);
-$router->add('POST', '/api/missions', ['MissionController', 'store']);
+$router->get('/api/missions', ['MissionController', 'index']);
+$router->post('/api/missions', ['MissionController', 'store']);
