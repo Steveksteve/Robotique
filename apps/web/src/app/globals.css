@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+  }
+}
+
+@layer components {
+  /* Glassmorphism Card */
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-xl border border-border rounded-3xl transition-all duration-300;
+  }
+  
+  .glass-panel:hover {
+    @apply border-border-highlight bg-surface-highlight/80;
+  }
+
+  /* Headers */
+  .panel-header {
+    @apply flex items-center gap-3 px-6 py-4 border-b border-border text-xs font-bold text-text-secondary uppercase tracking-[0.2em];
+  }
+
+  /* Modern Button */
+  .btn {
+    @apply relative overflow-hidden rounded-xl px-4 py-3 font-medium transition-all duration-200 active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white shadow-glow hover:shadow-lg hover:brightness-110;
+  }
+
+  .btn-danger {
+    @apply bg-danger/10 text-danger border border-danger/20 hover:bg-danger hover:text-white hover:shadow-glow-danger;
+  }
+
+  .btn-ghost {
+    @apply bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white border border-transparent hover:border-border;
+  }
+
+  /* Status Badges */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide border;
+  }
+  
+  .badge-success {
+    @apply bg-success/10 text-success border-success/20;
+  }
+  
+  .badge-warning {
+    @apply bg-warning/10 text-warning border-warning/20;
+  }
+  
+  .badge-danger {
+    @apply bg-danger/10 text-danger border-danger/20;
+  }
+
+  /* Custom Inputs */
+  .input-modern {
+    @apply bg-black/20 border border-border rounded-xl px-4 py-3 text-sm text-white placeholder-text-tertiary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
