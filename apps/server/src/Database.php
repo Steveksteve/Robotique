@@ -3,7 +3,7 @@
 class Database
 {
     private static $host = 'localhost';
-    private static $dbname = 'raa';
+    private static $dbname = 'raa_db';
     private static $username = 'root';
     private static $password = '';
 
@@ -11,7 +11,7 @@ class Database
     {
         try {
             $pdo = new PDO(
-                "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8",
+                "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8mb4",
                 self::$username,
                 self::$password
             );
@@ -22,6 +22,7 @@ class Database
 
         } catch (PDOException $e) {
             http_response_code(500);
+            header('Content-Type: application/json');
             echo json_encode([
                 'error' => 'Impossible de se connecter à la base de données.'
             ]);
