@@ -2,5 +2,5 @@
 
 require_once __DIR__ . '/MissionController.php';
 
-$router->add('GET', '/api/missions', ['MissionController', 'index']);
-$router->add('POST', '/api/missions', ['MissionController', 'store']);
+$router->add('GET', '/missions', ['MissionController', 'index']);
+$router->add('POST', '/missions', ['MissionController', 'store']);
