@@ -2,18 +2,24 @@
 
 class Database
 {
-    private static $host = 'localhost';
-    private static $dbname = 'raa_db';
-    private static $username = 'root';
-    private static $password = '';
+    private static function env($key, $default = null)
+    {
+        $val = getenv($key);
+        return $val === false ? $default : $val;
+    }
 
     public static function connect()
     {
+        $host = self::env('DB_HOST', 'localhost');
+        $dbname = self::env('DB_NAME', 'raa_db');
+        $username = self::env('DB_USER', 'root');
+        $password = self::env('DB_PASSWORD', '');
+
         try {
             $pdo = new PDO(
-                "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8mb4",
-                self::$username,
-                self::$password
+                "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8mb4",
+                $username,
+                $password
             );
 
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

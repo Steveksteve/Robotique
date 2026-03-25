@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: raa_db
+      MYSQL_USER: raa
+      MYSQL_PASSWORD: raapass
+    volumes:
+      - ./apps/server/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      retries: 10
+    # Port mapping to host removed to avoid collisions on developer machines.
+    # Containers on the same compose network can still reach the DB on port 3306.
+    # If you need to expose the DB to the host, change to a free port like "3307:3306".
+
+  api:
+    image: robotique-main-api:latest
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: raa_db
+      DB_USER: raa
+      DB_PASSWORD: raapass
+    ports:
+      - "8000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 5s
+      retries: 12
+
+networks:
+  default:
+    driver: bridge
