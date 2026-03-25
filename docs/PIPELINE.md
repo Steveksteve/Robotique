@@ -1,142 +1,106 @@
-# Pipeline CI/CD — Projet Robotique (RAA)
+# Pipeline CI/CD - Projet Robotique (RAA)
 
 ## Objectif
 
-Le projet Robotique/RAA est composé de plusieurs briques :
+Le projet Robotique/RAA assemble plusieurs briques :
 
 - une API serveur
-- une base de données MySQL
+- une base MySQL
 - un client robot
 - une interface web
 
-Le pipeline CI/CD a pour rôle de vérifier automatiquement que ces composants peuvent fonctionner ensemble après chaque modification du code.
+L'objectif du pipeline est d'automatiser au maximum le chemin entre un commit et un environnement exécutable. Aujourd'hui, le dépôt couvre déjà une vraie chaîne CI et embarque désormais une première chaîne CD pour l'API vers un environnement de staging.
 
-L’objectif n’est pas seulement de tester la syntaxe, mais de valider un scénario minimal de fonctionnement du système.
+## Ce qui est en place dans le dépôt
 
-## Problème à résoudre
+### CI
 
-Dans ce projet, le principal risque est qu’un composant fonctionne seul mais ne communique pas correctement avec les autres.
+Le workflow [`.github/workflows/ci.yml`](/c:/hetic/Robotique-main/Robotique-main/.github/workflows/ci.yml) se déclenche sur `push` et `pull_request` vers `main` et `develop`.
 
-Exemples :
-- l’API démarre mais ne se connecte pas à la base
-- une mission est envoyée mais n’est pas enregistrée
-- le statut d’une mission ne se met pas à jour
-- le robot ou l’interface ne récupèrent pas les bonnes données
+Il automatise les étapes suivantes :
 
-Le pipeline sert donc à détecter ces erreurs le plus tôt possible.
+1. récupération du code
+2. démarrage d'un environnement de test Docker via [`docker-compose.test.yml`](/c:/hetic/Robotique-main/Robotique-main/docker-compose.test.yml)
+3. attente de disponibilité de l'API
+4. exécution des tests d'intégration
+5. génération et upload des rapports
+6. collecte des logs en cas d'échec
+7. nettoyage de l'environnement
 
-## Choix techniques
+Le scénario actuellement validé par les tests d'intégration couvre :
 
-### Docker
+- la disponibilité de l'API
+- la création d'une mission
+- la lecture des missions
+- la mise à jour du statut d'une mission
 
-Docker permet de lancer chaque service dans un environnement identique.
+Les tests concernés sont dans :
 
-Avantages :
-- évite les différences entre machines
-- simplifie le démarrage du projet
-- rend les tests reproductibles
-- prépare un futur déploiement
+- [`tests/integration/test_missions.py`](/c:/hetic/Robotique-main/Robotique-main/tests/integration/test_missions.py)
+- [`tests/integration/test_websocket.py`](/c:/hetic/Robotique-main/Robotique-main/tests/integration/test_websocket.py)
 
-### GitHub Actions
+### CD
 
-GitHub Actions permet d’exécuter automatiquement le pipeline à chaque :
-- push
-- pull request
+Le workflow [`.github/workflows/cd.yml`](/c:/hetic/Robotique-main/Robotique-main/.github/workflows/cd.yml) ajoute une première chaîne de livraison continue :
 
-Cela garantit que le code est testé avant d’être fusionné.
+1. il attend qu'un run du workflow `CI` se termine avec succès
+2. il reconstruit l'image Docker de l'API
+3. il pousse cette image dans GitHub Container Registry (`ghcr.io`)
+4. sur `main`, il déploie automatiquement l'image sur un serveur de staging via SSH
+5. il redémarre les services avec Docker Compose côté serveur et vérifie que l'API répond
 
-### Pourquoi Docker Compose / Swarm
+Les fichiers de déploiement ajoutés pour cela sont :
 
-Pour ce projet, une orchestration légère suffit.
+- [`deploy/docker-compose.staging.yml`](/c:/hetic/Robotique-main/Robotique-main/deploy/docker-compose.staging.yml)
+- [`deploy/.env.staging.example`](/c:/hetic/Robotique-main/Robotique-main/deploy/.env.staging.example)
+- [`scripts/deploy_staging.sh`](/c:/hetic/Robotique-main/Robotique-main/scripts/deploy_staging.sh)
 
-Le projet reste limité en taille :
-- peu de services
-- environnement local ou petite infra
-- besoin principal : lancer plusieurs briques ensemble
+## Cible de déploiement actuelle
 
-Docker Compose est suffisant pour les tests CI.
-Docker Swarm peut être envisagé plus tard pour un déploiement simple multi-services.
+Le CD cible volontairement uniquement l'API et sa base de données, car ce sont les composants réellement exploitables et testables dans le dépôt à ce stade.
 
-### Pourquoi pas Kubernetes
+Le déploiement staging repose sur :
 
-Kubernetes est très puissant mais trop lourd pour le besoin actuel.
+- une image API versionnée et poussée sur `ghcr.io`
+- un serveur accessible en SSH
+- un `docker compose up -d` côté serveur
+- une vérification HTTP finale de l'API
 
-Dans notre cas :
-- peu de services
-- pas de besoin de scalabilité complexe
-- projet académique / prototype
+## Secrets et variables à configurer dans GitHub
 
-L’ajouter maintenant augmenterait surtout la complexité sans bénéfice immédiat.
+Pour que le déploiement staging fonctionne, il faut définir :
 
-## Étapes du pipeline
+- `STAGING_HOST`
+- `STAGING_SSH_PORT`
+- `STAGING_SSH_USER`
+- `STAGING_SSH_KEY`
+- `STAGING_APP_DIR`
+- `GHCR_USERNAME`
+- `GHCR_TOKEN`
 
-Le pipeline suit les étapes suivantes :
+Variable d'environnement GitHub recommandée :
 
-1. Récupérer le code depuis le dépôt GitHub
-2. Construire les services nécessaires
-3. Démarrer l’environnement de test
-4. Vérifier que l’API répond
-5. Créer une mission de test
-6. Vérifier que la mission est bien enregistrée
-7. Vérifier qu’un changement de statut fonctionne
-8. Arrêter l’environnement
+- `API_PORT`
 
-## Exemple de scénario testé
+Le serveur doit aussi disposer de Docker et Docker Compose.
 
-### Test 1 — disponibilité de l’API
-Le pipeline vérifie que l’endpoint principal répond correctement.
+## Limites connues
 
-### Test 2 — création d’une mission
-Le pipeline envoie une mission de test contenant :
-- une origine
-- une destination
-- un objet
+Le pipeline ne couvre pas encore tout le produit de bout en bout :
 
-Puis il vérifie que cette mission existe bien dans la base de données.
+- `web` n'est pas intégré à la chaîne CD actuelle
+- `robot` n'est pas encore déployé automatiquement
+- le test WebSocket reste conditionnel tant que `WS_URL` n'est pas fourni
+- le staging dépend d'une infrastructure cible et des secrets GitHub associés
 
-### Test 3 — mise à jour du statut
-Le pipeline vérifie qu’une mission peut changer d’état, par exemple :
-- CREATED
-- ASSIGNED
-- COMPLETED
+En particulier, le dépôt contient un Dockerfile pour `web`, mais le dossier frontend n'a pas encore de build exploitable dans cet état. Il serait donc trompeur de prétendre que le déploiement du front est prêt.
 
-## Conditions de validation
+## Lecture honnête de l'avancement
 
-Le pipeline est considéré comme valide si :
-- les services démarrent correctement
-- l’API répond
-- la mission de test est créée
-- les données sont bien enregistrées
-- les échanges entre composants fonctionnent
+Le projet n'est plus seulement au stade du document :
 
-Si une de ces étapes échoue, le merge doit être bloqué.
+- la CI est concrète et exécutable
+- une première automatisation CD existe pour publier et déployer l'API
+- la chaîne "commit -> tests -> image -> staging" est désormais matérialisée dans le dépôt
 
-## Bénéfices attendus
-
-Ce pipeline apporte plusieurs avantages :
-
-- détection rapide des erreurs
-- validation automatique des interactions entre services
-- réduction des bugs d’intégration
-- base solide pour un déploiement futur
-
-## Évolution possible
-
-Plus tard, le pipeline pourra être enrichi avec :
-
-- tests plus complets sur les statuts
-- tests WebSocket
-- tests du client robot
-- analyse de qualité du code
-- scan de sécurité
-- déploiement automatique vers un environnement de démonstration
-
-## Résumé
-
-Le pipeline CI/CD proposé est volontairement simple mais adapté au projet Robotique/RAA.
-
-Il permet de vérifier l’essentiel :
-- le démarrage des services
-- la communication entre API et base de données
-- le bon enregistrement des missions
-- la cohérence minimale du système
+En revanche, la pipeline CI/CD n'est pas encore complète pour tous les services. La prochaine étape logique est d'intégrer un vrai build web, puis d'étendre le déploiement au front et au client robot si ces composants doivent vivre en environnement partagé.

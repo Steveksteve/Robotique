@@ -1,0 +1,149 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to deploy"
+        required: false
+        type: string
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/api
+
+jobs:
+  publish-api:
+    if: >
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    outputs:
+      image_ref: ${{ steps.image_ref.outputs.value }}
+      deploy_ref: ${{ steps.vars.outputs.deploy_ref }}
+      deploy_branch: ${{ steps.vars.outputs.deploy_branch }}
+    steps:
+      - name: Resolve ref and branch
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DEPLOY_REF="${{ github.event.inputs.ref || github.ref_name }}"
+            DEPLOY_BRANCH="${{ github.event.inputs.ref || github.ref_name }}"
+          else
+            DEPLOY_REF="${{ github.event.workflow_run.head_sha }}"
+            DEPLOY_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          fi
+          echo "deploy_ref=$DEPLOY_REF" >> "$GITHUB_OUTPUT"
+          echo "deploy_branch=$DEPLOY_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.deploy_ref }}
+
+      - name: Resolve checked out commit SHA
+        id: commit
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=sha-${{ steps.commit.outputs.sha }}
+            type=raw,value=staging,enable=${{ steps.vars.outputs.deploy_branch == 'develop' }}
+            type=raw,value=latest,enable=${{ steps.vars.outputs.deploy_branch == 'main' }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/server
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Expose immutable image reference
+        id: image_ref
+        shell: bash
+        run: |
+          echo "value=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
+
+  deploy-staging:
+    needs: publish-api
+    if: >
+      needs.publish-api.result == 'success' &&
+      (
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging') ||
+        (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main')
+      )
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout deployment assets
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.publish-api.outputs.deploy_ref }}
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Add staging host to known_hosts
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.STAGING_SSH_PORT }}" "${{ secrets.STAGING_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload deployment bundle
+        shell: bash
+        run: |
+          ssh -p "${{ secrets.STAGING_SSH_PORT }}" "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_HOST }}" \
+            "mkdir -p '${{ secrets.STAGING_APP_DIR }}'"
+          scp -P "${{ secrets.STAGING_SSH_PORT }}" \
+            deploy/docker-compose.staging.yml \
+            deploy/.env.staging.example \
+            apps/server/database/schema.sql \
+            scripts/deploy_staging.sh \
+            "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_APP_DIR }}/"
+
+      - name: Deploy on staging server
+        shell: bash
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_PORT: ${{ secrets.STAGING_SSH_PORT }}
+          STAGING_USER: ${{ secrets.STAGING_SSH_USER }}
+          STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          API_IMAGE: ${{ needs.publish-api.outputs.image_ref }}
+          API_PORT: ${{ vars.API_PORT || '8000' }}
+        run: |
+          ssh -p "$STAGING_PORT" "$STAGING_USER@$STAGING_HOST" \
+            "export APP_DIR='$STAGING_APP_DIR' API_IMAGE='$API_IMAGE' API_PORT='$API_PORT' GHCR_USERNAME='$GHCR_USERNAME' GHCR_TOKEN='$GHCR_TOKEN'; bash '$STAGING_APP_DIR/deploy_staging.sh'"

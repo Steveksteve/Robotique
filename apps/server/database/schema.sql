@@ -4,10 +4,14 @@ COLLATE utf8mb4_unicode_ci;
 
 USE raa_db;
 
+DROP TABLE IF EXISTS robot_logs;
+DROP TABLE IF EXISTS map_points;
+DROP TABLE IF EXISTS missions;
+
 CREATE TABLE missions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    origin VARCHAR(100) NOT NULL,
-    destination VARCHAR(100) NOT NULL,
+    origin VARCHAR(255) NOT NULL,
+    destination VARCHAR(255) NOT NULL,
     object VARCHAR(255) NOT NULL,
     status ENUM(
         'CREATED',
@@ -21,9 +25,9 @@ CREATE TABLE missions (
         'FAILED',
         'EMERGENCY_STOPPED'
     ) NOT NULL DEFAULT 'CREATED',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE robot_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,7 +38,7 @@ CREATE TABLE robot_logs (
     CONSTRAINT fk_robot_logs_mission
         FOREIGN KEY (mission_id) REFERENCES missions(id)
         ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE map_points (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,7 +48,7 @@ CREATE TABLE map_points (
     y FLOAT NOT NULL,
     description TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_robot_logs_mission_id ON robot_logs(mission_id);
 CREATE INDEX idx_missions_status ON missions(status);
