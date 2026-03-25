@@ -140,5 +140,3 @@ Il permet de vérifier l’essentiel :
 - la communication entre API et base de données
 - le bon enregistrement des missions
 - la cohérence minimale du système
-
-C’est une première base robuste, suffisante pour sécuriser le développement du projet.
