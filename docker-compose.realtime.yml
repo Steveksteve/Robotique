@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: raa_db
+      MYSQL_USER: raa
+      MYSQL_PASSWORD: raapass
+    volumes:
+      - ./apps/server/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      retries: 10
+
+  api:
+    image: robotique-main-api:latest
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: raa_db
+      DB_USER: raa
+      DB_PASSWORD: raapass
+    ports:
+      - "8000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  realtime:
+    image: robotique-main-realtime:latest
+    build:
+      context: ./apps/websocket/server
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+
+networks:
+  default:
+    driver: bridge
+

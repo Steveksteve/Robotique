@@ -33,6 +33,36 @@ pytest tests/integration/ -q
 docker compose -f docker-compose.test.yml down -v
 ```
 
+## Test local du WebSocket
+
+Pour tester le flux robot -> site en local :
+
+1. Demarrer l'API, la base et le relais WebSocket
+
+```bash
+docker compose -f docker-compose.realtime.yml up --build -d
+```
+
+2. Ouvrir le dashboard de debug dans le navigateur
+
+```text
+apps/websocket/dashboard/live.html
+```
+
+3. Lancer le client robot
+
+```bash
+python apps/robot/client.py
+```
+
+4. Ouvrir le fichier HTML dans le navigateur puis verifier que les evenements `robot.heartbeat`, `robot.position_updated` et `mission.status_updated` apparaissent dans la page
+
+5. Nettoyer
+
+```bash
+docker compose -f docker-compose.realtime.yml down -v
+```
+
 Dépannage
 - Si la DB ne démarre pas, consultez les logs : `docker compose logs db`
 - Si l'API renvoie des erreurs, consulter : `docker compose logs api`
@@ -63,3 +93,4 @@ Que font ces scripts ?
 - Attendent que l'API réponde (`http://localhost:8000/`).
 - Exécutent les tests d'intégration (pytest).
 - Collectent le rapport JUnit dans `reports/junit.xml` et démontent les services.
+
