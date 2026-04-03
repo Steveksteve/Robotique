@@ -4,42 +4,89 @@ require_once __DIR__ . '/Database.php';
 
 class MissionController
 {
+    // GET missions
     public static function index()
     {
-        $pdo = Database::connect();
+        header('Content-Type: application/json');
 
-        $stmt = $pdo->query("SELECT * FROM missions");
-        $missions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $pdo = Database::connect();
 
-        echo json_encode($missions);
+            $stmt = $pdo->query("SELECT * FROM missions ORDER BY created_at DESC");
+            $missions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Liste des missions récupérée.',
+                'data' => $missions
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur serveur.'
+            ]);
+        }
     }
 
+    // POST missions
     public static function store()
     {
-        $pdo = Database::connect();
+        header('Content-Type: application/json');
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        try {
+            $pdo = Database::connect();
 
-        if (!isset($data['origin']) || !isset($data['destination'])) {
-            http_response_code(400);
-            echo json_encode([
-                'error' => 'Origin et destination sont requis.'
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            // Vérifie que le body est bien du JSON valide
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Format JSON invalide.'
+                ]);
+                return;
+            }
+
+            // Nettoyage des données
+            $origin = isset($data['origin']) ? trim($data['origin']) : null;
+            $destination = isset($data['destination']) ? trim($data['destination']) : null;
+
+            // Validation des champs
+            if (empty($origin) || empty($destination)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Origin et destination sont requis et ne peuvent pas être vides.'
+                ]);
+                return;
+            }
+
+            $stmt = $pdo->prepare("
+                INSERT INTO missions (origin, destination, status)
+                VALUES (:origin, :destination, 'CREATED')
+            ");
+
+            $stmt->execute([
+                'origin' => $origin,
+                'destination' => $destination
             ]);
-            return;
+
+            http_response_code(201);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Mission créée avec succès.'
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur serveur.'
+            ]);
         }
-
-        $stmt = $pdo->prepare("
-            INSERT INTO missions (origin, destination, status)
-            VALUES (:origin, :destination, 'CREATED')
-        ");
-
-        $stmt->execute([
-            'origin' => $data['origin'],
-            'destination' => $data['destination']
-        ]);
-
-        echo json_encode([
-            'message' => 'Mission créée avec succès.'
-        ]);
     }
 }
