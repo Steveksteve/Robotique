@@ -17,10 +17,11 @@ coverage/
 vendor/
 composer.lock
 
-
-*.sql
 *.sqlite
 *.db
+
+*.sql
+!apps/server/database/schema.sql
 
 __pycache__/
 *.pyc

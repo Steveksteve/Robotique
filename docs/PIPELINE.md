@@ -1,57 +1,106 @@
-# Pipeline CI/CD — Projection
+# Pipeline CI/CD - Projet Robotique (RAA)
 
-Très bien, on reformule ça de manière plus naturelle et moins “template”.
+## Objectif
 
+Le projet Robotique/RAA assemble plusieurs briques :
 
+- une API serveur
+- une base MySQL
+- un client robot
+- une interface web
 
-## Idée générale
+L'objectif du pipeline est d'automatiser au maximum le chemin entre un commit et un environnement exécutable. Aujourd'hui, le dépôt couvre déjà une vraie chaîne CI et embarque désormais une première chaîne CD pour l'API vers un environnement de staging.
 
-Le projet RAA est composé de plusieurs briques techniques qui dépendent les unes des autres : l’API, la base de données, le client robot et l’interface.
+## Ce qui est en place dans le dépôt
 
-Le risque principal n’est pas une erreur de syntaxe isolée, mais un problème de communication entre ces services.
+### CI
 
-Le pipeline est donc pensé pour vérifier que l’environnement complet démarre correctement et que les échanges entre les différents composants fonctionnent comme prévu.
+Le workflow [`.github/workflows/ci.yml`](/c:/hetic/Robotique-main/Robotique-main/.github/workflows/ci.yml) se déclenche sur `push` et `pull_request` vers `main` et `develop`.
 
+Il automatise les étapes suivantes :
 
+1. récupération du code
+2. démarrage d'un environnement de test Docker via [`docker-compose.test.yml`](/c:/hetic/Robotique-main/Robotique-main/docker-compose.test.yml)
+3. attente de disponibilité de l'API
+4. exécution des tests d'intégration
+5. génération et upload des rapports
+6. collecte des logs en cas d'échec
+7. nettoyage de l'environnement
 
-## Ce que fera le pipeline
+Le scénario actuellement validé par les tests d'intégration couvre :
 
-1. Construire les images Docker des services.
-2. Lancer l’environnement complet (API + DB + robot).
-3. Vérifier que l’API répond.
-4. Créer une mission de test.
-5. Vérifier que la mission est bien enregistrée.
-6. Vérifier qu’un changement de statut fonctionne.
+- la disponibilité de l'API
+- la création d'une mission
+- la lecture des missions
+- la mise à jour du statut d'une mission
 
-Si une étape échoue, on bloque le merge.
+Les tests concernés sont dans :
 
+- [`tests/integration/test_missions.py`](/c:/hetic/Robotique-main/Robotique-main/tests/integration/test_missions.py)
+- [`tests/integration/test_websocket.py`](/c:/hetic/Robotique-main/Robotique-main/tests/integration/test_websocket.py)
 
+### CD
 
-## Outils choisis
+Le workflow [`.github/workflows/cd.yml`](/c:/hetic/Robotique-main/Robotique-main/.github/workflows/cd.yml) ajoute une première chaîne de livraison continue :
 
-Docker
-Pour éviter les problèmes “ça marche chez moi”.
-Chaque service tourne dans son conteneur.
+1. il attend qu'un run du workflow `CI` se termine avec succès
+2. il reconstruit l'image Docker de l'API
+3. il pousse cette image dans GitHub Container Registry (`ghcr.io`)
+4. sur `main`, il déploie automatiquement l'image sur un serveur de staging via SSH
+5. il redémarre les services avec Docker Compose côté serveur et vérifie que l'API répond
 
-Docker Swarm
-Pour gérer les services ensemble :
+Les fichiers de déploiement ajoutés pour cela sont :
 
-* réseau interne
-* redémarrage automatique
-* isolation
-* possibilité future d’ajouter un second robot
+- [`deploy/docker-compose.staging.yml`](/c:/hetic/Robotique-main/Robotique-main/deploy/docker-compose.staging.yml)
+- [`deploy/.env.staging.example`](/c:/hetic/Robotique-main/Robotique-main/deploy/.env.staging.example)
+- [`scripts/deploy_staging.sh`](/c:/hetic/Robotique-main/Robotique-main/scripts/deploy_staging.sh)
 
+## Cible de déploiement actuelle
 
+Le CD cible volontairement uniquement l'API et sa base de données, car ce sont les composants réellement exploitables et testables dans le dépôt à ce stade.
 
-## Pourquoi pas Kubernetes
+Le déploiement staging repose sur :
 
-Kubernetes est plus adapté à un système distribué à grande échelle.
-Notre projet contient peu de services et tourne sur une machine unique.
-Mettre Kubernetes maintenant ajouterait surtout de la complexité sans résoudre un problème réel.
+- une image API versionnée et poussée sur `ghcr.io`
+- un serveur accessible en SSH
+- un `docker compose up -d` côté serveur
+- une vérification HTTP finale de l'API
 
-Swarm est suffisant pour notre niveau actuel.
+## Secrets et variables à configurer dans GitHub
 
+Pour que le déploiement staging fonctionne, il faut définir :
 
-## Enchaînement
+- `STAGING_HOST`
+- `STAGING_SSH_PORT`
+- `STAGING_SSH_USER`
+- `STAGING_SSH_KEY`
+- `STAGING_APP_DIR`
+- `GHCR_USERNAME`
+- `GHCR_TOKEN`
 
-Push → Build images → Lancer stack → Tester API → Valider → Déployer
+Variable d'environnement GitHub recommandée :
+
+- `API_PORT`
+
+Le serveur doit aussi disposer de Docker et Docker Compose.
+
+## Limites connues
+
+Le pipeline ne couvre pas encore tout le produit de bout en bout :
+
+- `web` n'est pas intégré à la chaîne CD actuelle
+- `robot` n'est pas encore déployé automatiquement
+- le test WebSocket reste conditionnel tant que `WS_URL` n'est pas fourni
+- le staging dépend d'une infrastructure cible et des secrets GitHub associés
+
+En particulier, le dépôt contient un Dockerfile pour `web`, mais le dossier frontend n'a pas encore de build exploitable dans cet état. Il serait donc trompeur de prétendre que le déploiement du front est prêt.
+
+## Lecture honnête de l'avancement
+
+Le projet n'est plus seulement au stade du document :
+
+- la CI est concrète et exécutable
+- une première automatisation CD existe pour publier et déployer l'API
+- la chaîne "commit -> tests -> image -> staging" est désormais matérialisée dans le dépôt
+
+En revanche, la pipeline CI/CD n'est pas encore complète pour tous les services. La prochaine étape logique est d'intégrer un vrai build web, puis d'étendre le déploiement au front et au client robot si ces composants doivent vivre en environnement partagé.

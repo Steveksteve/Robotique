@@ -1,0 +1,83 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/api
+
+jobs:
+  publish-api:
+    if: >
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    outputs:
+      image_ref: ${{ steps.image_ref.outputs.value }}
+      deploy_ref: ${{ steps.vars.outputs.deploy_ref }}
+      deploy_branch: ${{ steps.vars.outputs.deploy_branch }}
+    steps:
+      - name: Resolve ref and branch
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DEPLOY_REF="${{ github.ref_name }}"
+            DEPLOY_BRANCH="${{ github.ref_name }}"
+          else
+            DEPLOY_REF="${{ github.event.workflow_run.head_sha }}"
+            DEPLOY_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          fi
+          echo "deploy_ref=$DEPLOY_REF" >> "$GITHUB_OUTPUT"
+          echo "deploy_branch=$DEPLOY_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.deploy_ref }}
+
+      - name: Resolve checked out commit SHA
+        id: commit
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=sha-${{ steps.commit.outputs.sha }}
+            type=raw,value=staging,enable=${{ steps.vars.outputs.deploy_branch == 'develop' }}
+            type=raw,value=latest,enable=${{ steps.vars.outputs.deploy_branch == 'main' }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/server
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Expose immutable image reference
+        id: image_ref
+        shell: bash
+        run: |
+          echo "value=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
