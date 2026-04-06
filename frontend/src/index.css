@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #020617, #000);
+  color: #e2e8f0;
+}
+
+/* glow global */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 30%, #38bdf820, transparent 40%),
+              radial-gradient(circle at 80% 70%, #0ea5e920, transparent 40%);
+  z-index: -1;
+}
+
+/* radar scan */
+@keyframes scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
