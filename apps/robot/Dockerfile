@@ -1,9 +1,9 @@
 FROM python:3.11-slim
 WORKDIR /app
 
-# Upgrade pip and install the robot runtime dependencies
+# Upgrade pip and install runtime dependencies
 RUN python -m pip install --upgrade pip setuptools wheel \
-	&& pip install --no-cache-dir requests==2.31.0 websocket-client==1.9.0
+    && pip install --no-cache-dir requests==2.31.0 websocket-client==1.9.0
 
 COPY client.py ./client.py
 

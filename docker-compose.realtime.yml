@@ -32,12 +32,19 @@ services:
   realtime:
     image: robotique-main-realtime:latest
     build:
-      context: ./apps/websocket/server
+      context: ./apps/server/realtime
       dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: raa_db
+      DB_USER: raa
+      DB_PASSWORD: raapass
     ports:
       - "8765:8765"
+    depends_on:
+      db:
+        condition: service_healthy
 
 networks:
   default:
     driver: bridge
-

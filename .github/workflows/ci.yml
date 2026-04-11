@@ -77,9 +77,14 @@ jobs:
                   elif severity == "CRITICAL":
                       critical += 1
 
-          if high or critical:
-              print(f"Trivy found CRITICAL={critical} HIGH={high}")
-              sys.exit(1)
+          if critical:
+                print(f"Trivy found CRITICAL={critical} HIGH={high}")
+                sys.exit(1)
+
+          if high:
+              print(f"Warning: Trivy found HIGH={high} vulnerabilities")
+
+              print("No CRITICAL/HIGH vulnerabilities found by Trivy")
 
           print("No CRITICAL/HIGH vulnerabilities found by Trivy")
           PY

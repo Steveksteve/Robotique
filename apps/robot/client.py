@@ -17,96 +17,70 @@ WS_URL = os.getenv("WS_URL", "ws://localhost:8765")
 ROBOT_ID = os.getenv("ROBOT_ID", "robot-1")
 
 
-def iso_now():
+def utc_now():
     return datetime.now(timezone.utc).isoformat()
 
 
-class RobotRealtimeClient:
+class RobotSocketClient:
     def __init__(self):
-        self.ws = None
+        self.connection = None
         self.connected = False
         self.stop_event = threading.Event()
-        self.worker = None
+        self.thread = None
 
     def start(self):
         if websocket is None:
-            print("websocket-client non installe, mode temps reel desactive")
+            print("websocket-client non installe, WebSocket desactive")
             return
 
-        self.worker = threading.Thread(target=self._run_forever, daemon=True)
-        self.worker.start()
+        self.thread = threading.Thread(target=self._connect_loop, daemon=True)
+        self.thread.start()
 
-    def _run_forever(self):
+    def _connect_loop(self):
         while not self.stop_event.is_set():
             try:
-                self.ws = websocket.create_connection(WS_URL, timeout=5)
+                self.connection = websocket.create_connection(WS_URL, timeout=5)
                 self.connected = True
-                self._send(
+                self.send(
                     {
                         "type": "identify",
                         "client_type": "robot",
                         "robot_id": ROBOT_ID,
                     }
                 )
-                print(f"WebSocket connecte a {WS_URL}")
+                print(f"Robot connecte au WebSocket {WS_URL}")
 
                 while not self.stop_event.is_set():
-                    self.publish_heartbeat()
+                    self.send(
+                        {
+                            "type": "robot.heartbeat",
+                            "robot_id": ROBOT_ID,
+                            "timestamp": utc_now(),
+                        }
+                    )
                     time.sleep(5)
             except Exception as exc:
                 self.connected = False
-                print(f"Connexion WebSocket indisponible: {exc}")
+                print(f"WebSocket indisponible: {exc}")
                 time.sleep(2)
             finally:
-                if self.ws is not None:
+                if self.connection is not None:
                     try:
-                        self.ws.close()
+                        self.connection.close()
                     except Exception:
                         pass
-                    self.ws = None
+                    self.connection = None
 
-    def _send(self, payload):
-        if not self.connected or self.ws is None:
+    def send(self, payload):
+        if not self.connected or self.connection is None:
             return
-        self.ws.send(json.dumps(payload))
-
-    def publish_heartbeat(self):
-        self._send(
-            {
-                "type": "robot.heartbeat",
-                "robot_id": ROBOT_ID,
-                "timestamp": iso_now(),
-            }
-        )
-
-    def publish_position(self, x, y, battery=100):
-        self._send(
-            {
-                "type": "robot.position_updated",
-                "robot_id": ROBOT_ID,
-                "x": x,
-                "y": y,
-                "battery": battery,
-                "timestamp": iso_now(),
-            }
-        )
-
-    def publish_status(self, mission_id, status):
-        self._send(
-            {
-                "type": "mission.status_updated",
-                "robot_id": ROBOT_ID,
-                "mission_id": mission_id,
-                "status": status,
-                "timestamp": iso_now(),
-            }
-        )
+        self.connection.send(json.dumps(payload))
 
     def stop(self):
         self.stop_event.set()
-        if self.ws is not None:
+        if self.connection is not None:
             try:
-                self.ws.close()
+                self.connection.close()
             except Exception:
                 pass
 
@@ -114,7 +88,7 @@ class RobotRealtimeClient:
 class RobotClient:
     def __init__(self):
         self.session = requests.Session()
-        self.realtime = RobotRealtimeClient()
+        self.socket_client = RobotSocketClient()
 
     def get_missions(self):
         try:
@@ -125,40 +99,51 @@ class RobotClient:
             print("Erreur recuperation missions :", exc)
             return None
 
-    def update_status(self, mission_id, status):
-        try:
-            response = self.session.patch(
-                f"{API_BASE}/missions/{mission_id}/status",
-                json={"status": status},
-            )
-            response.raise_for_status()
-            payload = response.json()
-            self.realtime.publish_status(mission_id, status)
-            return payload
-        except requests.RequestException as exc:
-            print("Erreur mise a jour mission :", exc)
-            return None
+    def publish_position(self, mission_id, x, y):
+        self.socket_client.send(
+            {
+                "type": "robot.position_updated",
+                "robot_id": ROBOT_ID,
+                "mission_id": mission_id,
+                "x": x,
+                "y": y,
+                "timestamp": utc_now(),
+            }
+        )
+
+    def publish_status(self, mission_id, status):
+        self.socket_client.send(
+            {
+                "type": "mission.status_updated",
+                "robot_id": ROBOT_ID,
+                "mission_id": mission_id,
+                "status": status,
+                "timestamp": utc_now(),
+            }
+        )
 
     def run(self):
-        self.realtime.start()
-
+        self.socket_client.start()
         try:
             while True:
                 missions = self.get_missions()
-
                 if missions:
                     for index, mission in enumerate(missions):
                         if mission["status"] == "CREATED":
-                            print(f"Mission recue : {mission['id']}")
-                            self.realtime.publish_position(x=index + 1, y=index + 2, battery=95)
-                            self.update_status(mission["id"], "NAVIGATING_TO_PICKUP")
+                            mission_id = mission["id"]
+                            print(f"Mission recue : {mission_id}")
+                            self.publish_status(mission_id, "ASSIGNED")
+                            time.sleep(1)
+                            self.publish_position(mission_id, index + 1, index + 2)
+                            self.publish_status(mission_id, "NAVIGATING_TO_PICKUP")
                             time.sleep(3)
-                            self.realtime.publish_position(x=index + 2, y=index + 3, battery=91)
-                            self.update_status(mission["id"], "COMPLETED")
-
+                            self.publish_position(mission_id, index + 2, index + 3)
+                            self.publish_status(mission_id, "COMPLETED")
                 time.sleep(5)
+        except KeyboardInterrupt:
+            print("Arret du client robot")
         finally:
-            self.realtime.stop()
+            self.socket_client.stop()
 
 
 if __name__ == "__main__":
