@@ -9,21 +9,20 @@ export default function Missions() {
       <h1 style={title}>Mission Control</h1>
 
       <div style={list}>
-        {missions.map((m: Mission) => (
-          <div key={m.id} style={card}>
+        {missions.map((mission: Mission) => (
+          <div key={mission.id} style={card}>
             <div style={left}>
               <div style={path}>
-                {m.from} → {m.to}
+                {mission.origin} {"->"} {mission.destination}
               </div>
 
               <div style={meta}>
-                Mission #{m.id}
+                Mission #{mission.id}
+                {mission.object ? ` - ${mission.object}` : ""}
               </div>
             </div>
 
-            <div style={status(m.status)}>
-              {m.status}
-            </div>
+            <div style={status(mission.status)}>{mission.status}</div>
           </div>
         ))}
       </div>
@@ -74,21 +73,25 @@ const meta = {
   color: "#64748b",
 };
 
-const status = (s: string) => ({
+const status = (value: string) => ({
   padding: "6px 12px",
   borderRadius: 8,
   fontSize: 12,
   textTransform: "uppercase" as const,
   background:
-    s === "completed"
+    value === "COMPLETED"
       ? "rgba(34,197,94,0.15)"
-      : s === "navigating"
+      : value.includes("NAVIGATING") || value === "ASSIGNED"
       ? "rgba(56,189,248,0.15)"
+      : value === "FAILED" || value === "CANCELLED" || value === "EMERGENCY_STOPPED"
+      ? "rgba(239,68,68,0.15)"
       : "rgba(100,116,139,0.15)",
   color:
-    s === "completed"
+    value === "COMPLETED"
       ? "#22c55e"
-      : s === "navigating"
+      : value.includes("NAVIGATING") || value === "ASSIGNED"
       ? "#38bdf8"
+      : value === "FAILED" || value === "CANCELLED" || value === "EMERGENCY_STOPPED"
+      ? "#ef4444"
       : "#64748b",
 });

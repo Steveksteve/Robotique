@@ -1,62 +1,16 @@
-type Point = {
-  x: number;
-  y: number;
-};
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import "./index.css";
 
-type Props = {
-  x: number;
-  y: number;
-  trail: Point[];
-};
+const container = document.getElementById("root");
 
-export default function MiniMap({ x, y, trail }: Props) {
-  return (
-    <div style={map}>
-      {trail.map((p, i) => (
-        <div
-          key={i}
-          style={{
-            ...dot,
-            left: p.x,
-            top: p.y,
-            opacity: 0.3,
-          }}
-        />
-      ))}
-
-      <div
-        style={{
-          ...robot,
-          left: x,
-          top: y,
-        }}
-      />
-    </div>
-  );
+if (!container) {
+  throw new Error("Root container #root not found");
 }
 
-/* ---------- STYLE ---------- */
-
-const map = {
-  width: 320,
-  height: 320,
-  border: "1px solid #38bdf8",
-  borderRadius: 12,
-  position: "relative" as const,
-};
-
-const dot = {
-  width: 6,
-  height: 6,
-  borderRadius: "50%",
-  position: "absolute" as const,
-  background: "#64748b",
-};
-
-const robot = {
-  width: 10,
-  height: 10,
-  borderRadius: "50%",
-  position: "absolute" as const,
-  background: "#22d3ee",
-};
+createRoot(container).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

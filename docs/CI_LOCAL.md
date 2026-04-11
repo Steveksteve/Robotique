@@ -33,6 +33,28 @@ pytest tests/integration/ -q
 docker compose -f docker-compose.test.yml down -v
 ```
 
+## WebSocket robot -> site
+
+Pour lancer l'API, la base et le serveur WebSocket :
+
+```bash
+docker compose -f docker-compose.realtime.yml up --build -d
+```
+
+Le serveur WebSocket ecoute par defaut sur :
+
+```text
+ws://localhost:8765
+```
+
+Le robot publie alors :
+
+- `robot.heartbeat`
+- `robot.position_updated`
+- `mission.status_updated`
+
+Le frontend doit se connecter en client `dashboard`, commencer par envoyer un message `identify`, puis ecouter ces evenements en temps reel.
+
 Dépannage
 - Si la DB ne démarre pas, consultez les logs : `docker compose logs db`
 - Si l'API renvoie des erreurs, consulter : `docker compose logs api`
