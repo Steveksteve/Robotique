@@ -13,15 +13,16 @@ type RealtimeState = {
   events: RealtimeEvent[];
 };
 
-type MissionStatusEvent = {
-  type: "mission.status_updated";
+type MissionUpdatedEvent = {
+  type: "mission:updated" | "mission.status_updated";
   mission_id: number;
   status: Mission["status"];
+  mission?: Partial<Mission> & { id?: number };
   timestamp?: string;
 };
 
 type PositionEvent = {
-  type: "robot.position_updated";
+  type: "robot:position" | "robot.position_updated";
   mission_id: number;
   x: number;
   y: number;
@@ -40,7 +41,7 @@ type ServerEvent = {
   timestamp?: string;
 };
 
-type IncomingEvent = MissionStatusEvent | PositionEvent | HeartbeatEvent | ServerEvent;
+type IncomingEvent = MissionUpdatedEvent | PositionEvent | HeartbeatEvent | ServerEvent;
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8765";
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
@@ -86,9 +87,9 @@ function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
       ? { ...existing, ...update }
       : {
           id: update.id,
-          origin: "Unknown",
-          destination: "Unknown",
-          object: "",
+          origin: update.origin ?? "Unknown",
+          destination: update.destination ?? "Unknown",
+          object: update.object,
           status: update.status ?? "CREATED",
         };
 
@@ -208,6 +209,7 @@ function handleIncomingEvent(payload: IncomingEvent) {
       });
       break;
 
+    case "robot:position":
     case "robot.position_updated":
       setState((current) => ({
         ...current,
@@ -215,23 +217,29 @@ function handleIncomingEvent(payload: IncomingEvent) {
         trail: [...current.trail, { x: payload.x, y: payload.y }].slice(-MAX_TRAIL),
       }));
       appendEvent({
-        type: payload.type,
+        type: "robot:position",
         message: `Position updated to (${payload.x}, ${payload.y})`,
         timestamp,
       });
       break;
 
-    case "mission.status_updated":
+    case "mission:updated":
+    case "mission.status_updated": {
+      const missionPayload = payload.mission ?? {};
       upsertMission({
-        id: payload.mission_id,
-        status: payload.status,
+        id: missionPayload.id ?? payload.mission_id,
+        origin: missionPayload.origin,
+        destination: missionPayload.destination,
+        object: missionPayload.object,
+        status: missionPayload.status ?? payload.status,
       });
       appendEvent({
-        type: payload.type,
-        message: `Mission #${payload.mission_id} -> ${payload.status}`,
+        type: "mission:updated",
+        message: `Mission #${payload.mission_id} -> ${missionPayload.status ?? payload.status}`,
         timestamp,
       });
       break;
+    }
 
     default:
       break;

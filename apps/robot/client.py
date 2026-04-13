@@ -102,7 +102,7 @@ class RobotClient:
     def publish_position(self, mission_id, x, y):
         self.socket_client.send(
             {
-                "type": "robot.position_updated",
+                "type": "robot:position",
                 "robot_id": ROBOT_ID,
                 "mission_id": mission_id,
                 "x": x,
@@ -114,7 +114,7 @@ class RobotClient:
     def publish_status(self, mission_id, status):
         self.socket_client.send(
             {
-                "type": "mission.status_updated",
+                "type": "mission:updated",
                 "robot_id": ROBOT_ID,
                 "mission_id": mission_id,
                 "status": status,

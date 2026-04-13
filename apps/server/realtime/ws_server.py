@@ -22,6 +22,11 @@ clients = {}
 dashboards = set()
 robots = {}
 
+EVENT_ALIASES = {
+    "robot.position_updated": "robot:position",
+    "mission.status_updated": "mission:updated",
+}
+
 
 def utc_now():
     return datetime.now(timezone.utc).isoformat()
@@ -39,18 +44,37 @@ def db_connect():
     )
 
 
+def normalize_event_type(event_type):
+    return EVENT_ALIASES.get(event_type, event_type)
+
+
+def get_mission(mission_id):
+    with db_connect() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT id, origin, destination, object, status, created_at, updated_at
+                FROM missions
+                WHERE id = %s
+                """,
+                (mission_id,),
+            )
+            return cursor.fetchone()
+
+
 def update_mission_status(mission_id, status):
     with db_connect() as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT id FROM missions WHERE id = %s", (mission_id,))
             mission = cursor.fetchone()
             if not mission:
-                return False
+                return None
             cursor.execute(
                 "UPDATE missions SET status = %s WHERE id = %s",
                 (status, mission_id),
             )
-    return True
+
+    return get_mission(mission_id)
 
 
 def insert_robot_log(mission_id, x, y):
@@ -65,17 +89,46 @@ def insert_robot_log(mission_id, x, y):
             )
 
 
+def build_legacy_payload(canonical_event):
+    if canonical_event["type"] == "robot:position":
+        return {
+            **canonical_event,
+            "type": "robot.position_updated",
+        }
+
+    if canonical_event["type"] == "mission:updated":
+        return {
+            **canonical_event,
+            "type": "mission.status_updated",
+        }
+
+    return canonical_event
+
+
 async def safe_send(websocket, payload):
     try:
-        await websocket.send(json.dumps(payload))
+        await websocket.send(json.dumps(payload, default=str))
     except ConnectionClosed:
         pass
 
 
-async def broadcast_dashboards(payload):
+async def broadcast_dashboards(payload, include_legacy_alias=True):
     if not dashboards:
         return
-    await asyncio.gather(*(safe_send(client, payload) for client in list(dashboards)))
+
+    outgoing_payloads = [payload]
+    if include_legacy_alias:
+        legacy_payload = build_legacy_payload(payload)
+        if legacy_payload is not payload:
+            outgoing_payloads.append(legacy_payload)
+
+    await asyncio.gather(
+        *(
+            safe_send(client, outgoing)
+            for client in list(dashboards)
+            for outgoing in outgoing_payloads
+        )
+    )
 
 
 async def send_error(websocket, message):
@@ -107,7 +160,8 @@ async def handle_identify(websocket, payload):
                 "type": "robot.connected",
                 "robot_id": robot_id,
                 "timestamp": utc_now(),
-            }
+            },
+            include_legacy_alias=False,
         )
 
     await safe_send(
@@ -128,47 +182,62 @@ async def handle_position_event(websocket, payload):
     y = payload.get("y")
 
     if mission_id is None or x is None or y is None:
-        await send_error(websocket, "mission_id, x and y are required for robot.position_updated")
+        await send_error(websocket, "mission_id, x and y are required for robot:position")
         return
 
     insert_robot_log(mission_id, x, y)
-    payload.setdefault("timestamp", utc_now())
-    await broadcast_dashboards(payload)
+    event = {
+        "type": "robot:position",
+        "robot_id": payload.get("robot_id"),
+        "mission_id": mission_id,
+        "x": x,
+        "y": y,
+        "timestamp": payload.get("timestamp") or utc_now(),
+    }
+    await broadcast_dashboards(event)
 
 
-async def handle_status_event(websocket, payload):
+async def handle_mission_updated_event(websocket, payload):
     mission_id = payload.get("mission_id")
     status = payload.get("status")
 
     if mission_id is None or not status:
-        await send_error(websocket, "mission_id and status are required for mission.status_updated")
+        await send_error(websocket, "mission_id and status are required for mission:updated")
         return
 
-    if not update_mission_status(mission_id, status):
+    mission = update_mission_status(mission_id, status)
+    if not mission:
         await send_error(websocket, f"mission {mission_id} not found")
         return
 
-    payload.setdefault("timestamp", utc_now())
-    await broadcast_dashboards(payload)
+    event = {
+        "type": "mission:updated",
+        "robot_id": payload.get("robot_id"),
+        "mission_id": mission_id,
+        "status": mission["status"],
+        "mission": mission,
+        "timestamp": payload.get("timestamp") or utc_now(),
+    }
+    await broadcast_dashboards(event)
 
 
 async def handle_robot_event(websocket, payload):
-    event_type = payload.get("type")
+    event_type = normalize_event_type(payload.get("type"))
 
     if event_type == "robot.heartbeat":
         payload.setdefault("timestamp", utc_now())
-        await broadcast_dashboards(payload)
+        await broadcast_dashboards(payload, include_legacy_alias=False)
         return
 
-    if event_type == "robot.position_updated":
+    if event_type == "robot:position":
         await handle_position_event(websocket, payload)
         return
 
-    if event_type == "mission.status_updated":
-        await handle_status_event(websocket, payload)
+    if event_type == "mission:updated":
+        await handle_mission_updated_event(websocket, payload)
         return
 
-    await send_error(websocket, f"unsupported event type: {event_type}")
+    await send_error(websocket, f"unsupported event type: {payload.get('type')}")
 
 
 async def cleanup(websocket):
@@ -182,7 +251,8 @@ async def cleanup(websocket):
                 "type": "robot.disconnected",
                 "robot_id": robot_id,
                 "timestamp": utc_now(),
-            }
+            },
+            include_legacy_alias=False,
         )
 
 
