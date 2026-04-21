@@ -1,21 +1,66 @@
 <?php
 
-require_once __DIR__ . '/MissionController.php';
+require_once __DIR__ . "/Database.php";
+require_once __DIR__ . "/MissionController.php";
 
-$router->get('/missions', ['MissionController', 'index']);
-$router->post('/missions', ['MissionController', 'store']);
-$router->patch('/missions/{id}/status', ['MissionController', 'updateStatus']);
+$pdo = Database::connect();
+$controller = new MissionController($pdo);
 
-$router->get('/', function() {
-    header('Content-Type: application/json');
+$method = $_SERVER["REQUEST_METHOD"];
+$uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+
+$basePath = rtrim(str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"])), "/");
+
+if ($basePath !== "" && $basePath !== "/" && str_starts_with($uri, $basePath)) {
+    $uri = substr($uri, strlen($basePath));
+}
+
+if (str_starts_with($uri, "/index.php")) {
+    $uri = substr($uri, strlen("/index.php"));
+}
+
+$uri = preg_replace('#/+#', '/', $uri);
+
+if ($uri === "" || $uri === false) {
+    $uri = "/";
+}
+
+if ($uri === "/" && $method === "GET") {
     echo json_encode([
-        'message' => 'Hello depuis le serveur robotique'
+        "status" => "ok",
+        "service" => "api"
     ]);
-});
+    exit;
+}
 
-$router->post('/', function() {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'Commande robot reçue'
-    ]);
-});
+if ($uri === "/missions" && $method === "GET") {
+    $controller->index();
+    exit;
+}
+
+if (preg_match("#^/missions/(\d+)$#", $uri, $matches) && $method === "GET") {
+    $controller->show($matches[1]);
+    exit;
+}
+
+if ($uri === "/missions" && $method === "POST") {
+    $controller->store();
+    exit;
+}
+
+if (preg_match("#^/missions/(\d+)/status$#", $uri, $matches) && $method === "PATCH") {
+    $controller->updateStatus($matches[1]);
+    exit;
+}
+
+if (preg_match("#^/missions/(\d+)$#", $uri, $matches) && $method === "DELETE") {
+    $controller->delete($matches[1]);
+    exit;
+}
+
+http_response_code(404);
+echo json_encode([
+    "error" => "Route not found",
+    "method" => $method,
+    "uri" => $uri
+]);
