@@ -19,8 +19,18 @@ if (str_starts_with($uri, "/index.php")) {
     $uri = substr($uri, strlen("/index.php"));
 }
 
+$uri = preg_replace('#/+#', '/', $uri);
+
 if ($uri === "" || $uri === false) {
     $uri = "/";
+}
+
+if ($uri === "/" && $method === "GET") {
+    echo json_encode([
+        "status" => "ok",
+        "service" => "api"
+    ]);
+    exit;
 }
 
 if ($uri === "/missions" && $method === "GET") {
