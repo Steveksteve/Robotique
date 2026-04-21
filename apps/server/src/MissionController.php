@@ -76,6 +76,7 @@ class MissionController
             $data["object"]
         ]);
 
+        http_response_code(201);
         echo json_encode(["id" => $this->pdo->lastInsertId()]);
     }
 
