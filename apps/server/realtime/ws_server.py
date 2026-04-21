@@ -25,6 +25,7 @@ robots = {}
 EVENT_ALIASES = {
     "robot.position_updated": "robot:position",
     "mission.status_updated": "mission:updated",
+    "mission.completed": "mission:completed",
 }
 
 
@@ -100,6 +101,12 @@ def build_legacy_payload(canonical_event):
         return {
             **canonical_event,
             "type": "mission.status_updated",
+        }
+
+    if canonical_event["type"] == "mission:completed":
+        return {
+            **canonical_event,
+            "type": "mission.completed",
         }
 
     return canonical_event
@@ -210,7 +217,7 @@ async def handle_mission_updated_event(websocket, payload):
         await send_error(websocket, f"mission {mission_id} not found")
         return
 
-    event = {
+    updated_event = {
         "type": "mission:updated",
         "robot_id": payload.get("robot_id"),
         "mission_id": mission_id,
@@ -218,7 +225,41 @@ async def handle_mission_updated_event(websocket, payload):
         "mission": mission,
         "timestamp": payload.get("timestamp") or utc_now(),
     }
-    await broadcast_dashboards(event)
+    await broadcast_dashboards(updated_event)
+
+    if mission["status"] == "COMPLETED":
+        completed_event = {
+            "type": "mission:completed",
+            "robot_id": payload.get("robot_id"),
+            "mission_id": mission_id,
+            "status": mission["status"],
+            "mission": mission,
+            "timestamp": payload.get("timestamp") or utc_now(),
+        }
+        await broadcast_dashboards(completed_event)
+
+
+async def handle_mission_completed_event(websocket, payload):
+    mission_id = payload.get("mission_id")
+
+    if mission_id is None:
+        await send_error(websocket, "mission_id is required for mission:completed")
+        return
+
+    mission = update_mission_status(mission_id, "COMPLETED")
+    if not mission:
+        await send_error(websocket, f"mission {mission_id} not found")
+        return
+
+    completed_event = {
+        "type": "mission:completed",
+        "robot_id": payload.get("robot_id"),
+        "mission_id": mission_id,
+        "status": mission["status"],
+        "mission": mission,
+        "timestamp": payload.get("timestamp") or utc_now(),
+    }
+    await broadcast_dashboards(completed_event)
 
 
 async def handle_robot_event(websocket, payload):
@@ -235,6 +276,10 @@ async def handle_robot_event(websocket, payload):
 
     if event_type == "mission:updated":
         await handle_mission_updated_event(websocket, payload)
+        return
+
+    if event_type == "mission:completed":
+        await handle_mission_completed_event(websocket, payload)
         return
 
     await send_error(websocket, f"unsupported event type: {payload.get('type')}")

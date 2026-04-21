@@ -14,7 +14,7 @@ type RealtimeState = {
 };
 
 type MissionUpdatedEvent = {
-  type: "mission:updated" | "mission.status_updated";
+  type: "mission:updated" | "mission.status_updated" | "mission:completed" | "mission.completed";
   mission_id: number;
   status: Mission["status"];
   mission?: Partial<Mission> & { id?: number };
@@ -224,18 +224,32 @@ function handleIncomingEvent(payload: IncomingEvent) {
       break;
 
     case "mission:updated":
-    case "mission.status_updated": {
+    case "mission.status_updated":
+    case "mission:completed":
+    case "mission.completed": {
       const missionPayload = payload.mission ?? {};
+      const resolvedStatus =
+        payload.type === "mission:completed"
+          || payload.type === "mission.completed"
+          ? "COMPLETED"
+          : (missionPayload.status ?? payload.status);
+
       upsertMission({
         id: missionPayload.id ?? payload.mission_id,
         origin: missionPayload.origin,
         destination: missionPayload.destination,
         object: missionPayload.object,
-        status: missionPayload.status ?? payload.status,
+        status: resolvedStatus,
       });
+
       appendEvent({
-        type: "mission:updated",
-        message: `Mission #${payload.mission_id} -> ${missionPayload.status ?? payload.status}`,
+        type: payload.type === "mission:completed" || payload.type === "mission.completed"
+          ? "mission:completed"
+          : "mission:updated",
+        message:
+          payload.type === "mission:completed" || payload.type === "mission.completed"
+            ? `Mission #${payload.mission_id} completed`
+            : `Mission #${payload.mission_id} -> ${resolvedStatus}`,
         timestamp,
       });
       break;

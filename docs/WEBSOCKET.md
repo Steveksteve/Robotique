@@ -73,6 +73,15 @@ Cet evenement est insere dans `robot_logs`.
   "timestamp": "2026-04-11T10:15:04Z"
 }
 ```
+### Mission completed
+
+```json
+{
+  "type": "mission:completed",
+  "robot_id": "robot-1",
+  "mission_id": 12,
+  "timestamp": "2026-04-11T10:15:10Z"
+}
 
 Cet evenement met a jour la table `missions`.
 
