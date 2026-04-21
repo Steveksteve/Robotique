@@ -1,109 +1,138 @@
 <?php
 
-require_once __DIR__ . '/Database.php';
-
 class MissionController
 {
-    public static function index()
+    private $pdo;
+
+    private $allowedStatuses = [
+        "CREATED",
+        "ASSIGNED",
+        "NAVIGATING_TO_PICKUP",
+        "PICKING_UP",
+        "NAVIGATING_TO_DROP",
+        "COMPLETED",
+        "ERROR"
+    ];
+
+    private $allowedTransitions = [
+        "CREATED" => ["ASSIGNED", "ERROR"],
+        "ASSIGNED" => ["NAVIGATING_TO_PICKUP", "ERROR"],
+        "NAVIGATING_TO_PICKUP" => ["PICKING_UP", "ERROR"],
+        "PICKING_UP" => ["NAVIGATING_TO_DROP", "ERROR"],
+        "NAVIGATING_TO_DROP" => ["COMPLETED", "ERROR"],
+        "COMPLETED" => [],
+        "ERROR" => []
+    ];
+
+    public function __construct($pdo)
     {
-        header('Content-Type: application/json');
-
-        $pdo = Database::connect();
-
-        $stmt = $pdo->query("SELECT * FROM missions ORDER BY id DESC");
-        $missions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        echo json_encode($missions);
+        $this->pdo = $pdo;
     }
 
-    public static function store()
+    public function index()
     {
-        header('Content-Type: application/json');
-
-        $pdo = Database::connect();
-
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        if (
-            !isset($data['origin']) ||
-            !isset($data['destination']) ||
-            !isset($data['object'])
-        ) {
-            http_response_code(400);
-            echo json_encode([
-                'error' => 'origin, destination et object sont requis.'
-            ]);
-            return;
-        }
-
-        $origin = trim($data['origin']);
-        $destination = trim($data['destination']);
-        $object = trim($data['object']);
-
-        if ($origin === '' || $destination === '' || $object === '') {
-            http_response_code(400);
-            echo json_encode([
-                'error' => 'origin, destination et object ne peuvent pas être vides.'
-            ]);
-            return;
-        }
-
-        $stmt = $pdo->prepare("
-            INSERT INTO missions (origin, destination, object, status)
-            VALUES (:origin, :destination, :object, :status)
-        ");
-
-        $stmt->execute([
-            'origin' => $origin,
-            'destination' => $destination,
-            'object' => $object,
-            'status' => 'CREATED'
-        ]);
-
-        http_response_code(201);
-        echo json_encode([
-            'message' => 'Mission créée avec succès.',
-            'mission_id' => $pdo->lastInsertId()
-        ]);
+        $stmt = $this->pdo->query("SELECT * FROM missions ORDER BY id DESC");
+        echo json_encode($stmt->fetchAll());
     }
 
-    public static function updateStatus($id)
+    public function show($id)
     {
-        header('Content-Type: application/json');
+        $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
+        $stmt->execute([$id]);
 
-        $pdo = Database::connect();
-
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        if (!isset($data['status'])) {
-            http_response_code(400);
-            echo json_encode(['error' => 'status est requis.']);
-            return;
-        }
-
-        $status = trim($data['status']);
-
-        if ($status === '') {
-            http_response_code(400);
-            echo json_encode(['error' => 'status ne peut pas être vide.']);
-            return;
-        }
-
-        // Vérifier existence de la mission
-        $stmt = $pdo->prepare("SELECT id FROM missions WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
+        $mission = $stmt->fetch();
 
         if (!$mission) {
             http_response_code(404);
-            echo json_encode(['error' => 'Mission non trouvée.']);
+            echo json_encode(["error" => "Mission not found"]);
             return;
         }
 
-        $stmt = $pdo->prepare("UPDATE missions SET status = :status WHERE id = :id");
-        $stmt->execute(['status' => $status, 'id' => $id]);
+        echo json_encode($mission);
+    }
 
-        http_response_code(200);
-        echo json_encode(['message' => 'Status mis à jour.', 'mission_id' => $id, 'status' => $status]);
+    public function store()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (
+            !isset($data["origin"]) ||
+            !isset($data["destination"]) ||
+            !isset($data["object"])
+        ) {
+            http_response_code(400);
+            echo json_encode(["error" => "origin, destination and object are required"]);
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("
+            INSERT INTO missions (origin, destination, object, status)
+            VALUES (?, ?, ?, 'CREATED')
+        ");
+
+        $stmt->execute([
+            $data["origin"],
+            $data["destination"],
+            $data["object"]
+        ]);
+
+        echo json_encode(["id" => $this->pdo->lastInsertId()]);
+    }
+
+    public function updateStatus($id)
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $newStatus = $data["status"] ?? null;
+
+        if (!in_array($newStatus, $this->allowedStatuses)) {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid status"]);
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("SELECT status FROM missions WHERE id = ?");
+        $stmt->execute([$id]);
+        $current = $stmt->fetch();
+
+        if (!$current) {
+            http_response_code(404);
+            echo json_encode(["error" => "Mission not found"]);
+            return;
+        }
+
+        $currentStatus = $current["status"];
+
+        if (!in_array($newStatus, $this->allowedTransitions[$currentStatus])) {
+            http_response_code(409);
+            echo json_encode([
+                "error" => "Invalid transition",
+                "from" => $currentStatus,
+                "to" => $newStatus
+            ]);
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("UPDATE missions SET status = ? WHERE id = ?");
+        $stmt->execute([$newStatus, $id]);
+
+        echo json_encode(["success" => true]);
+    }
+
+    public function delete($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT id FROM missions WHERE id = ?");
+        $stmt->execute([$id]);
+        $mission = $stmt->fetch();
+
+        if (!$mission) {
+            http_response_code(404);
+            echo json_encode(["error" => "Mission not found"]);
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("DELETE FROM missions WHERE id = ?");
+        $stmt->execute([$id]);
+
+        echo json_encode(["success" => true]);
     }
 }

@@ -28,6 +28,26 @@ EVENT_ALIASES = {
     "mission.completed": "mission:completed",
 }
 
+ALLOWED_MISSION_STATUSES = {
+    "CREATED",
+    "ASSIGNED",
+    "NAVIGATING_TO_PICKUP",
+    "PICKING_UP",
+    "NAVIGATING_TO_DROP",
+    "COMPLETED",
+    "ERROR",
+}
+
+ALLOWED_MISSION_TRANSITIONS = {
+    "CREATED": {"ASSIGNED", "ERROR"},
+    "ASSIGNED": {"NAVIGATING_TO_PICKUP", "ERROR"},
+    "NAVIGATING_TO_PICKUP": {"PICKING_UP", "ERROR"},
+    "PICKING_UP": {"NAVIGATING_TO_DROP", "ERROR"},
+    "NAVIGATING_TO_DROP": {"COMPLETED", "ERROR"},
+    "COMPLETED": set(),
+    "ERROR": set(),
+}
+
 
 def utc_now():
     return datetime.now(timezone.utc).isoformat()
@@ -110,6 +130,15 @@ def build_legacy_payload(canonical_event):
         }
 
     return canonical_event
+
+
+def is_valid_mission_status(status):
+    return status in ALLOWED_MISSION_STATUSES
+
+
+def is_valid_mission_transition(current_status, next_status):
+    allowed_next_statuses = ALLOWED_MISSION_TRANSITIONS.get(current_status, set())
+    return next_status in allowed_next_statuses
 
 
 async def safe_send(websocket, payload):
@@ -212,6 +241,23 @@ async def handle_mission_updated_event(websocket, payload):
         await send_error(websocket, "mission_id and status are required for mission:updated")
         return
 
+    if not is_valid_mission_status(status):
+        await send_error(websocket, f"invalid mission status: {status}")
+        return
+
+    current_mission = get_mission(mission_id)
+    if not current_mission:
+        await send_error(websocket, f"mission {mission_id} not found")
+        return
+
+    current_status = current_mission["status"]
+    if not is_valid_mission_transition(current_status, status):
+        await send_error(
+            websocket,
+            f"invalid mission transition: {current_status} -> {status}",
+        )
+        return
+
     mission = update_mission_status(mission_id, status)
     if not mission:
         await send_error(websocket, f"mission {mission_id} not found")
@@ -246,7 +292,22 @@ async def handle_mission_completed_event(websocket, payload):
         await send_error(websocket, "mission_id is required for mission:completed")
         return
 
-    mission = update_mission_status(mission_id, "COMPLETED")
+    current_mission = get_mission(mission_id)
+    if not current_mission:
+        await send_error(websocket, f"mission {mission_id} not found")
+        return
+
+    current_status = current_mission["status"]
+    target_status = "COMPLETED"
+
+    if not is_valid_mission_transition(current_status, target_status):
+        await send_error(
+            websocket,
+            f"invalid mission transition: {current_status} -> {target_status}",
+        )
+        return
+
+    mission = update_mission_status(mission_id, target_status)
     if not mission:
         await send_error(websocket, f"mission {mission_id} not found")
         return
