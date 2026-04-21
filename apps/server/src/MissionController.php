@@ -77,8 +77,9 @@ class MissionController
         ]);
 
         http_response_code(201);
-        echo json_encode(["id" => $this->pdo->lastInsertId()]);
+        echo json_encode(["mission_id" => $this->pdo->lastInsertId()]);
     }
+
 
     public function updateStatus($id)
     {
