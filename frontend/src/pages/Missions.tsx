@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useWebSocket } from "../hooks/useWebSocket";
 import type { Mission } from "../types/mission";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
 export default function Missions() {
+  const realtime = useWebSocket();
+
   const [missions, setMissions] = useState<Mission[]>([]);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -73,9 +76,22 @@ export default function Missions() {
     void fetchMissions();
   }, []);
 
+  useEffect(() => {
+    if (realtime.missions.length > 0) {
+      setMissions(realtime.missions);
+    }
+  }, [realtime.missions]);
+
   return (
     <div style={container}>
       <h1 style={title}>Mission Control</h1>
+
+      <div style={wsBox}>
+        WebSocket :{" "}
+        <strong style={wsStatus(realtime.connectionStatus)}>
+          {realtime.connectionStatus}
+        </strong>
+      </div>
 
       <form style={form} onSubmit={createMission}>
         <h2 style={subtitle}>Créer une mission</h2>
@@ -151,13 +167,31 @@ const container = {
 
 const title = {
   fontSize: 28,
-  marginBottom: 30,
+  marginBottom: 20,
 };
 
 const subtitle = {
   fontSize: 20,
   margin: 0,
 };
+
+const wsBox = {
+  marginBottom: 24,
+  padding: "12px 16px",
+  borderRadius: 10,
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  width: "fit-content",
+};
+
+const wsStatus = (value: string) => ({
+  color:
+    value === "connected"
+      ? "#22c55e"
+      : value === "connecting"
+      ? "#f59e0b"
+      : "#ef4444",
+});
 
 const form = {
   display: "grid",
