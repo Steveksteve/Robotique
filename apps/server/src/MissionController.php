@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . "/Logger.php";
 class MissionController
 {
     private $pdo;
@@ -114,10 +114,24 @@ class MissionController
             return;
         }
 
-        $stmt = $this->pdo->prepare("UPDATE missions SET status = ? WHERE id = ?");
+        $stmt = $this->pdo->prepare("
+            UPDATE missions
+            SET status = ?
+            WHERE id = ?
+        ");
+
         $stmt->execute([$newStatus, $id]);
 
-        echo json_encode(["success" => true]);
+        Logger::logRobotEvent(
+            $this->pdo,
+            (int)$id,
+            rand(0, 10),
+            rand(0, 10)
+        );
+
+        echo json_encode([
+            "success" => true
+        ]);
     }
 
     public function delete($id)
