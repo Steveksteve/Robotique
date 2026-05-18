@@ -14,7 +14,11 @@ type RealtimeState = {
 };
 
 type MissionUpdatedEvent = {
-  type: "mission:updated" | "mission.status_updated" | "mission:completed" | "mission.completed";
+  type:
+    | "mission:updated"
+    | "mission.status_updated"
+    | "mission:completed"
+    | "mission.completed";
   mission_id: number;
   status: Mission["status"];
   mission?: Partial<Mission> & { id?: number };
@@ -35,13 +39,22 @@ type HeartbeatEvent = {
 };
 
 type ServerEvent = {
-  type: "server.ack" | "server.error" | "robot.connected" | "robot.disconnected";
+  type:
+    | "server.ack"
+    | "server.error"
+    | "robot.connected"
+    | "robot.disconnected"
+    | "dashboard:resync";
   message?: string;
   robot_id?: string;
   timestamp?: string;
 };
 
-type IncomingEvent = MissionUpdatedEvent | PositionEvent | HeartbeatEvent | ServerEvent;
+type IncomingEvent =
+  | MissionUpdatedEvent
+  | PositionEvent
+  | HeartbeatEvent
+  | ServerEvent;
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8765";
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
@@ -51,6 +64,7 @@ const MAX_EVENTS = 12;
 let socket: WebSocket | null = null;
 let reconnectTimer: number | null = null;
 let hasLoadedInitialMissions = false;
+let isLoadingInitialMissions = false;
 
 const listeners = new Set<() => void>();
 
@@ -83,6 +97,7 @@ function appendEvent(event: RealtimeEvent) {
 function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
   setState((current) => {
     const existing = current.missions.find((mission) => mission.id === update.id);
+
     const nextMission: Mission = existing
       ? { ...existing, ...update }
       : {
@@ -91,9 +106,12 @@ function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
           destination: update.destination ?? "Unknown",
           object: update.object,
           status: update.status ?? "CREATED",
+          created_at: update.created_at,
+          updated_at: update.updated_at,
         };
 
     const filtered = current.missions.filter((mission) => mission.id !== update.id);
+
     return {
       ...current,
       missions: [nextMission, ...filtered].sort((a, b) => b.id - a.id),
@@ -102,42 +120,55 @@ function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
 }
 
 async function loadInitialMissions() {
-  if (hasLoadedInitialMissions) {
+  if (hasLoadedInitialMissions || isLoadingInitialMissions) {
     return;
   }
 
-  hasLoadedInitialMissions = true;
+  isLoadingInitialMissions = true;
 
   try {
     const response = await fetch(`${API_BASE}/missions`);
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const missions = (await response.json()) as Array<{
-      id: number;
-      origin: string;
-      destination: string;
-      object?: string;
-      status: Mission["status"];
-    }>;
+    const missions = (await response.json()) as Mission[];
 
     setState((current) => ({
       ...current,
-      missions: missions.map((mission) => ({
-        id: mission.id,
-        origin: mission.origin,
-        destination: mission.destination,
-        object: mission.object,
-        status: mission.status,
-      })),
+      missions: missions
+        .map((mission) => ({
+          id: Number(mission.id),
+          origin: mission.origin,
+          destination: mission.destination,
+          object: mission.object,
+          status: mission.status,
+          created_at: mission.created_at,
+          updated_at: mission.updated_at,
+        }))
+        .sort((a, b) => b.id - a.id),
     }));
-  } catch (error) {
+
+    hasLoadedInitialMissions = true;
+
     appendEvent({
-      type: "server.error",
-      message: `Initial missions fetch failed: ${error instanceof Error ? error.message : "unknown error"}`,
+      type: "dashboard:resync",
+      message: `${missions.length} mission(s) synchronisée(s) depuis l’API`,
       timestamp: new Date().toISOString(),
     });
+  } catch (error) {
+    hasLoadedInitialMissions = false;
+
+    appendEvent({
+      type: "server.error",
+      message: `Resync missions failed: ${
+        error instanceof Error ? error.message : "unknown error"
+      }`,
+      timestamp: new Date().toISOString(),
+    });
+  } finally {
+    isLoadingInitialMissions = false;
   }
 }
 
@@ -168,6 +199,14 @@ function handleIncomingEvent(payload: IncomingEvent) {
       appendEvent({
         type: payload.type,
         message: payload.message ?? "Unknown server error",
+        timestamp,
+      });
+      break;
+
+    case "dashboard:resync":
+      appendEvent({
+        type: payload.type,
+        message: payload.message ?? "Dashboard synchronized",
         timestamp,
       });
       break;
@@ -229,10 +268,9 @@ function handleIncomingEvent(payload: IncomingEvent) {
     case "mission.completed": {
       const missionPayload = payload.mission ?? {};
       const resolvedStatus =
-        payload.type === "mission:completed"
-          || payload.type === "mission.completed"
+        payload.type === "mission:completed" || payload.type === "mission.completed"
           ? "COMPLETED"
-          : (missionPayload.status ?? payload.status);
+          : missionPayload.status ?? payload.status;
 
       upsertMission({
         id: missionPayload.id ?? payload.mission_id,
@@ -240,12 +278,15 @@ function handleIncomingEvent(payload: IncomingEvent) {
         destination: missionPayload.destination,
         object: missionPayload.object,
         status: resolvedStatus,
+        created_at: missionPayload.created_at,
+        updated_at: missionPayload.updated_at,
       });
 
       appendEvent({
-        type: payload.type === "mission:completed" || payload.type === "mission.completed"
-          ? "mission:completed"
-          : "mission:updated",
+        type:
+          payload.type === "mission:completed" || payload.type === "mission.completed"
+            ? "mission:completed"
+            : "mission:updated",
         message:
           payload.type === "mission:completed" || payload.type === "mission.completed"
             ? `Mission #${payload.mission_id} completed`
@@ -261,7 +302,11 @@ function handleIncomingEvent(payload: IncomingEvent) {
 }
 
 function connect() {
-  if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+  if (
+    socket &&
+    (socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING)
+  ) {
     return;
   }
 
@@ -300,6 +345,7 @@ function connect() {
       connectionStatus: "disconnected",
       robotStatus: current.robotStatus === "online" ? "stale" : current.robotStatus,
     }));
+
     scheduleReconnect();
   });
 
@@ -314,6 +360,7 @@ function connect() {
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
+
   return () => listeners.delete(listener);
 }
 

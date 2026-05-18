@@ -77,9 +77,7 @@ export default function Missions() {
   }, []);
 
   useEffect(() => {
-    if (realtime.missions.length > 0) {
-      setMissions(realtime.missions);
-    }
+    setMissions(realtime.missions);
   }, [realtime.missions]);
 
   return (
