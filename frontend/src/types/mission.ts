@@ -4,11 +4,8 @@ export type MissionStatus =
   | "NAVIGATING_TO_PICKUP"
   | "PICKING_UP"
   | "NAVIGATING_TO_DROP"
-  | "DROPPING_OFF"
   | "COMPLETED"
-  | "CANCELLED"
-  | "FAILED"
-  | "EMERGENCY_STOPPED";
+  | "ERROR";
 
 export interface Mission {
   id: number;
@@ -16,6 +13,8 @@ export interface Mission {
   destination: string;
   object?: string;
   status: MissionStatus;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Position {
