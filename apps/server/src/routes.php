@@ -58,7 +58,26 @@ if (preg_match("#^/missions/(\d+)$#", $uri, $matches) && $method === "DELETE") {
     exit;
 }
 
-http_response_code(404);
+if ($uri === "/logs" && $method === "GET") {
+
+    $stmt = $pdo->query("
+        SELECT
+            rl.id,
+            rl.mission_id,
+            rl.robot_x,
+            rl.robot_y,
+            rl.timestamp,
+            m.status
+        FROM robot_logs rl
+        INNER JOIN missions m
+            ON m.id = rl.mission_id
+        ORDER BY rl.timestamp DESC
+    ");
+
+    echo json_encode($stmt->fetchAll());
+
+    exit;
+}
 echo json_encode([
     "error" => "Route not found",
     "method" => $method,
