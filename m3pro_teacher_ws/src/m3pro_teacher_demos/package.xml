@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>m3pro_teacher_demos</name>
+  <version>0.1.0</version>
+  <description>Teacher demo nodes for TF2, URDF joint bridging, and sensor fusion on the Yahboom M3 Pro.</description>
+  <maintainer email="teacher@example.com">Teacher</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>arm_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>m3pro_teacher_description</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+

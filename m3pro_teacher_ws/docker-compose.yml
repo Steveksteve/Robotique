@@ -1,0 +1,69 @@
+services:
+  m3pro_teacher_build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_build
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash
+      && colcon build --symlink-install
+      && source install/setup.bash
+      && ros2 pkg list | grep m3pro_teacher"
+
+  # ROS Core Service - Daemon for ROS2
+  ros_core:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_ros_core
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -c "sleep infinity"
+    networks:
+      - m3pro_network
+    restart: unless-stopped
+
+  # RosBridge Server - WebSocket communication for web dashboard
+  rosbridge:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_rosbridge
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -c "sleep infinity"
+    ports:
+      - "9090:9090"
+    networks:
+      - m3pro_network
+    depends_on:
+      - ros_core
+    restart: unless-stopped
+
+  # Web Dashboard Server - HTTP server for the dashboard UI
+  dashboard:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_dashboard
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -c "cd /root/m3pro_teacher_ws/src/m3pro_teacher_web/web && python3 -m http.server 8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - m3pro_network
+    depends_on:
+      - rosbridge
+    restart: unless-stopped
+
+networks:
+  m3pro_network:
+    driver: bridge
+    name: m3pro_network
+

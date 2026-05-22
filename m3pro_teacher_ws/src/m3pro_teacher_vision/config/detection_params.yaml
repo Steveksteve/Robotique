@@ -1,0 +1,48 @@
+# ============================================================
+# Object detection parameters
+# Tune these HSV ranges for the objects you want to detect
+# Use the 'hsv_tuner' trick: pause the robot, run:
+#   ros2 run rqt_image_view rqt_image_view
+# to see the camera feed and pick HSV values
+# ============================================================
+object_detector_node:
+  ros__parameters:
+    # --- Camera topics ---
+    color_topic: /camera/color/image_raw
+    depth_topic: /camera/depth/image_raw
+
+    # --- HSV range for target object (default: red ball) ---
+    # Red wraps around hue 0/180, so we use two ranges
+    hsv_low_1: [0, 120, 70]
+    hsv_high_1: [10, 255, 255]
+    hsv_low_2: [170, 120, 70]
+    hsv_high_2: [180, 255, 255]
+
+    # --- Detection thresholds ---
+    min_contour_area: 500        # minimum pixel area to count as detection
+    max_detection_depth: 1.0     # ignore objects farther than this (meters)
+    min_detection_depth: 0.15    # ignore objects closer than this (meters)
+
+    # --- Camera intrinsics (RealSense D435 defaults, adjust for your camera) ---
+    camera_fx: 615.0
+    camera_fy: 615.0
+    camera_cx: 320.0
+    camera_cy: 240.0
+    depth_scale: 0.001           # depth image value * scale = meters
+
+pick_and_place_node:
+  ros__parameters:
+    # --- Arm dimensions (from URDF, in meters) ---
+    arm_base_x: 0.02             # arm mount offset from base_link
+    arm_base_z: 0.24             # shoulder height above base_link
+    upper_arm_length: 0.11
+    forearm_length: 0.11
+    wrist_length: 0.12           # wrist + gripper to fingertip
+
+    # --- Arm control topic ---
+    arm_command_topic: /arm_control
+
+    # --- Behavior ---
+    approach_distance: 0.30      # stop this far from object, then reach with arm
+    gripper_open_value: 30       # servo degrees (30 = open)
+    gripper_close_value: 75      # servo degrees (75 = closed on object)
