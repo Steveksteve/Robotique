@@ -60,6 +60,22 @@ services:
       - m3pro_network
     depends_on:
       - rosbridge
+      - arm_control
+    restart: unless-stopped
+
+  # Arm Control Backend - services used by the dashboard Arm panel
+  arm_control:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_arm_control
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 run m3pro_teacher_demos arm_manual_control_node --ros-args -p arm_control_topic:=/arm6_joints"
+    networks:
+      - m3pro_network
+    depends_on:
+      - ros_core
     restart: unless-stopped
 
 networks:
