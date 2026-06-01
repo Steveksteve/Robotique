@@ -31,7 +31,18 @@
   .btn-blue { background: #2563eb; color: white; }
   .btn-yellow { background: #d97706; color: white; }
   #log { font-family: monospace; font-size: 11px; background: #111318; border-radius: 4px; padding: 8px; height: 120px; overflow-y: auto; white-space: pre-wrap; color: #9ca3af; }
+  .arm-grid { display: grid; gap: 10px; }
+  .arm-row { display: grid; grid-template-columns: 92px 1fr 54px 78px; gap: 8px; align-items: center; }
+  .arm-label { font-size: 12px; color: #9ca3af; }
+  .arm-value { font-family: monospace; font-size: 12px; text-align: right; color: #e5e7eb; }
+  input[type="range"] { width: 100%; accent-color: #2563eb; }
+  .arm-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
   @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) {
+    .arm-row { grid-template-columns: 82px 1fr 48px; }
+    .arm-row button { grid-column: 1 / -1; }
+    .arm-actions { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -107,6 +118,55 @@
       <button class="btn-yellow" onclick="saveMap()">Save Map</button>
       <button class="btn-blue" onclick="startDetection()">Start Object Detection</button>
       <div id="log">Dashboard loaded. Connecting to robot...</div>
+    </div>
+  </div>
+
+  <!-- Arm Control Panel -->
+  <div class="panel">
+    <div class="panel-header">Arm</div>
+    <div class="panel-body arm-grid">
+      <div class="arm-row">
+        <span class="arm-label">Base</span>
+        <input id="arm-joint1" type="range" min="0" max="180" step="1" value="90">
+        <span class="arm-value" id="arm-joint1-value">90 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(1)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Shoulder</span>
+        <input id="arm-joint2" type="range" min="0" max="180" step="1" value="120">
+        <span class="arm-value" id="arm-joint2-value">120 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(2)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Elbow</span>
+        <input id="arm-joint3" type="range" min="0" max="180" step="1" value="10">
+        <span class="arm-value" id="arm-joint3-value">10 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(3)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Wrist P</span>
+        <input id="arm-joint4" type="range" min="0" max="180" step="1" value="20">
+        <span class="arm-value" id="arm-joint4-value">20 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(4)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Wrist R</span>
+        <input id="arm-joint5" type="range" min="0" max="180" step="1" value="90">
+        <span class="arm-value" id="arm-joint5-value">90 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(5)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Gripper</span>
+        <input id="arm-gripper" type="range" min="0" max="180" step="1" value="60">
+        <span class="arm-value" id="arm-gripper-value">60 deg</span>
+        <button class="btn-blue" onclick="sendArmGripper()">Apply</button>
+      </div>
+      <div class="arm-actions">
+        <button class="btn-green" onclick="sendArmAll()">Apply All</button>
+        <button class="btn-yellow" onclick="sendArmHome()">Home</button>
+        <button class="btn-blue" onclick="sendArmTrigger('/arm/gripper_open', 'Gripper open')">Open</button>
+        <button class="btn-red" onclick="sendArmTrigger('/arm/gripper_close', 'Gripper close')">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -378,6 +438,63 @@ function saveMap() {
 
 function startDetection() {
   log('To start detection, run: ros2 launch m3pro_teacher_vision detect_and_pick.launch.py');
+}
+
+// ===== Arm Control =====
+const armServiceType = 'm3pro_teacher_interfaces/srv/SetJoint';
+const armAllServiceType = 'm3pro_teacher_interfaces/srv/SetJoints';
+const armHomeServiceType = 'm3pro_teacher_interfaces/srv/Home';
+const triggerServiceType = 'std_srvs/srv/Trigger';
+
+function armValue(id) {
+  return Number(document.getElementById(id).value);
+}
+
+function updateArmValueLabel(id) {
+  document.getElementById(`${id}-value`).textContent = `${armValue(id)} deg`;
+}
+
+['arm-joint1', 'arm-joint2', 'arm-joint3', 'arm-joint4', 'arm-joint5', 'arm-gripper'].forEach((id) => {
+  document.getElementById(id).addEventListener('input', () => updateArmValueLabel(id));
+});
+
+function callArmService(name, serviceType, request, okMessage) {
+  const service = new ROSLIB.Service({ ros, name, serviceType });
+  service.callService(new ROSLIB.ServiceRequest(request), (result) => {
+    log(result && result.message ? result.message : okMessage);
+  }, (error) => {
+    log(`${name} failed: ${error}`);
+  });
+}
+
+function sendArmJoint(jointNum) {
+  const value = armValue(`arm-joint${jointNum}`);
+  callArmService(`/arm/set_joint${jointNum}`, armServiceType, { value }, `Joint ${jointNum} set`);
+}
+
+function sendArmGripper() {
+  callArmService('/arm/set_gripper', armServiceType, { value: armValue('arm-gripper') }, 'Gripper set');
+}
+
+function sendArmAll() {
+  callArmService('/arm/set_all_joints', armAllServiceType, {
+    values: [
+      armValue('arm-joint1'),
+      armValue('arm-joint2'),
+      armValue('arm-joint3'),
+      armValue('arm-joint4'),
+      armValue('arm-joint5'),
+      armValue('arm-gripper')
+    ]
+  }, 'Arm command sent');
+}
+
+function sendArmHome() {
+  callArmService('/arm/home', armHomeServiceType, {}, 'Arm home');
+}
+
+function sendArmTrigger(name, message) {
+  callArmService(name, triggerServiceType, {}, message);
 }
 </script>
 </body>

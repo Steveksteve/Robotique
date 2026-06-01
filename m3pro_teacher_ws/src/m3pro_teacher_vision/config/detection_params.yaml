@@ -40,7 +40,7 @@ pick_and_place_node:
     wrist_length: 0.12           # wrist + gripper to fingertip
 
     # --- Arm control topic ---
-    arm_command_topic: /arm_control
+    arm_command_topic: /arm6_joints
 
     # --- Behavior ---
     approach_distance: 0.30      # stop this far from object, then reach with arm

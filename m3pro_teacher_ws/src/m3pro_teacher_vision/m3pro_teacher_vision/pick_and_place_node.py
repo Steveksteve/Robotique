@@ -60,7 +60,7 @@ class PickAndPlaceNode(Node):
         self.L2 = float(self.declare_parameter("forearm_length", 0.11).value)
         self.L3 = float(self.declare_parameter("wrist_length", 0.12).value)
 
-        self.arm_topic = self.declare_parameter("arm_command_topic", "/arm_control").value
+        self.arm_topic = self.declare_parameter("arm_command_topic", "/arm6_joints").value
         self.approach_dist = float(self.declare_parameter("approach_distance", 0.30).value)
         self.gripper_open = int(self.declare_parameter("gripper_open_value", 30).value)
         self.gripper_close = int(self.declare_parameter("gripper_close_value", 75).value)

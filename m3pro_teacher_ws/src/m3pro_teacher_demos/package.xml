@@ -8,6 +8,7 @@
 
   <buildtool_depend>ament_python</buildtool_depend>
 
+  <exec_depend>m3pro_teacher_interfaces</exec_depend>
   <exec_depend>arm_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>m3pro_teacher_description</exec_depend>
@@ -17,6 +18,7 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>xacro</exec_depend>
 
@@ -24,4 +26,3 @@
     <build_type>ament_python</build_type>
   </export>
 </package>
-

@@ -24,6 +24,8 @@ def generate_launch_description():
             DeclareLaunchArgument("danger_distance_m", default_value="0.35"),
             DeclareLaunchArgument("caution_distance_m", default_value="0.80"),
             DeclareLaunchArgument("enable_beep", default_value="false"),
+            DeclareLaunchArgument("arm_control", default_value="true"),
+            DeclareLaunchArgument("arm_control_topic", default_value="/arm6_joints"),
             Node(
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
@@ -42,6 +44,18 @@ def generate_launch_description():
                         "joint_states_topic": "/teacher/joint_states",
                     }
                 ],
+                output="screen",
+            ),
+            Node(
+                package="m3pro_teacher_demos",
+                executable="arm_manual_control_node",
+                name="arm_manual_control_node",
+                parameters=[
+                    {
+                        "arm_control_topic": LaunchConfiguration("arm_control_topic"),
+                    }
+                ],
+                condition=IfCondition(LaunchConfiguration("arm_control")),
                 output="screen",
             ),
             Node(
