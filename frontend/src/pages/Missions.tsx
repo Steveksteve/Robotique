@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
 import type { Mission } from "../types/mission";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
+
+type CreateMissionResponse = {
+  mission_id: number;
+  mission?: Mission;
+};
 
 export default function Missions() {
   const realtime = useWebSocket();
@@ -11,9 +16,10 @@ export default function Missions() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [object, setObject] = useState("");
+  const [objectName, setObjectName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   async function fetchMissions() {
     try {
@@ -25,8 +31,16 @@ export default function Missions() {
         throw new Error("Impossible de charger les missions.");
       }
 
-      const data = await response.json();
-      setMissions(data);
+      const data = (await response.json()) as Mission[];
+
+      setMissions(
+        data
+          .map((mission) => ({
+            ...mission,
+            id: Number(mission.id),
+          }))
+          .sort((a, b) => b.id - a.id),
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue.");
     }
@@ -35,7 +49,7 @@ export default function Missions() {
   async function createMission(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!origin.trim() || !destination.trim() || !object.trim()) {
+    if (!origin.trim() || !destination.trim() || !objectName.trim()) {
       setError("Tous les champs sont obligatoires.");
       return;
     }
@@ -43,6 +57,7 @@ export default function Missions() {
     try {
       setLoading(true);
       setError("");
+      setInfo("");
 
       const response = await fetch(`${API_BASE}/missions`, {
         method: "POST",
@@ -50,9 +65,9 @@ export default function Missions() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          origin,
-          destination,
-          object,
+          origin: origin.trim(),
+          destination: destination.trim(),
+          object: objectName.trim(),
         }),
       });
 
@@ -60,15 +75,51 @@ export default function Missions() {
         throw new Error("Impossible de créer la mission.");
       }
 
+      const created = (await response.json()) as CreateMissionResponse;
+
       setOrigin("");
       setDestination("");
-      setObject("");
+      setObjectName("");
 
       await fetchMissions();
+
+      const sent = realtime.assignMission(Number(created.mission_id));
+
+      setInfo(
+        sent
+          ? `Mission #${created.mission_id} créée et envoyée au robot.`
+          : `Mission #${created.mission_id} créée, mais le WebSocket n’est pas connecté.`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  function assignMission(missionId: number) {
+    setError("");
+    setInfo("");
+
+    const sent = realtime.assignMission(missionId);
+
+    if (sent) {
+      setInfo(`Mission #${missionId} envoyée au robot.`);
+    } else {
+      setError("Impossible d’envoyer la mission : WebSocket non connecté.");
+    }
+  }
+
+  function emergencyStop(missionId: number) {
+    setError("");
+    setInfo("");
+
+    const sent = realtime.emergencyStop(missionId);
+
+    if (sent) {
+      setInfo(`Arrêt d’urgence demandé pour la mission #${missionId}.`);
+    } else {
+      setError("Impossible d’envoyer l’arrêt d’urgence : WebSocket non connecté.");
     }
   }
 
@@ -77,7 +128,9 @@ export default function Missions() {
   }, []);
 
   useEffect(() => {
-    setMissions(realtime.missions);
+    if (realtime.missions.length > 0) {
+      setMissions(realtime.missions);
+    }
   }, [realtime.missions]);
 
   return (
@@ -85,49 +138,69 @@ export default function Missions() {
       <h1 style={title}>Mission Control</h1>
 
       <div style={wsBox}>
-        WebSocket :{" "}
-        <strong style={wsStatus(realtime.connectionStatus)}>
-          {realtime.connectionStatus}
-        </strong>
+        <span>
+          WebSocket :{" "}
+          <strong style={wsStatus(realtime.connectionStatus)}>
+            {realtime.connectionStatus}
+          </strong>
+        </span>
+
+        <span style={robotText}>Robot : {realtime.robotStatus}</span>
       </div>
 
       <form style={form} onSubmit={createMission}>
         <h2 style={subtitle}>Créer une mission</h2>
 
-        <input
-          style={input}
-          type="text"
-          placeholder="Origine ex: Stock A"
-          value={origin}
-          onChange={(event) => setOrigin(event.target.value)}
-        />
+        <label style={label}>
+          Origine
+          <input
+            style={input}
+            type="text"
+            placeholder="Ex : Stock A"
+            value={origin}
+            onChange={(event) => setOrigin(event.target.value)}
+          />
+        </label>
 
-        <input
-          style={input}
-          type="text"
-          placeholder="Destination ex: SAV"
-          value={destination}
-          onChange={(event) => setDestination(event.target.value)}
-        />
+        <label style={label}>
+          Destination
+          <input
+            style={input}
+            type="text"
+            placeholder="Ex : SAV"
+            value={destination}
+            onChange={(event) => setDestination(event.target.value)}
+          />
+        </label>
 
-        <input
-          style={input}
-          type="text"
-          placeholder="Objet ex: Colis #42"
-          value={object}
-          onChange={(event) => setObject(event.target.value)}
-        />
+        <label style={label}>
+          Objet à transporter
+          <input
+            style={input}
+            type="text"
+            placeholder="Ex : Colis #42"
+            value={objectName}
+            onChange={(event) => setObjectName(event.target.value)}
+          />
+        </label>
 
         <button style={button} type="submit" disabled={loading}>
-          {loading ? "Création..." : "Créer la mission"}
+          {loading ? "Création..." : "Créer + envoyer au robot"}
         </button>
 
-        {error && <div style={errorBox}>{error}</div>}
+        {error && (
+          <div style={errorBox} role="alert">
+            {error}
+          </div>
+        )}
+
+        {info && <div style={infoBox}>{info}</div>}
       </form>
 
       <div style={header}>
         <h2 style={subtitle}>Liste des missions</h2>
-        <button style={refreshButton} onClick={fetchMissions}>
+
+        <button style={refreshButton} onClick={fetchMissions} type="button">
           Rafraîchir
         </button>
       </div>
@@ -149,7 +222,31 @@ export default function Missions() {
                 </div>
               </div>
 
-              <div style={status(mission.status)}>{mission.status}</div>
+              <div style={actions}>
+                {mission.status === "CREATED" && (
+                  <button
+                    type="button"
+                    style={secondaryButton}
+                    onClick={() => assignMission(Number(mission.id))}
+                    disabled={realtime.connectionStatus !== "connected"}
+                  >
+                    Envoyer au robot
+                  </button>
+                )}
+
+                {!["COMPLETED", "ERROR"].includes(mission.status) && (
+                  <button
+                    type="button"
+                    style={dangerButton}
+                    onClick={() => emergencyStop(Number(mission.id))}
+                    disabled={realtime.connectionStatus !== "connected"}
+                  >
+                    Stop
+                  </button>
+                )}
+
+                <div style={statusStyle(mission.status)}>{mission.status}</div>
+              </div>
             </div>
           ))
         )}
@@ -158,22 +255,25 @@ export default function Missions() {
   );
 }
 
-const container = {
+const container: CSSProperties = {
   padding: "60px",
   color: "white",
 };
 
-const title = {
+const title: CSSProperties = {
   fontSize: 28,
   marginBottom: 20,
 };
 
-const subtitle = {
+const subtitle: CSSProperties = {
   fontSize: 20,
   margin: 0,
 };
 
-const wsBox = {
+const wsBox: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 16,
   marginBottom: 24,
   padding: "12px 16px",
   borderRadius: 10,
@@ -182,16 +282,22 @@ const wsBox = {
   width: "fit-content",
 };
 
-const wsStatus = (value: string) => ({
-  color:
-    value === "connected"
-      ? "#22c55e"
-      : value === "connecting"
-      ? "#f59e0b"
-      : "#ef4444",
-});
+const robotText: CSSProperties = {
+  color: "#94a3b8",
+};
 
-const form = {
+function wsStatus(value: string): CSSProperties {
+  return {
+    color:
+      value === "connected"
+        ? "#22c55e"
+        : value === "connecting"
+          ? "#f59e0b"
+          : "#ef4444",
+  };
+}
+
+const form: CSSProperties = {
   display: "grid",
   gap: 14,
   maxWidth: 520,
@@ -202,7 +308,14 @@ const form = {
   border: "1px solid rgba(56,189,248,0.15)",
 };
 
-const input = {
+const label: CSSProperties = {
+  display: "grid",
+  gap: 8,
+  fontSize: 13,
+  color: "#94a3b8",
+};
+
+const input: CSSProperties = {
   padding: "12px 14px",
   borderRadius: 10,
   border: "1px solid rgba(255,255,255,0.12)",
@@ -211,7 +324,7 @@ const input = {
   outline: "none",
 };
 
-const button = {
+const button: CSSProperties = {
   padding: "12px 14px",
   borderRadius: 10,
   border: "none",
@@ -221,7 +334,7 @@ const button = {
   cursor: "pointer",
 };
 
-const refreshButton = {
+const refreshButton: CSSProperties = {
   padding: "10px 14px",
   borderRadius: 10,
   border: "1px solid rgba(56,189,248,0.3)",
@@ -230,34 +343,60 @@ const refreshButton = {
   cursor: "pointer",
 };
 
-const errorBox = {
+const secondaryButton: CSSProperties = {
+  padding: "8px 10px",
+  borderRadius: 8,
+  border: "1px solid rgba(56,189,248,0.35)",
+  background: "rgba(56,189,248,0.08)",
+  color: "#7dd3fc",
+  cursor: "pointer",
+};
+
+const dangerButton: CSSProperties = {
+  padding: "8px 10px",
+  borderRadius: 8,
+  border: "1px solid rgba(248,113,113,0.45)",
+  background: "rgba(239,68,68,0.1)",
+  color: "#fca5a5",
+  cursor: "pointer",
+};
+
+const errorBox: CSSProperties = {
   padding: 12,
   borderRadius: 10,
   background: "rgba(239,68,68,0.15)",
   color: "#f87171",
 };
 
-const header = {
+const infoBox: CSSProperties = {
+  padding: 12,
+  borderRadius: 10,
+  background: "rgba(34,197,94,0.12)",
+  color: "#86efac",
+};
+
+const header: CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   marginBottom: 20,
 };
 
-const list = {
+const list: CSSProperties = {
   display: "flex",
-  flexDirection: "column" as const,
+  flexDirection: "column",
   gap: 20,
 };
 
-const empty = {
+const empty: CSSProperties = {
   color: "#64748b",
 };
 
-const card = {
+const card: CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  gap: 18,
   padding: "20px 24px",
   borderRadius: 12,
   background: "rgba(255,255,255,0.03)",
@@ -265,41 +404,49 @@ const card = {
   backdropFilter: "blur(6px)",
 };
 
-const left = {
+const left: CSSProperties = {
   display: "flex",
-  flexDirection: "column" as const,
+  flexDirection: "column",
   gap: 6,
 };
 
-const path = {
+const actions: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+};
+
+const path: CSSProperties = {
   fontSize: 16,
   fontWeight: 500,
 };
 
-const meta = {
+const meta: CSSProperties = {
   fontSize: 12,
   color: "#64748b",
 };
 
-const status = (value: string) => ({
-  padding: "6px 12px",
-  borderRadius: 8,
-  fontSize: 12,
-  textTransform: "uppercase" as const,
-  background:
-    value === "COMPLETED"
-      ? "rgba(34,197,94,0.15)"
-      : value === "ERROR"
-      ? "rgba(239,68,68,0.15)"
-      : value.includes("NAVIGATING") || value === "ASSIGNED"
-      ? "rgba(56,189,248,0.15)"
-      : "rgba(100,116,139,0.15)",
-  color:
-    value === "COMPLETED"
-      ? "#22c55e"
-      : value === "ERROR"
-      ? "#ef4444"
-      : value.includes("NAVIGATING") || value === "ASSIGNED"
-      ? "#38bdf8"
-      : "#64748b",
-});
+function statusStyle(value: string): CSSProperties {
+  return {
+    padding: "6px 12px",
+    borderRadius: 8,
+    fontSize: 12,
+    textTransform: "uppercase",
+    background:
+      value === "COMPLETED"
+        ? "rgba(34,197,94,0.15)"
+        : value === "ERROR"
+          ? "rgba(239,68,68,0.15)"
+          : value.includes("NAVIGATING") || value === "ASSIGNED"
+            ? "rgba(56,189,248,0.15)"
+            : "rgba(100,116,139,0.15)",
+    color:
+      value === "COMPLETED"
+        ? "#22c55e"
+        : value === "ERROR"
+          ? "#ef4444"
+          : value.includes("NAVIGATING") || value === "ASSIGNED"
+            ? "#38bdf8"
+            : "#64748b",
+  };
+}

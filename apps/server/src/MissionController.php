@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/Logger.php";
+
 class MissionController
 {
     private $pdo;
@@ -76,10 +77,18 @@ class MissionController
             $data["object"]
         ]);
 
-        http_response_code(201);
-        echo json_encode(["mission_id" => $this->pdo->lastInsertId()]);
-    }
+        $missionId = (int)$this->pdo->lastInsertId();
 
+        $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
+        $stmt->execute([$missionId]);
+        $mission = $stmt->fetch();
+
+        http_response_code(201);
+        echo json_encode([
+            "mission_id" => $missionId,
+            "mission" => $mission
+        ]);
+    }
 
     public function updateStatus($id)
     {
@@ -122,15 +131,23 @@ class MissionController
 
         $stmt->execute([$newStatus, $id]);
 
+        $robotX = isset($data["robot_x"]) ? (float)$data["robot_x"] : 0;
+        $robotY = isset($data["robot_y"]) ? (float)$data["robot_y"] : 0;
+
         Logger::logRobotEvent(
             $this->pdo,
             (int)$id,
-            rand(0, 10),
-            rand(0, 10)
+            $robotX,
+            $robotY
         );
 
+        $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
+        $stmt->execute([$id]);
+        $mission = $stmt->fetch();
+
         echo json_encode([
-            "success" => true
+            "success" => true,
+            "mission" => $mission
         ]);
     }
 

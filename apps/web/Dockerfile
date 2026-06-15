@@ -1,24 +1,15 @@
-## Multi-stage Dockerfile pour Next.js (build puis production)
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS build
 WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --silent
-
-RUN npm audit fix --silent || true
-
-COPY . .
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+ARG VITE_API_BASE=/api
+ARG VITE_WS_URL=ws://localhost:8765
+ENV VITE_API_BASE=${VITE_API_BASE}
+ENV VITE_WS_URL=${VITE_WS_URL}
 RUN npm run build
 
-## Production image
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
-
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
