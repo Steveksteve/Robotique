@@ -2,12 +2,43 @@ import MiniMap from "../components/MiniMap";
 import { useWebSocket } from "../hooks/useWebSocket";
 
 export default function Dashboard() {
-  const { connectionStatus, robotStatus, missions, position, trail, lastHeartbeat, events } =
-    useWebSocket();
+  const {
+    connectionStatus,
+    robotStatus,
+    emergencyActive,
+    missions,
+    position,
+    trail,
+    lastHeartbeat,
+    events,
+    emergencyStop,
+  } = useWebSocket();
+
+  const activeMission = missions.find(
+    (mission) => !["COMPLETED", "ERROR"].includes(mission.status),
+  );
 
   return (
     <div>
-      <h1 style={title}>Control Center</h1>
+      <div style={topbar}>
+        <h1 style={title}>Control Center</h1>
+
+        <button
+          style={emergencyButton}
+          type="button"
+          onClick={() => emergencyStop(activeMission?.id)}
+          disabled={connectionStatus !== "connected"}
+          aria-label="Déclencher l’arrêt d’urgence du robot"
+        >
+          ARRÊT D’URGENCE
+        </button>
+      </div>
+
+      {emergencyActive && (
+        <div style={alertBox} role="alert">
+          Arrêt d’urgence actif. La mission en cours est passée en erreur ou attend une reprise côté robot.
+        </div>
+      )}
 
       <div style={grid}>
         <div style={cardBig}>
@@ -40,6 +71,13 @@ export default function Dashboard() {
         </div>
 
         <div style={card}>
+          <div style={cardTitle}>MISSION ACTIVE</div>
+          <div style={smallValue}>
+            {activeMission ? `#${activeMission.id} - ${activeMission.status}` : "aucune"}
+          </div>
+        </div>
+
+        <div style={card}>
           <div style={cardTitle}>LAST HEARTBEAT</div>
           <div style={smallValue}>{lastHeartbeat ?? "none"}</div>
         </div>
@@ -65,9 +103,36 @@ export default function Dashboard() {
   );
 }
 
+const topbar = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: 20,
+  marginBottom: 30,
+};
+
 const title = {
   fontSize: 32,
-  marginBottom: 40,
+  margin: 0,
+};
+
+const emergencyButton = {
+  padding: "14px 18px",
+  borderRadius: 12,
+  border: "1px solid rgba(248,113,113,0.7)",
+  background: "rgba(239,68,68,0.18)",
+  color: "#fecaca",
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const alertBox = {
+  marginBottom: 24,
+  padding: "14px 16px",
+  borderRadius: 12,
+  border: "1px solid rgba(248,113,113,0.4)",
+  background: "rgba(239,68,68,0.12)",
+  color: "#fecaca",
 };
 
 const grid = {

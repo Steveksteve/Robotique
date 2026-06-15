@@ -1,11 +1,12 @@
 import { useEffect, useSyncExternalStore } from "react";
-import type { Mission, Position, RealtimeEvent } from "../types/mission";
+import type { Mission, MissionStatus, Position, RealtimeEvent } from "../types/mission";
 
 type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 type RealtimeState = {
   connectionStatus: ConnectionStatus;
   robotStatus: string;
+  emergencyActive: boolean;
   lastHeartbeat: string | null;
   position: Position;
   missions: Mission[];
@@ -18,16 +19,18 @@ type MissionUpdatedEvent = {
     | "mission:updated"
     | "mission.status_updated"
     | "mission:completed"
-    | "mission.completed";
+    | "mission.completed"
+    | "mission:assigned";
   mission_id: number;
-  status: Mission["status"];
+  status?: MissionStatus;
   mission?: Partial<Mission> & { id?: number };
+  message?: string;
   timestamp?: string;
 };
 
 type PositionEvent = {
   type: "robot:position" | "robot.position_updated";
-  mission_id: number;
+  mission_id?: number | null;
   x: number;
   y: number;
   timestamp?: string;
@@ -35,6 +38,18 @@ type PositionEvent = {
 
 type HeartbeatEvent = {
   type: "robot.heartbeat";
+  robot_id?: string;
+  mission_id?: number;
+  timestamp?: string;
+};
+
+type SafetyEvent = {
+  type: "robot:emergency_stop" | "robot.timeout";
+  robot_id?: string;
+  mission_id?: number | null;
+  reason?: string;
+  message?: string;
+  mission?: Partial<Mission> & { id?: number };
   timestamp?: string;
 };
 
@@ -54,12 +69,13 @@ type IncomingEvent =
   | MissionUpdatedEvent
   | PositionEvent
   | HeartbeatEvent
+  | SafetyEvent
   | ServerEvent;
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8765";
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 const MAX_TRAIL = 24;
-const MAX_EVENTS = 12;
+const MAX_EVENTS = 16;
 
 let socket: WebSocket | null = null;
 let reconnectTimer: number | null = null;
@@ -71,6 +87,7 @@ const listeners = new Set<() => void>();
 let state: RealtimeState = {
   connectionStatus: "connecting",
   robotStatus: "offline",
+  emergencyActive: false,
   lastHeartbeat: null,
   position: { x: 160, y: 160 },
   missions: [],
@@ -116,6 +133,31 @@ function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
       ...current,
       missions: [nextMission, ...filtered].sort((a, b) => b.id - a.id),
     };
+  });
+}
+
+function updateMissionFromPayload(payload: MissionUpdatedEvent | SafetyEvent) {
+  const missionPayload = payload.mission ?? {};
+  const missionId = missionPayload.id ?? payload.mission_id;
+
+  if (!missionId) {
+    return;
+  }
+
+  const statusFromPayload = "status" in payload ? payload.status : undefined;
+  const resolvedStatus =
+    payload.type === "mission:completed" || payload.type === "mission.completed"
+      ? "COMPLETED"
+      : missionPayload.status ?? statusFromPayload;
+
+  upsertMission({
+    id: missionId,
+    origin: missionPayload.origin,
+    destination: missionPayload.destination,
+    object: missionPayload.object,
+    status: resolvedStatus,
+    created_at: missionPayload.created_at,
+    updated_at: missionPayload.updated_at,
   });
 }
 
@@ -183,6 +225,26 @@ function scheduleReconnect() {
   }, 2000);
 }
 
+function sendRealtimeCommand(payload: Record<string, unknown>) {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    appendEvent({
+      type: "server.error",
+      message: "Commande impossible : WebSocket non connecté.",
+      timestamp: new Date().toISOString(),
+    });
+    return false;
+  }
+
+  socket.send(
+    JSON.stringify({
+      ...payload,
+      timestamp: new Date().toISOString(),
+    }),
+  );
+
+  return true;
+}
+
 function handleIncomingEvent(payload: IncomingEvent) {
   const timestamp = payload.timestamp ?? new Date().toISOString();
 
@@ -243,7 +305,7 @@ function handleIncomingEvent(payload: IncomingEvent) {
       }));
       appendEvent({
         type: payload.type,
-        message: "Heartbeat received",
+        message: `Heartbeat received${payload.robot_id ? ` from ${payload.robot_id}` : ""}`,
         timestamp,
       });
       break;
@@ -262,25 +324,25 @@ function handleIncomingEvent(payload: IncomingEvent) {
       });
       break;
 
+    case "mission:assigned":
+      updateMissionFromPayload(payload);
+      appendEvent({
+        type: payload.type,
+        message: payload.message ?? `Mission #${payload.mission_id} envoyée au robot`,
+        timestamp,
+      });
+      break;
+
     case "mission:updated":
     case "mission.status_updated":
     case "mission:completed":
     case "mission.completed": {
-      const missionPayload = payload.mission ?? {};
+      updateMissionFromPayload(payload);
+
       const resolvedStatus =
         payload.type === "mission:completed" || payload.type === "mission.completed"
           ? "COMPLETED"
-          : missionPayload.status ?? payload.status;
-
-      upsertMission({
-        id: missionPayload.id ?? payload.mission_id,
-        origin: missionPayload.origin,
-        destination: missionPayload.destination,
-        object: missionPayload.object,
-        status: resolvedStatus,
-        created_at: missionPayload.created_at,
-        updated_at: missionPayload.updated_at,
-      });
+          : payload.mission?.status ?? payload.status;
 
       appendEvent({
         type:
@@ -290,11 +352,38 @@ function handleIncomingEvent(payload: IncomingEvent) {
         message:
           payload.type === "mission:completed" || payload.type === "mission.completed"
             ? `Mission #${payload.mission_id} completed`
-            : `Mission #${payload.mission_id} -> ${resolvedStatus}`,
+            : `Mission #${payload.mission_id} -> ${resolvedStatus ?? "UNKNOWN"}`,
         timestamp,
       });
       break;
     }
+
+    case "robot:emergency_stop":
+      updateMissionFromPayload(payload);
+      setState((current) => ({
+        ...current,
+        emergencyActive: true,
+        robotStatus: "emergency_stop",
+      }));
+      appendEvent({
+        type: payload.type,
+        message: payload.reason ?? payload.message ?? "Arrêt d’urgence déclenché",
+        timestamp,
+      });
+      break;
+
+    case "robot.timeout":
+      updateMissionFromPayload(payload);
+      setState((current) => ({
+        ...current,
+        robotStatus: "timeout",
+      }));
+      appendEvent({
+        type: payload.type,
+        message: payload.message ?? "Perte heartbeat robot",
+        timestamp,
+      });
+      break;
 
     default:
       break;
@@ -304,8 +393,7 @@ function handleIncomingEvent(payload: IncomingEvent) {
 function connect() {
   if (
     socket &&
-    (socket.readyState === WebSocket.OPEN ||
-      socket.readyState === WebSocket.CONNECTING)
+    (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)
   ) {
     return;
   }
@@ -376,5 +464,19 @@ export function useWebSocket() {
     connect();
   }, []);
 
-  return snapshot;
+  return {
+    ...snapshot,
+    assignMission: (missionId: number, robotId?: string) =>
+      sendRealtimeCommand({
+        type: "mission:assign",
+        mission_id: missionId,
+        robot_id: robotId,
+      }),
+    emergencyStop: (missionId?: number, reason = "Arrêt d’urgence demandé depuis le dashboard") =>
+      sendRealtimeCommand({
+        type: "robot:emergency_stop",
+        mission_id: missionId,
+        reason,
+      }),
+  };
 }
