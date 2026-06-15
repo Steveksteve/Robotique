@@ -28,12 +28,13 @@ class MissionController
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        header("Content-Type: application/json");
     }
 
     public function index()
     {
         $stmt = $this->pdo->query("SELECT * FROM missions ORDER BY id DESC");
-        echo json_encode($stmt->fetchAll());
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function show($id)
@@ -41,7 +42,7 @@ class MissionController
         $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
         $stmt->execute([$id]);
 
-        $mission = $stmt->fetch();
+        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$mission) {
             http_response_code(404);
@@ -62,7 +63,9 @@ class MissionController
             !isset($data["object"])
         ) {
             http_response_code(400);
-            echo json_encode(["error" => "origin, destination and object are required"]);
+            echo json_encode([
+                "error" => "origin, destination and object are required"
+            ]);
             return;
         }
 
@@ -77,11 +80,12 @@ class MissionController
             $data["object"]
         ]);
 
-        $missionId = (int)$this->pdo->lastInsertId();
+        $missionId = (int) $this->pdo->lastInsertId();
 
         $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
         $stmt->execute([$missionId]);
-        $mission = $stmt->fetch();
+
+        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
 
         http_response_code(201);
         echo json_encode([
@@ -95,7 +99,7 @@ class MissionController
         $data = json_decode(file_get_contents("php://input"), true);
         $newStatus = $data["status"] ?? null;
 
-        if (!in_array($newStatus, $this->allowedStatuses)) {
+        if (!in_array($newStatus, $this->allowedStatuses, true)) {
             http_response_code(400);
             echo json_encode(["error" => "Invalid status"]);
             return;
@@ -103,7 +107,8 @@ class MissionController
 
         $stmt = $this->pdo->prepare("SELECT status FROM missions WHERE id = ?");
         $stmt->execute([$id]);
-        $current = $stmt->fetch();
+
+        $current = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$current) {
             http_response_code(404);
@@ -113,7 +118,7 @@ class MissionController
 
         $currentStatus = $current["status"];
 
-        if (!in_array($newStatus, $this->allowedTransitions[$currentStatus])) {
+        if (!in_array($newStatus, $this->allowedTransitions[$currentStatus], true)) {
             http_response_code(409);
             echo json_encode([
                 "error" => "Invalid transition",
@@ -131,19 +136,20 @@ class MissionController
 
         $stmt->execute([$newStatus, $id]);
 
-        $robotX = isset($data["robot_x"]) ? (float)$data["robot_x"] : 0;
-        $robotY = isset($data["robot_y"]) ? (float)$data["robot_y"] : 0;
+        $robotX = isset($data["robot_x"]) ? (float) $data["robot_x"] : 0;
+        $robotY = isset($data["robot_y"]) ? (float) $data["robot_y"] : 0;
 
         Logger::logRobotEvent(
             $this->pdo,
-            (int)$id,
+            (int) $id,
             $robotX,
             $robotY
         );
 
         $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
         $stmt->execute([$id]);
-        $mission = $stmt->fetch();
+
+        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
 
         echo json_encode([
             "success" => true,
@@ -155,7 +161,8 @@ class MissionController
     {
         $stmt = $this->pdo->prepare("SELECT id FROM missions WHERE id = ?");
         $stmt->execute([$id]);
-        $mission = $stmt->fetch();
+
+        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$mission) {
             http_response_code(404);
