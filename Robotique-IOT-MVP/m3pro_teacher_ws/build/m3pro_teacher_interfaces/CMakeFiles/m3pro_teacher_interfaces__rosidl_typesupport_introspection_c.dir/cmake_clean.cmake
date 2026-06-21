@@ -1,0 +1,21 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/home__type_support.c.o"
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/home__type_support.c.o.d"
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.c.o"
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.c.o.d"
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.c.o"
+  "CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.c.o.d"
+  "libm3pro_teacher_interfaces__rosidl_typesupport_introspection_c.pdb"
+  "libm3pro_teacher_interfaces__rosidl_typesupport_introspection_c.so"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/home__rosidl_typesupport_introspection_c.h"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/home__type_support.c"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joint__rosidl_typesupport_introspection_c.h"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.c"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joints__rosidl_typesupport_introspection_c.h"
+  "rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.c"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

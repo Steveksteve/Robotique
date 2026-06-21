@@ -1,0 +1,4 @@
+source;share/m3pro_teacher_interfaces/environment/ament_prefix_path.sh
+source;share/m3pro_teacher_interfaces/environment/library_path.sh
+source;share/m3pro_teacher_interfaces/environment/path.sh
+source;share/m3pro_teacher_interfaces/environment/pythonpath.sh

@@ -1,0 +1,38 @@
+[8.378s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos/build --no-deps install_data
+[10.037s] running develop
+[10.138s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[10.138s]   warnings.warn(
+[10.146s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[10.146s]   warnings.warn(
+[11.325s] running egg_info
+[11.325s] creating m3pro_teacher_demos.egg-info
+[11.326s] writing m3pro_teacher_demos.egg-info/PKG-INFO
+[11.327s] writing dependency_links to m3pro_teacher_demos.egg-info/dependency_links.txt
+[11.328s] writing entry points to m3pro_teacher_demos.egg-info/entry_points.txt
+[11.328s] writing requirements to m3pro_teacher_demos.egg-info/requires.txt
+[11.329s] writing top-level names to m3pro_teacher_demos.egg-info/top_level.txt
+[11.329s] writing manifest file 'm3pro_teacher_demos.egg-info/SOURCES.txt'
+[11.337s] reading manifest file 'm3pro_teacher_demos.egg-info/SOURCES.txt'
+[11.340s] writing manifest file 'm3pro_teacher_demos.egg-info/SOURCES.txt'
+[11.349s] running build_ext
+[11.350s] Creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/python3.10/site-packages/m3pro-teacher-demos.egg-link (link to .)
+[11.353s] Installing arm_joint_state_bridge_demo script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.354s] Installing arm_manual_control_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.354s] Installing frontier_explorer_demo script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.355s] Installing odom_raw_bridge script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.355s] Installing sensor_fusion_rgb_demo script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.355s] Installing tf2_sensor_frames_demo script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/m3pro_teacher_demos
+[11.356s] 
+[11.356s] Installed /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos
+[11.357s] running install_data
+[11.357s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/ament_index
+[11.358s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/ament_index/resource_index
+[11.358s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/ament_index/resource_index/packages
+[11.358s] copying resource/m3pro_teacher_demos -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/ament_index/resource_index/packages
+[11.359s] copying package.xml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos
+[11.359s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos/launch
+[11.360s] copying launch/sim_showcase.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos/launch
+[11.360s] copying launch/live_showcase.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos/launch
+[11.361s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos/scripts
+[11.361s] copying scripts/arm_control_cli.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/share/m3pro_teacher_demos/scripts
+[11.517s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos' returned '0': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos/build --no-deps install_data

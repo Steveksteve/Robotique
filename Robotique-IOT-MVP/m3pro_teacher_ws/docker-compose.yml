@@ -1,0 +1,84 @@
+services:
+  m3pro_teacher_build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_build
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash
+      && colcon build --symlink-install
+      && source install/setup.bash
+      && ros2 pkg list | grep m3pro_teacher"
+
+  # ROS Core Service - Daemon for ROS2
+  ros_core:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_ros_core
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -c "sleep infinity"
+    networks:
+      - m3pro_network
+    restart: unless-stopped
+
+  # RosBridge Server - WebSocket communication for web dashboard
+  rosbridge:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_rosbridge
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+    ports:
+      - "9090:9090"
+    networks:
+      - m3pro_network
+    depends_on:
+      - ros_core
+    restart: unless-stopped
+
+  # Web Dashboard Server - HTTP server for the dashboard UI
+  dashboard:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_dashboard
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 run m3pro_teacher_web web_server_node --ros-args -p port:=8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - m3pro_network
+    depends_on:
+      - rosbridge
+      - arm_control
+    restart: unless-stopped
+
+  # Arm Control Backend - services used by the dashboard Arm panel
+  arm_control:
+    image: m3pro_teacher_ws:humble
+    container_name: m3pro_teacher_arm_control
+    environment:
+      ROS_DOMAIN_ID: "30"
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 run m3pro_teacher_demos arm_manual_control_node --ros-args -p arm_control_topic:=/arm6_joints"
+    networks:
+      - m3pro_network
+    depends_on:
+      - ros_core
+    restart: unless-stopped
+
+networks:
+  m3pro_network:
+    driver: bridge
+    name: m3pro_network

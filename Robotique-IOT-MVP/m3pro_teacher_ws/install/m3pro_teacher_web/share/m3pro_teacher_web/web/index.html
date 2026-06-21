@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M3 Pro Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, sans-serif; background: #0f1117; color: #e0e0e0; }
+  header { background: #1a1d27; padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #2a2d37; }
+  header h1 { font-size: 18px; font-weight: 600; }
+  #conn-status { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .connected { background: #1a3a2a; color: #4ade80; }
+  .disconnected { background: #3a1a1a; color: #f87171; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; max-width: 1200px; margin: 0 auto; }
+  .panel { background: #1a1d27; border-radius: 8px; border: 1px solid #2a2d37; overflow: hidden; }
+  .panel-header { padding: 10px 14px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; border-bottom: 1px solid #2a2d37; }
+  .panel-body { padding: 14px; }
+  canvas { width: 100%; background: #111318; border-radius: 4px; cursor: crosshair; }
+  #camera-feed { width: 100%; border-radius: 4px; background: #111318; min-height: 180px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { background: #111318; border-radius: 6px; padding: 10px; }
+  .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; }
+  .stat-value { font-size: 16px; font-weight: 600; margin-top: 2px; }
+  .controls { display: flex; flex-direction: column; gap: 8px; }
+  button { padding: 10px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  button:hover { opacity: 0.85; }
+  .btn-green { background: #059669; color: white; }
+  .btn-red { background: #dc2626; color: white; }
+  .btn-blue { background: #2563eb; color: white; }
+  .btn-yellow { background: #d97706; color: white; }
+  #log { font-family: monospace; font-size: 11px; background: #111318; border-radius: 4px; padding: 8px; height: 120px; overflow-y: auto; white-space: pre-wrap; color: #9ca3af; }
+  .arm-grid { display: grid; gap: 10px; }
+  .arm-row { display: grid; grid-template-columns: 92px 1fr 54px 78px; gap: 8px; align-items: center; }
+  .arm-label { font-size: 12px; color: #9ca3af; }
+  .arm-value { font-family: monospace; font-size: 12px; text-align: right; color: #e5e7eb; }
+  input[type="range"] { width: 100%; accent-color: #2563eb; }
+  .arm-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) {
+    .arm-row { grid-template-columns: 82px 1fr 48px; }
+    .arm-row button { grid-column: 1 / -1; }
+    .arm-actions { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>M3 Pro Robot Dashboard</h1>
+  <span id="conn-status" class="disconnected">DISCONNECTED</span>
+</header>
+
+<div class="grid">
+  <!-- Map Panel -->
+  <div class="panel">
+    <div class="panel-header">Map (click to set nav goal)</div>
+    <div class="panel-body">
+      <canvas id="map-canvas" width="500" height="500"></canvas>
+    </div>
+  </div>
+
+  <!-- Camera Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      Camera Feed
+      <select id="camera-select" style="float:right;background:#111318;color:#e0e0e0;border:1px solid #2a2d37;border-radius:4px;font-size:11px;padding:2px 4px;">
+        <option value="raw">Live Camera</option>
+        <option value="detect">Object Detection</option>
+        <option value="obstacle">Camera Obstacles</option>
+      </select>
+    </div>
+    <div class="panel-body">
+      <img id="camera-feed" alt="Waiting for camera...">
+      <div id="camera-status" style="font-size:11px;color:#6b7280;margin-top:6px;">Connecting to camera stream...</div>
+    </div>
+  </div>
+
+  <!-- Robot State Panel -->
+  <div class="panel">
+    <div class="panel-header">Robot State</div>
+    <div class="panel-body">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Position</div>
+          <div class="stat-value" id="pos-value">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Heading</div>
+          <div class="stat-value" id="yaw-value">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Linear Vel</div>
+          <div class="stat-value" id="lin-vel">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Angular Vel</div>
+          <div class="stat-value" id="ang-vel">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Nearest Obstacle</div>
+          <div class="stat-value" id="nearest-obs">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Fusion State</div>
+          <div class="stat-value" id="fusion-state">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls Panel -->
+  <div class="panel">
+    <div class="panel-header">Controls</div>
+    <div class="panel-body controls">
+      <button class="btn-green" onclick="sendGoalFromClick()">Send Nav Goal (click map first)</button>
+      <button class="btn-red" onclick="cancelNav()">Cancel Navigation</button>
+      <button class="btn-yellow" onclick="saveMap()">Save Map</button>
+      <button class="btn-blue" onclick="startDetection()">Start Object Detection</button>
+      <div id="log">Dashboard loaded. Connecting to robot...</div>
+    </div>
+  </div>
+
+  <!-- Arm Control Panel -->
+  <div class="panel">
+    <div class="panel-header">Arm</div>
+    <div class="panel-body arm-grid">
+      <div class="arm-row">
+        <span class="arm-label">Base</span>
+        <input id="arm-joint1" type="range" min="0" max="180" step="1" value="90">
+        <span class="arm-value" id="arm-joint1-value">90 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(1)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Shoulder</span>
+        <input id="arm-joint2" type="range" min="0" max="180" step="1" value="120">
+        <span class="arm-value" id="arm-joint2-value">120 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(2)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Elbow</span>
+        <input id="arm-joint3" type="range" min="0" max="180" step="1" value="10">
+        <span class="arm-value" id="arm-joint3-value">10 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(3)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Wrist P</span>
+        <input id="arm-joint4" type="range" min="0" max="180" step="1" value="20">
+        <span class="arm-value" id="arm-joint4-value">20 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(4)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Wrist R</span>
+        <input id="arm-joint5" type="range" min="0" max="180" step="1" value="90">
+        <span class="arm-value" id="arm-joint5-value">90 deg</span>
+        <button class="btn-blue" onclick="sendArmJoint(5)">Apply</button>
+      </div>
+      <div class="arm-row">
+        <span class="arm-label">Gripper</span>
+        <input id="arm-gripper" type="range" min="0" max="180" step="1" value="60">
+        <span class="arm-value" id="arm-gripper-value">60 deg</span>
+        <button class="btn-blue" onclick="sendArmGripper()">Apply</button>
+      </div>
+      <div class="arm-actions">
+        <button class="btn-green" onclick="sendArmAll()">Apply All</button>
+        <button class="btn-yellow" onclick="sendArmHome()">Home</button>
+        <button class="btn-blue" onclick="sendArmTrigger('/arm/gripper_open', 'Gripper open')">Open</button>
+        <button class="btn-red" onclick="sendArmTrigger('/arm/gripper_close', 'Gripper close')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ROS Connection =====
+const host = window.location.hostname || 'localhost';
+const ros = new ROSLIB.Ros({ url: `ws://${host}:9090` });
+
+const statusEl = document.getElementById('conn-status');
+ros.on('connection', () => { statusEl.textContent = 'CONNECTED'; statusEl.className = 'connected'; log('Connected to rosbridge'); });
+ros.on('close', () => { statusEl.textContent = 'DISCONNECTED'; statusEl.className = 'disconnected'; log('Connection closed'); });
+ros.on('error', (e) => { log('Connection error'); });
+
+function log(msg) {
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  el.textContent += `[${time}] ${msg}\n`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ===== Map Display =====
+const mapCanvas = document.getElementById('map-canvas');
+const ctx = mapCanvas.getContext('2d');
+let mapData = null;
+let robotPose = null;
+let clickedMapPoint = null;
+
+const mapTopic = new ROSLIB.Topic({ ros, name: '/map', messageType: 'nav_msgs/msg/OccupancyGrid' });
+mapTopic.subscribe((msg) => {
+  mapData = msg;
+  drawMap();
+});
+
+function drawMap() {
+  if (!mapData) return;
+  const info = mapData.info;
+  const w = info.width, h = info.height;
+
+  // Scale canvas to fit map
+  const scale = Math.min(mapCanvas.width / w, mapCanvas.height / h);
+  ctx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+  ctx.fillStyle = '#111318';
+  ctx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
+
+  const imgData = ctx.createImageData(w, h);
+  for (let i = 0; i < mapData.data.length; i++) {
+    const v = mapData.data[i];
+    let r, g, b;
+    if (v === -1) { r = 40; g = 42; b = 50; }       // unknown
+    else if (v === 0) { r = 24; g = 26; b = 34; }    // free
+    else { r = 220; g = 220; b = 230; }               // occupied
+    imgData.data[i * 4] = r;
+    imgData.data[i * 4 + 1] = g;
+    imgData.data[i * 4 + 2] = b;
+    imgData.data[i * 4 + 3] = 255;
+  }
+
+  // Draw map to offscreen canvas, then scale to display canvas
+  const offscreen = new OffscreenCanvas(w, h);
+  const offCtx = offscreen.getContext('2d');
+  offCtx.putImageData(imgData, 0, 0);
+  ctx.save();
+  ctx.scale(scale, scale);
+  ctx.drawImage(offscreen, 0, 0);
+  ctx.restore();
+
+  // Draw robot position
+  if (robotPose) {
+    const rx = (robotPose.x - info.origin.position.x) / info.resolution * scale;
+    const ry = mapCanvas.height - (robotPose.y - info.origin.position.y) / info.resolution * scale;
+    ctx.beginPath();
+    ctx.arc(rx, ry, 6, 0, 2 * Math.PI);
+    ctx.fillStyle = '#4ade80';
+    ctx.fill();
+    // Direction arrow
+    const yaw = robotPose.yaw;
+    ctx.beginPath();
+    ctx.moveTo(rx, ry);
+    ctx.lineTo(rx + 14 * Math.cos(-yaw), ry + 14 * Math.sin(-yaw));
+    ctx.strokeStyle = '#4ade80';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Draw clicked goal point
+  if (clickedMapPoint) {
+    const gx = (clickedMapPoint.x - info.origin.position.x) / info.resolution * scale;
+    const gy = mapCanvas.height - (clickedMapPoint.y - info.origin.position.y) / info.resolution * scale;
+    ctx.beginPath();
+    ctx.arc(gx, gy, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(gx, gy, 10, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+// Click on map to select goal
+mapCanvas.addEventListener('click', (e) => {
+  if (!mapData) { log('No map data yet'); return; }
+  const rect = mapCanvas.getBoundingClientRect();
+  const scaleX = mapCanvas.width / rect.width;
+  const scaleY = mapCanvas.height / rect.height;
+  const px = (e.clientX - rect.left) * scaleX;
+  const py = (e.clientY - rect.top) * scaleY;
+
+  const info = mapData.info;
+  const scale = Math.min(mapCanvas.width / info.width, mapCanvas.height / info.height);
+  const mapX = px / scale * info.resolution + info.origin.position.x;
+  const mapY = (mapCanvas.height - py) / scale * info.resolution + info.origin.position.y;
+
+  clickedMapPoint = { x: mapX, y: mapY };
+  log(`Goal selected: (${mapX.toFixed(2)}, ${mapY.toFixed(2)})`);
+  drawMap();
+});
+
+// ===== Odometry =====
+const odomTopic = new ROSLIB.Topic({ ros, name: '/odom', messageType: 'nav_msgs/msg/Odometry' });
+odomTopic.subscribe((msg) => {
+  const p = msg.pose.pose.position;
+  const q = msg.pose.pose.orientation;
+  const yaw = Math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z));
+  robotPose = { x: p.x, y: p.y, yaw };
+  document.getElementById('pos-value').textContent = `${p.x.toFixed(2)}, ${p.y.toFixed(2)}`;
+  document.getElementById('yaw-value').textContent = `${(yaw * 180 / Math.PI).toFixed(1)} deg`;
+  const lv = msg.twist.twist.linear;
+  const av = msg.twist.twist.angular;
+  document.getElementById('lin-vel').textContent = `${Math.hypot(lv.x, lv.y).toFixed(2)} m/s`;
+  document.getElementById('ang-vel').textContent = `${av.z.toFixed(2)} rad/s`;
+  drawMap();
+});
+
+// ===== Fusion State =====
+const fusionTopic = new ROSLIB.Topic({ ros, name: '/teacher/fusion_state', messageType: 'std_msgs/msg/String' });
+fusionTopic.subscribe((msg) => {
+  document.getElementById('fusion-state').textContent = msg.data.substring(0, 40);
+  const match = msg.data.match(/nearest=([\d.]+)m/);
+  if (match) document.getElementById('nearest-obs').textContent = match[1] + ' m';
+});
+
+// ===== Camera Feed =====
+const cameraImg = document.getElementById('camera-feed');
+const cameraStatus = document.getElementById('camera-status');
+const cameraSelect = document.getElementById('camera-select');
+let currentStream = null;
+
+function startCameraStream() {
+  const mode = cameraSelect.value;
+  // Use MJPEG stream for live camera, snapshots for detection views
+  if (mode === 'raw') {
+    cameraImg.src = `/camera/stream?t=${Date.now()}`;
+    cameraImg.onload = () => { cameraStatus.textContent = 'Live MJPEG stream'; };
+    cameraImg.onerror = () => {
+      cameraStatus.textContent = 'Camera unavailable — launch: ros2 launch slam_mapping app_camera.launch.py';
+      cameraImg.alt = 'Camera unavailable';
+      // Retry with snapshot fallback
+      setTimeout(() => { if (cameraSelect.value === 'raw') refreshSnapshot(); }, 2000);
+    };
+  } else {
+    // Detection / obstacle views come via ROS topic as base64
+    cameraImg.src = '';
+    cameraImg.alt = 'Waiting for detection data...';
+    const topicName = mode === 'detect' ? '/teacher/detection_image' : '/teacher/camera_obs_image';
+    cameraStatus.textContent = `Subscribing to ${topicName}...`;
+    if (currentStream) { currentStream.unsubscribe(); }
+    currentStream = new ROSLIB.Topic({
+      ros: ros,
+      name: topicName,
+      messageType: 'sensor_msgs/msg/Image',
+      throttle_rate: 200
+    });
+    currentStream.subscribe(function(msg) {
+      // Render raw ROS image to canvas then to img
+      renderRosImage(msg);
+      cameraStatus.textContent = `${topicName} (${msg.width}x${msg.height})`;
+    });
+  }
+}
+
+function refreshSnapshot() {
+  if (cameraSelect.value !== 'raw') return;
+  cameraImg.src = `/camera/snapshot?t=${Date.now()}`;
+  cameraImg.onload = () => { cameraStatus.textContent = 'Snapshot mode (~5 FPS)'; };
+  cameraImg.onerror = () => { cameraStatus.textContent = 'Camera unavailable'; };
+}
+let snapshotTimer = null;
+
+function renderRosImage(msg) {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = msg.width;
+    canvas.height = msg.height;
+    const ctx2 = canvas.getContext('2d');
+    const imgData = ctx2.createImageData(msg.width, msg.height);
+    // Decode base64 data
+    const raw = atob(msg.data);
+    const enc = msg.encoding.toLowerCase();
+    for (let i = 0; i < msg.width * msg.height; i++) {
+      let r, g, b;
+      if (enc === 'rgb8') {
+        r = raw.charCodeAt(i * 3);
+        g = raw.charCodeAt(i * 3 + 1);
+        b = raw.charCodeAt(i * 3 + 2);
+      } else if (enc === 'bgr8') {
+        b = raw.charCodeAt(i * 3);
+        g = raw.charCodeAt(i * 3 + 1);
+        r = raw.charCodeAt(i * 3 + 2);
+      } else { r = g = b = raw.charCodeAt(i); }
+      imgData.data[i * 4] = r;
+      imgData.data[i * 4 + 1] = g;
+      imgData.data[i * 4 + 2] = b;
+      imgData.data[i * 4 + 3] = 255;
+    }
+    ctx2.putImageData(imgData, 0, 0);
+    cameraImg.src = canvas.toDataURL('image/jpeg', 0.8);
+  } catch(e) { /* skip bad frames */ }
+}
+
+cameraSelect.addEventListener('change', () => {
+  if (currentStream) { currentStream.unsubscribe(); currentStream = null; }
+  clearInterval(snapshotTimer);
+  startCameraStream();
+});
+
+// Start camera on load
+startCameraStream();
+// Fallback: if MJPEG stream doesn't load in 3s, try snapshots
+setTimeout(() => {
+  if (cameraSelect.value === 'raw' && !cameraImg.complete) {
+    snapshotTimer = setInterval(refreshSnapshot, 200);
+  }
+}, 3000);
+
+// ===== Nav Goal =====
+const goalPub = new ROSLIB.Topic({ ros, name: '/goal_pose', messageType: 'geometry_msgs/msg/PoseStamped' });
+
+function sendGoalFromClick() {
+  if (!clickedMapPoint) { log('Click on the map first to select a goal'); return; }
+  const goal = new ROSLIB.Message({
+    header: { frame_id: 'map' },
+    pose: {
+      position: { x: clickedMapPoint.x, y: clickedMapPoint.y, z: 0.0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1.0 }
+    }
+  });
+  goalPub.publish(goal);
+  log(`Nav goal sent: (${clickedMapPoint.x.toFixed(2)}, ${clickedMapPoint.y.toFixed(2)})`);
+}
+
+function cancelNav() {
+  const cancelPub = new ROSLIB.Topic({ ros, name: '/navigate_to_pose/_action/cancel_goal', messageType: 'action_msgs/msg/CancelGoal' });
+  cancelPub.publish(new ROSLIB.Message({ goal_info: { goal_id: { uuid: Array(16).fill(0) } } }));
+  log('Navigation cancelled');
+}
+
+function saveMap() {
+  const service = new ROSLIB.Service({ ros, name: '/slam_toolbox/save_map', serviceType: 'slam_toolbox/srv/SaveMap' });
+  const request = new ROSLIB.ServiceRequest({ name: { data: '/tmp/m3pro_map' } });
+  service.callService(request, (result) => {
+    log('Map saved to /tmp/m3pro_map');
+  }, (error) => {
+    log('Map save failed: ' + error);
+  });
+}
+
+function startDetection() {
+  log('To start detection, run: ros2 launch m3pro_teacher_vision detect_and_pick.launch.py');
+}
+
+// ===== Arm Control =====
+const armServiceType = 'm3pro_teacher_interfaces/srv/SetJoint';
+const armAllServiceType = 'm3pro_teacher_interfaces/srv/SetJoints';
+const armHomeServiceType = 'm3pro_teacher_interfaces/srv/Home';
+const triggerServiceType = 'std_srvs/srv/Trigger';
+
+function armValue(id) {
+  return Number(document.getElementById(id).value);
+}
+
+function updateArmValueLabel(id) {
+  document.getElementById(`${id}-value`).textContent = `${armValue(id)} deg`;
+}
+
+['arm-joint1', 'arm-joint2', 'arm-joint3', 'arm-joint4', 'arm-joint5', 'arm-gripper'].forEach((id) => {
+  document.getElementById(id).addEventListener('input', () => updateArmValueLabel(id));
+});
+
+function callArmService(name, serviceType, request, okMessage) {
+  const service = new ROSLIB.Service({ ros, name, serviceType });
+  service.callService(new ROSLIB.ServiceRequest(request), (result) => {
+    log(result && result.message ? result.message : okMessage);
+  }, (error) => {
+    log(`${name} failed: ${error}`);
+  });
+}
+
+function sendArmJoint(jointNum) {
+  const value = armValue(`arm-joint${jointNum}`);
+  callArmService(`/arm/set_joint${jointNum}`, armServiceType, { value }, `Joint ${jointNum} set`);
+}
+
+function sendArmGripper() {
+  callArmService('/arm/set_gripper', armServiceType, { value: armValue('arm-gripper') }, 'Gripper set');
+}
+
+function sendArmAll() {
+  callArmService('/arm/set_all_joints', armAllServiceType, {
+    values: [
+      armValue('arm-joint1'),
+      armValue('arm-joint2'),
+      armValue('arm-joint3'),
+      armValue('arm-joint4'),
+      armValue('arm-joint5'),
+      armValue('arm-gripper')
+    ]
+  }, 'Arm command sent');
+}
+
+function sendArmHome() {
+  callArmService('/arm/home', armHomeServiceType, {}, 'Arm home');
+}
+
+function sendArmTrigger(name, message) {
+  callArmService(name, triggerServiceType, {}, message);
+}
+</script>
+</body>
+</html>

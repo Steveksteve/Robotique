@@ -1,0 +1,37 @@
+[5.342s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision': CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_nav:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:/root/yahboomcar_ws/install/yahboomcar_msgs:/root/yahboomcar_ws/install/M3Pro_config:/root/yahboomcar_ws/install/test_config:/root/yahboomcar_ws/install/orbbec_description:/root/yahboomcar_ws/install/orbbec_camera:/root/yahboomcar_ws/install/orbbec_camera_msgs:/root/yahboomcar_ws/install/arm_msgs:/root/yahboomcar_ws/install/arm_kin:/root/yahboomcar_ws/install/M3Pro_KCF:/root/yahboomcar_ws/install/arm_interface:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces:/root/M3Pro_ws/install/yahboom_mapping:/root/M3Pro_ws/install/yahboom_laser_filter:/root/M3Pro_ws/install/updatecostmap:/root/M3Pro_ws/install/slam_mapping:/root/M3Pro_ws/install/slam_gmapping:/root/M3Pro_ws/install/imu_tools:/root/M3Pro_ws/install/rviz_imu_plugin:/root/M3Pro_ws/install/robot_pose_publisher_ros2:/root/M3Pro_ws/install/openslam_gmapping:/root/M3Pro_ws/install/ira_laser_tools:/root/M3Pro_ws/install/interfaces:/root/M3Pro_ws/install/imu_filter_madgwick:/root/M3Pro_ws/install/imu_complementary_filter:/root/M3Pro_ws/install/M3Pro_navigation:/root/M3Pro_ws/install/M3Pro_KCF:/root/M3Pro_ws/install/M3Pro PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data
+[7.016s] running develop
+[7.017s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[7.018s]   warnings.warn(
+[7.026s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[7.026s]   warnings.warn(
+[8.187s] running egg_info
+[8.187s] creating m3pro_teacher_vision.egg-info
+[8.189s] writing m3pro_teacher_vision.egg-info/PKG-INFO
+[8.189s] writing dependency_links to m3pro_teacher_vision.egg-info/dependency_links.txt
+[8.190s] writing entry points to m3pro_teacher_vision.egg-info/entry_points.txt
+[8.190s] writing requirements to m3pro_teacher_vision.egg-info/requires.txt
+[8.191s] writing top-level names to m3pro_teacher_vision.egg-info/top_level.txt
+[8.191s] writing manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[8.200s] reading manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[8.203s] writing manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[8.212s] running build_ext
+[8.213s] Creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages/m3pro-teacher-vision.egg-link (link to .)
+[8.217s] Installing camera_obstacle_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/m3pro_teacher_vision
+[8.217s] Installing mission_executor_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/m3pro_teacher_vision
+[8.218s] Installing object_detector_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/m3pro_teacher_vision
+[8.218s] Installing pick_and_place_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/m3pro_teacher_vision
+[8.218s] Installing qr_code_reader_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/m3pro_teacher_vision
+[8.219s] 
+[8.220s] Installed /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision
+[8.220s] running install_data
+[8.220s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index
+[8.221s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index
+[8.221s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index/packages
+[8.221s] copying resource/m3pro_teacher_vision -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index/packages
+[8.222s] copying package.xml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision
+[8.222s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/launch
+[8.223s] copying launch/mission_mvp.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/launch
+[8.223s] copying launch/detect_and_pick.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/launch
+[8.224s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/config
+[8.224s] copying config/detection_params.yaml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/config
+[8.367s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision' returned '0': CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_nav:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:/root/yahboomcar_ws/install/yahboomcar_msgs:/root/yahboomcar_ws/install/M3Pro_config:/root/yahboomcar_ws/install/test_config:/root/yahboomcar_ws/install/orbbec_description:/root/yahboomcar_ws/install/orbbec_camera:/root/yahboomcar_ws/install/orbbec_camera_msgs:/root/yahboomcar_ws/install/arm_msgs:/root/yahboomcar_ws/install/arm_kin:/root/yahboomcar_ws/install/M3Pro_KCF:/root/yahboomcar_ws/install/arm_interface:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces:/root/M3Pro_ws/install/yahboom_mapping:/root/M3Pro_ws/install/yahboom_laser_filter:/root/M3Pro_ws/install/updatecostmap:/root/M3Pro_ws/install/slam_mapping:/root/M3Pro_ws/install/slam_gmapping:/root/M3Pro_ws/install/imu_tools:/root/M3Pro_ws/install/rviz_imu_plugin:/root/M3Pro_ws/install/robot_pose_publisher_ros2:/root/M3Pro_ws/install/openslam_gmapping:/root/M3Pro_ws/install/ira_laser_tools:/root/M3Pro_ws/install/interfaces:/root/M3Pro_ws/install/imu_filter_madgwick:/root/M3Pro_ws/install/imu_complementary_filter:/root/M3Pro_ws/install/M3Pro_navigation:/root/M3Pro_ws/install/M3Pro_KCF:/root/M3Pro_ws/install/M3Pro PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data

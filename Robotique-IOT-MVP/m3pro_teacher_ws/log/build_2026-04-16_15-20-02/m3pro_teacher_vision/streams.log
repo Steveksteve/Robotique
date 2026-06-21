@@ -1,0 +1,36 @@
+[7.691s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data
+[9.512s] running develop
+[9.513s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[9.513s]   warnings.warn(
+[9.520s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[9.520s]   warnings.warn(
+[10.845s] running egg_info
+[10.846s] creating m3pro_teacher_vision.egg-info
+[10.848s] writing m3pro_teacher_vision.egg-info/PKG-INFO
+[10.850s] writing dependency_links to m3pro_teacher_vision.egg-info/dependency_links.txt
+[10.850s] writing entry points to m3pro_teacher_vision.egg-info/entry_points.txt
+[10.851s] writing requirements to m3pro_teacher_vision.egg-info/requires.txt
+[10.852s] writing top-level names to m3pro_teacher_vision.egg-info/top_level.txt
+[10.853s] writing manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[10.859s] reading manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[10.862s] writing manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'
+[10.871s] running build_ext
+[10.872s] Creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages/m3pro-teacher-vision.egg-link (link to .)
+[10.876s] Installing camera_obstacle_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin
+[10.877s] Installing mission_executor_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin
+[10.878s] Installing object_detector_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin
+[10.879s] Installing pick_and_place_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin
+[10.880s] Installing qr_code_reader_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin
+[10.881s] 
+[10.882s] Installed /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision
+[10.884s] running install_data
+[10.884s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index
+[10.886s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index
+[10.887s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index/packages
+[10.888s] copying resource/m3pro_teacher_vision -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/ament_index/resource_index/packages
+[10.889s] copying package.xml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision
+[10.890s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/launch
+[10.892s] copying launch/detect_and_pick.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/launch
+[10.893s] creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/config
+[10.895s] copying config/detection_params.yaml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/config
+[12.663s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision' returned '0': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data

@@ -1,0 +1,38 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_description
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/launch/urdf_rviz_demo.launch.py
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/rviz/m3pro_teacher.rviz
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/urdf/m3pro_teacher.urdf.xacro
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/ament_index/resource_index/package_run_dependencies/m3pro_teacher_description
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/ament_index/resource_index/parent_prefix_path/m3pro_teacher_description
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/environment/ament_prefix_path.sh
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/environment/ament_prefix_path.dsv
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/environment/path.sh
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/environment/path.dsv
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/local_setup.bash
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/local_setup.sh
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/local_setup.zsh
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/local_setup.dsv
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/package.dsv
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/ament_index/resource_index/packages/m3pro_teacher_description
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/cmake/m3pro_teacher_descriptionConfig.cmake
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/cmake/m3pro_teacher_descriptionConfig-version.cmake
+-- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description/share/m3pro_teacher_description/package.xml

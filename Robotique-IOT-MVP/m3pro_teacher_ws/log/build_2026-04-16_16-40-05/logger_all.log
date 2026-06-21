@@ -1,0 +1,213 @@
+[9.402s] [34mcolcon[0m [1;30mDEBUG[0m [32mCommand line arguments: ['/usr/bin/colcon', 'build', '--symlink-install', '--packages-select', 'm3pro_teacher_vision'][0m
+[9.403s] [34mcolcon[0m [1;30mDEBUG[0m [32mParsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['m3pro_teacher_vision'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7fa606d8a0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7fa606e740>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7fa606e740>>, mixin_verb=('build',))[0m
+[9.711s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(colcon_meta) check parameters
+[9.715s] [34mcolcon.colcon_metadata.package_discovery.colcon_meta[0m [1;30mINFO[0m Using configuration from '/root/.colcon/metadata/default/Gazebo.meta'
+[9.717s] [34mcolcon.colcon_metadata.package_discovery.colcon_meta[0m [1;30mINFO[0m Using configuration from '/root/.colcon/metadata/default/fastrtps.meta'
+[9.717s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(recursive) check parameters
+[9.718s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(ignore) check parameters
+[9.718s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(path) check parameters
+[9.718s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(colcon_meta) discover
+[9.718s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(recursive) discover
+[9.718s] [34mcolcon.colcon_core.package_discovery[0m [1;30mINFO[0m Crawling recursively for packages in '/root/Robotique-IOT/m3pro_teacher_ws'
+[9.719s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['ignore', 'ignore_ament_install']
+[9.719s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'ignore'
+[9.719s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'ignore_ament_install'
+[9.720s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['colcon_pkg']
+[9.720s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'colcon_pkg'
+[9.720s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['colcon_meta']
+[9.720s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'colcon_meta'
+[9.720s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['ros']
+[9.721s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'ros'
+[9.774s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['cmake', 'python']
+[9.774s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'cmake'
+[9.774s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'python'
+[9.774s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extensions ['python_setup_py']
+[9.774s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(.) by extension 'python_setup_py'
+[9.775s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['ignore', 'ignore_ament_install']
+[9.775s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'ignore'
+[9.776s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'ignore_ament_install'
+[9.776s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['colcon_pkg']
+[9.776s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'colcon_pkg'
+[9.777s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['colcon_meta']
+[9.777s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'colcon_meta'
+[9.777s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['ros']
+[9.777s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'ros'
+[9.778s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['cmake', 'python']
+[9.778s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'cmake'
+[9.778s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'python'
+[9.778s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extensions ['python_setup_py']
+[9.778s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(Log) by extension 'python_setup_py'
+[9.779s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(build) by extensions ['ignore', 'ignore_ament_install']
+[9.779s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(build) by extension 'ignore'
+[9.779s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(build) ignored
+[9.780s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(install) by extensions ['ignore', 'ignore_ament_install']
+[9.780s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(install) by extension 'ignore'
+[9.780s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(install) ignored
+[9.781s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(log) by extensions ['ignore', 'ignore_ament_install']
+[9.781s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(log) by extension 'ignore'
+[9.781s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(log) ignored
+[9.782s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['ignore', 'ignore_ament_install']
+[9.782s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'ignore'
+[9.782s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'ignore_ament_install'
+[9.783s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['colcon_pkg']
+[9.783s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'colcon_pkg'
+[9.783s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['colcon_meta']
+[9.783s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'colcon_meta'
+[9.783s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['ros']
+[9.784s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'ros'
+[9.784s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['cmake', 'python']
+[9.784s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'cmake'
+[9.784s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'python'
+[9.784s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extensions ['python_setup_py']
+[9.785s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(scripts) by extension 'python_setup_py'
+[9.785s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['ignore', 'ignore_ament_install']
+[9.785s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'ignore'
+[9.786s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'ignore_ament_install'
+[9.786s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['colcon_pkg']
+[9.786s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'colcon_pkg'
+[9.786s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['colcon_meta']
+[9.786s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'colcon_meta'
+[9.787s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['ros']
+[9.787s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'ros'
+[9.787s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['cmake', 'python']
+[9.787s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'cmake'
+[9.787s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'python'
+[9.788s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extensions ['python_setup_py']
+[9.788s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src) by extension 'python_setup_py'
+[9.788s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extensions ['ignore', 'ignore_ament_install']
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extension 'ignore'
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extension 'ignore_ament_install'
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extensions ['colcon_pkg']
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extension 'colcon_pkg'
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extensions ['colcon_meta']
+[9.789s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extension 'colcon_meta'
+[9.790s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extensions ['ros']
+[9.790s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_demos) by extension 'ros'
+[9.801s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_demos' with type 'ros.ament_python' and name 'm3pro_teacher_demos'[0m
+[9.802s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extensions ['ignore', 'ignore_ament_install']
+[9.802s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extension 'ignore'
+[9.802s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extension 'ignore_ament_install'
+[9.803s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extensions ['colcon_pkg']
+[9.803s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extension 'colcon_pkg'
+[9.803s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extensions ['colcon_meta']
+[9.803s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extension 'colcon_meta'
+[9.804s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extensions ['ros']
+[9.804s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_description) by extension 'ros'
+[9.806s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_description' with type 'ros.ament_cmake' and name 'm3pro_teacher_description'[0m
+[9.806s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[9.807s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extension 'ignore'
+[9.807s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extension 'ignore_ament_install'
+[9.807s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extensions ['colcon_pkg']
+[9.808s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extension 'colcon_pkg'
+[9.808s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extensions ['colcon_meta']
+[9.808s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extension 'colcon_meta'
+[9.808s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extensions ['ros']
+[9.808s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_interfaces) by extension 'ros'
+[9.811s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_interfaces' with type 'ros.ament_cmake' and name 'm3pro_teacher_interfaces'[0m
+[9.812s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extensions ['ignore', 'ignore_ament_install']
+[9.812s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extension 'ignore'
+[9.813s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extension 'ignore_ament_install'
+[9.813s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extensions ['colcon_pkg']
+[9.813s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extension 'colcon_pkg'
+[9.813s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extensions ['colcon_meta']
+[9.813s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extension 'colcon_meta'
+[9.814s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extensions ['ros']
+[9.814s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_nav) by extension 'ros'
+[9.817s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_nav' with type 'ros.ament_cmake' and name 'm3pro_teacher_nav'[0m
+[9.817s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extensions ['ignore', 'ignore_ament_install']
+[9.818s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extension 'ignore'
+[9.818s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extension 'ignore_ament_install'
+[9.818s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extensions ['colcon_pkg']
+[9.818s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extension 'colcon_pkg'
+[9.819s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extensions ['colcon_meta']
+[9.819s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extension 'colcon_meta'
+[9.819s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extensions ['ros']
+[9.819s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_vision) by extension 'ros'
+[9.822s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_vision' with type 'ros.ament_python' and name 'm3pro_teacher_vision'[0m
+[9.823s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extensions ['ignore', 'ignore_ament_install']
+[9.823s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extension 'ignore'
+[9.823s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extension 'ignore_ament_install'
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extensions ['colcon_pkg']
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extension 'colcon_pkg'
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extensions ['colcon_meta']
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extension 'colcon_meta'
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extensions ['ros']
+[9.824s] [34mcolcon.colcon_core.package_identification[0m [1;30mLevel 1[0m _identify(src/m3pro_teacher_web) by extension 'ros'
+[9.827s] [34mcolcon.colcon_core.package_identification[0m [1;30mDEBUG[0m [32mPackage 'src/m3pro_teacher_web' with type 'ros.ament_python' and name 'm3pro_teacher_web'[0m
+[9.827s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(recursive) using defaults
+[9.827s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(ignore) discover
+[9.827s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(ignore) using defaults
+[9.827s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(path) discover
+[9.828s] [34mcolcon.colcon_core.package_discovery[0m [1;30mLevel 1[0m discover_packages(path) using defaults
+[10.246s] [34mcolcon.colcon_core.package_selection[0m [1;30mINFO[0m Skipping not selected package 'm3pro_teacher_description' in 'src/m3pro_teacher_description'
+[10.246s] [34mcolcon.colcon_core.package_selection[0m [1;30mINFO[0m Skipping not selected package 'm3pro_teacher_interfaces' in 'src/m3pro_teacher_interfaces'
+[10.246s] [34mcolcon.colcon_core.package_selection[0m [1;30mINFO[0m Skipping not selected package 'm3pro_teacher_demos' in 'src/m3pro_teacher_demos'
+[10.247s] [34mcolcon.colcon_core.package_selection[0m [1;30mINFO[0m Skipping not selected package 'm3pro_teacher_nav' in 'src/m3pro_teacher_nav'
+[10.247s] [34mcolcon.colcon_core.package_selection[0m [1;30mINFO[0m Skipping not selected package 'm3pro_teacher_web' in 'src/m3pro_teacher_web'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_args' from command line to 'None'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_target' from command line to 'None'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_clean_cache' from command line to 'False'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_clean_first' from command line to 'False'
+[10.357s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'cmake_force_configure' from command line to 'False'
+[10.358s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'ament_cmake_args' from command line to 'None'
+[10.358s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'catkin_cmake_args' from command line to 'None'
+[10.358s] [34mcolcon.colcon_core.verb[0m [1;30mLevel 5[0m set package 'm3pro_teacher_vision' build argument 'catkin_skip_building_tests' from command line to 'False'
+[10.358s] [34mcolcon.colcon_core.verb[0m [1;30mDEBUG[0m [32mBuilding package 'm3pro_teacher_vision' with the following arguments: {'ament_cmake_args': None, 'build_base': '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision', 'merge_install': False, 'path': '/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_vision', 'symlink_install': True, 'test_result_base': None}[0m
+[10.469s] [34mcolcon.colcon_core.executor[0m [1;30mINFO[0m Executing jobs using 'parallel' executor
+[10.579s] [34mcolcon.colcon_parallel_executor.executor.parallel[0m [1;30mDEBUG[0m [32mrun_until_complete[0m
+[10.580s] [34mcolcon.colcon_ros.task.ament_python.build[0m [1;30mINFO[0m Building ROS package in '/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_vision' with build type 'ament_python'
+[10.581s] [34mcolcon.colcon_core.shell[0m [1;30mLevel 1[0m create_environment_hook('m3pro_teacher_vision', 'ament_prefix_path')
+[10.706s] [34mcolcon.colcon_core.plugin_system[0m [1;30mINFO[0m Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[10.707s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/ament_prefix_path.ps1'
+[10.709s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment descriptor '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/ament_prefix_path.dsv'
+[10.711s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/ament_prefix_path.sh'
+[10.835s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[10.835s] [34mcolcon.colcon_core.shell[0m [1;30mDEBUG[0m [32mSkip shell extension 'dsv' for command environment[0m
+[13.048s] [34mcolcon.colcon_core.task.python.build[0m [1;30mINFO[0m Building Python package in '/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_vision'
+[13.158s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[13.158s] [34mcolcon.colcon_core.shell[0m [1;30mDEBUG[0m [32mSkip shell extension 'dsv' for command environment[0m
+[16.057s] [34mcolcon.colcon_core.event_handler.log_command[0m [1;30mDEBUG[0m [32mInvoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data[0m
+[19.101s] [34mcolcon.colcon_core.shell[0m [1;30mLevel 1[0m create_environment_hook('m3pro_teacher_vision', 'pythonpath_develop')
+[19.104s] [34mcolcon.colcon_core.event_handler.log_command[0m [1;30mDEBUG[0m [32mInvoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision' returned '0': AMENT_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build --no-deps install_data[0m
+[19.224s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath_develop.ps1'
+[19.226s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment descriptor '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath_develop.dsv'
+[19.227s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath_develop.sh'
+[19.349s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision' for CMake module files
+[19.352s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision' for CMake config files
+[19.354s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib'
+[19.355s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin'
+[19.355s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/pkgconfig/m3pro_teacher_vision.pc'
+[19.356s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages'
+[19.357s] [34mcolcon.colcon_core.shell[0m [1;30mLevel 1[0m create_environment_hook('m3pro_teacher_vision', 'pythonpath')
+[19.467s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath.ps1'
+[19.469s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment descriptor '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath.dsv'
+[19.470s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating environment hook '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/hook/pythonpath.sh'
+[19.472s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m checking '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin'
+[19.473s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m create_environment_scripts_only(m3pro_teacher_vision)
+[19.584s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating package script '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/package.ps1'
+[19.588s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating package descriptor '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/package.dsv'
+[19.591s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating package script '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/package.sh'
+[19.594s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating package script '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/package.bash'
+[19.597s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating package script '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/m3pro_teacher_vision/package.zsh'
+[19.600s] [34mcolcon.colcon_core.environment[0m [1;30mLevel 1[0m create_file_with_runtime_dependencies(/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/share/colcon-core/packages/m3pro_teacher_vision)
+[19.601s] [34mcolcon.colcon_parallel_executor.executor.parallel[0m [1;30mDEBUG[0m [32mclosing loop[0m
+[19.603s] [34mcolcon.colcon_parallel_executor.executor.parallel[0m [1;30mDEBUG[0m [32mloop closed[0m
+[19.603s] [34mcolcon.colcon_parallel_executor.executor.parallel[0m [1;30mDEBUG[0m [32mrun_until_complete finished with '0'[0m
+[19.603s] [34mcolcon.colcon_core.event_reactor[0m [1;30mDEBUG[0m [32mjoining thread[0m
+[19.753s] [34mcolcon.colcon_core.plugin_system[0m [1;30mINFO[0m Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[19.754s] [34mcolcon.colcon_core.plugin_system[0m [1;30mINFO[0m Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[19.754s] [34mcolcon.colcon_core.plugin_system[0m [1;30mINFO[0m Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[19.755s] [34mcolcon.colcon_notification.desktop_notification[0m [1;30mINFO[0m Sending desktop notification using 'notify2'
+[19.760s] [34mcolcon.colcon_notification.desktop_notification.notify2[0m [1;30mDEBUG[0m [32mFailed to initialize notify2: org.freedesktop.DBus.Error.Spawn.ExecFailed: /usr/bin/dbus-launch terminated abnormally without any error message[0m
+[19.761s] [34mcolcon.colcon_core.event_reactor[0m [1;30mDEBUG[0m [32mjoined thread[0m
+[19.875s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix script '/root/Robotique-IOT/m3pro_teacher_ws/install/local_setup.ps1'
+[19.879s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix util module '/root/Robotique-IOT/m3pro_teacher_ws/install/_local_setup_util_ps1.py'
+[19.885s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix chain script '/root/Robotique-IOT/m3pro_teacher_ws/install/setup.ps1'
+[20.003s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix script '/root/Robotique-IOT/m3pro_teacher_ws/install/local_setup.sh'
+[20.006s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix util module '/root/Robotique-IOT/m3pro_teacher_ws/install/_local_setup_util_sh.py'
+[20.008s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix chain script '/root/Robotique-IOT/m3pro_teacher_ws/install/setup.sh'
+[20.144s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix script '/root/Robotique-IOT/m3pro_teacher_ws/install/local_setup.bash'
+[20.146s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix chain script '/root/Robotique-IOT/m3pro_teacher_ws/install/setup.bash'
+[20.268s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix script '/root/Robotique-IOT/m3pro_teacher_ws/install/local_setup.zsh'
+[20.271s] [34mcolcon.colcon_core.shell[0m [1;30mINFO[0m Creating prefix chain script '/root/Robotique-IOT/m3pro_teacher_ws/install/setup.zsh'

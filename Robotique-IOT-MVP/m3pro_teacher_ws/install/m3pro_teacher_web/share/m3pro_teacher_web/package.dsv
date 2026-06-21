@@ -1,0 +1,9 @@
+source;share/m3pro_teacher_web/hook/pythonpath.ps1
+source;share/m3pro_teacher_web/hook/pythonpath.dsv
+source;share/m3pro_teacher_web/hook/pythonpath.sh
+source;share/m3pro_teacher_web/hook/ament_prefix_path.ps1
+source;share/m3pro_teacher_web/hook/ament_prefix_path.dsv
+source;share/m3pro_teacher_web/hook/ament_prefix_path.sh
+source;../../build/m3pro_teacher_web/share/m3pro_teacher_web/hook/pythonpath_develop.ps1
+source;../../build/m3pro_teacher_web/share/m3pro_teacher_web/hook/pythonpath_develop.dsv
+source;../../build/m3pro_teacher_web/share/m3pro_teacher_web/hook/pythonpath_develop.sh

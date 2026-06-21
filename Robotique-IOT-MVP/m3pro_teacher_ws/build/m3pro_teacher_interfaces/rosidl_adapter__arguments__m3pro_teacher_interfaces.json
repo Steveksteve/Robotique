@@ -1,0 +1,8 @@
+{
+  "package_name": "m3pro_teacher_interfaces",
+  "non_idl_tuples": [
+    "/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_interfaces:srv/SetJoint.srv",
+    "/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_interfaces:srv/SetJoints.srv",
+    "/root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_interfaces:srv/Home.srv"
+  ]
+}

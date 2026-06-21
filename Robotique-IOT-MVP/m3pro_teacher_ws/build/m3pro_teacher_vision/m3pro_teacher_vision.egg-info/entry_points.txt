@@ -1,0 +1,7 @@
+[console_scripts]
+camera_obstacle_node = m3pro_teacher_vision.camera_obstacle_node:main
+mission_executor_node = m3pro_teacher_vision.mission_executor_node:main
+object_detector_node = m3pro_teacher_vision.object_detector_node:main
+pick_and_place_node = m3pro_teacher_vision.pick_and_place_node:main
+qr_code_reader_node = m3pro_teacher_vision.qr_code_reader_node:main
+

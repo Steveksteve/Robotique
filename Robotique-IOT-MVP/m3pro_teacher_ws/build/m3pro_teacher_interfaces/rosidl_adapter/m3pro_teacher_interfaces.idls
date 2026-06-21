@@ -1,0 +1,3 @@
+/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces/rosidl_adapter/m3pro_teacher_interfaces:srv/SetJoint.idl
+/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces/rosidl_adapter/m3pro_teacher_interfaces:srv/SetJoints.idl
+/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces/rosidl_adapter/m3pro_teacher_interfaces:srv/Home.idl

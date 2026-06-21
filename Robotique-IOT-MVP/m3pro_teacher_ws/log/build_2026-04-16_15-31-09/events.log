@@ -1,0 +1,124 @@
+[0.000000] (-) TimerEvent: {}
+[0.002148] (-) JobUnselected: {'identifier': 'm3pro_teacher_demos'}
+[0.002395] (-) JobUnselected: {'identifier': 'm3pro_teacher_description'}
+[0.002594] (-) JobUnselected: {'identifier': 'm3pro_teacher_interfaces'}
+[0.003145] (-) JobUnselected: {'identifier': 'm3pro_teacher_nav'}
+[0.003558] (-) JobUnselected: {'identifier': 'm3pro_teacher_web'}
+[0.004279] (m3pro_teacher_vision) JobQueued: {'identifier': 'm3pro_teacher_vision', 'dependencies': OrderedDict([('m3pro_teacher_interfaces', '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces')])}
+[0.004485] (m3pro_teacher_vision) JobStarted: {'identifier': 'm3pro_teacher_vision'}
+[0.097683] (-) TimerEvent: {}
+[0.200663] (-) TimerEvent: {}
+[0.302483] (-) TimerEvent: {}
+[0.404276] (-) TimerEvent: {}
+[0.505923] (-) TimerEvent: {}
+[0.606999] (-) TimerEvent: {}
+[0.708257] (-) TimerEvent: {}
+[0.810392] (-) TimerEvent: {}
+[0.910993] (-) TimerEvent: {}
+[1.011665] (-) TimerEvent: {}
+[1.112233] (-) TimerEvent: {}
+[1.212812] (-) TimerEvent: {}
+[1.313438] (-) TimerEvent: {}
+[1.414066] (-) TimerEvent: {}
+[1.514624] (-) TimerEvent: {}
+[1.615187] (-) TimerEvent: {}
+[1.715760] (-) TimerEvent: {}
+[1.816322] (-) TimerEvent: {}
+[1.916880] (-) TimerEvent: {}
+[2.017480] (-) TimerEvent: {}
+[2.118064] (-) TimerEvent: {}
+[2.218643] (-) TimerEvent: {}
+[2.319240] (-) TimerEvent: {}
+[2.419945] (-) TimerEvent: {}
+[2.520751] (-) TimerEvent: {}
+[2.622198] (-) TimerEvent: {}
+[2.723304] (-) TimerEvent: {}
+[2.824157] (-) TimerEvent: {}
+[2.926114] (-) TimerEvent: {}
+[3.027085] (-) TimerEvent: {}
+[3.128431] (-) TimerEvent: {}
+[3.230432] (-) TimerEvent: {}
+[3.331022] (-) TimerEvent: {}
+[3.431595] (-) TimerEvent: {}
+[3.532245] (-) TimerEvent: {}
+[3.632820] (-) TimerEvent: {}
+[3.733512] (-) TimerEvent: {}
+[3.834141] (-) TimerEvent: {}
+[3.934722] (-) TimerEvent: {}
+[4.035325] (-) TimerEvent: {}
+[4.135893] (-) TimerEvent: {}
+[4.236542] (-) TimerEvent: {}
+[4.337132] (-) TimerEvent: {}
+[4.437712] (-) TimerEvent: {}
+[4.538286] (-) TimerEvent: {}
+[4.638874] (-) TimerEvent: {}
+[4.739525] (-) TimerEvent: {}
+[4.840103] (-) TimerEvent: {}
+[4.940807] (-) TimerEvent: {}
+[5.041543] (-) TimerEvent: {}
+[5.142159] (-) TimerEvent: {}
+[5.242975] (-) TimerEvent: {}
+[5.292884] (m3pro_teacher_vision) Command: {'cmd': ['/usr/bin/python3', 'setup.py', 'develop', '--editable', '--build-directory', '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/build', '--no-deps', 'install_data'], 'cwd': '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision', 'env': {'HOSTNAME': 'jetson-desktop', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib:/root/yahboomcar_ws/install/yahboomcar_msgs/lib:/root/yahboomcar_ws/install/orbbec_camera/lib:/root/yahboomcar_ws/install/orbbec_camera_msgs/lib:/root/yahboomcar_ws/install/arm_msgs/lib:/root/yahboomcar_ws/install/arm_interface/lib:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces/lib:/root/M3Pro_ws/install/rviz_imu_plugin/lib:/root/M3Pro_ws/install/openslam_gmapping/lib:/root/M3Pro_ws/install/interfaces/lib:/root/M3Pro_ws/install/imu_filter_madgwick/lib:/root/M3Pro_ws/install/imu_complementary_filter/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/root', 'OLDPWD': '/root/Robotique-IOT/m3pro_teacher_ws', 'ROS_PYTHON_VERSION': '3', 'LC_CTYPE': 'C.UTF-8', 'COLCON_PREFIX_PATH': '/root/Robotique-IOT/m3pro_teacher_ws/install:/root/M3Pro_ws/install:/root/yahboomcar_ws/install', 'ROS_DISTRO': 'humble', 'PULSE_SERVER': 'unix:/run/user/1000/pulse/native', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'ROS_LOCALHOST_ONLY': '0', 'QT_X11_NO_MITSHM': '1', 'PATH': '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin:/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'XDG_RUNTIME_DIR': '/tmp/runtime-jetson', 'DISPLAY': ':0', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'ROS_DOMAIN_ID': '30', 'AMENT_PREFIX_PATH': '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_nav:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:/root/yahboomcar_ws/install/yahboomcar_msgs:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/M3Pro_config:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/test_config:/root/yahboomcar_ws/install/orbbec_description:/root/yahboomcar_ws/install/orbbec_camera:/root/yahboomcar_ws/install/orbbec_camera_msgs:/root/yahboomcar_ws/install/arm_msgs:/root/yahboomcar_ws/install/arm_kin:/root/yahboomcar_ws/install/M3Pro_KCF:/root/yahboomcar_ws/install/arm_interface:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_mapping:/root/M3Pro_ws/install/yahboom_laser_filter:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/updatecostmap:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/slam_mapping:/root/M3Pro_ws/install/slam_gmapping:/root/M3Pro_ws/install/imu_tools:/root/M3Pro_ws/install/rviz_imu_plugin:/root/M3Pro_ws/install/robot_pose_publisher_ros2:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/openslam_gmapping:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ira_laser_tools:/root/M3Pro_ws/install/interfaces:/root/M3Pro_ws/install/imu_filter_madgwick:/root/M3Pro_ws/install/imu_complementary_filter:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/root/M3Pro_ws/install/M3Pro_navigation:/root/M3Pro_ws/install/M3Pro_KCF:/root/M3Pro_ws/install/M3Pro:/opt/ros/humble', 'ALSA_CARD': '0', 'PWD': '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision', 'PYTHONPATH': '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision/prefix_override:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_web:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_demos:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_demos/lib/python3.10/site-packages:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages:/root/yahboomcar_ws/install/yahboomcar_msgs/local/lib/python3.10/dist-packages:/root/yahboomcar_ws/install/yahboomcar_mediapipe/lib/python3.10/site-packages:/root/yahboomcar_ws/install/yahboomcar_ctrl/lib/python3.10/site-packages:/root/yahboomcar_ws/install/yahboom_M3Pro_laser/lib/python3.10/site-packages:/root/yahboomcar_ws/install/yahboom_M3Pro_description/lib/python3.10/site-packages:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam/lib/python3.10/site-packages:/root/yahboomcar_ws/install/orbbec_camera_msgs/local/lib/python3.10/dist-packages:/root/yahboomcar_ws/install/arm_msgs/local/lib/python3.10/dist-packages:/root/yahboomcar_ws/install/arm_interface/local/lib/python3.10/dist-packages:/root/yahboomcar_ws/install/arm_driver/lib/python3.10/site-packages:/root/yahboomcar_ws/install/M3Pro_demo/lib/python3.10/site-packages:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo/lib/python3.10/site-packages:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces/local/lib/python3.10/dist-packages:/root/M3Pro_ws/install/yahboom_multi/lib/python3.10/site-packages:/root/M3Pro_ws/install/yahboom_app_save_map/lib/python3.10/site-packages:/root/M3Pro_ws/install/text_chat/lib/python3.10/site-packages:/root/M3Pro_ws/install/patrol/lib/python3.10/site-packages:/root/M3Pro_ws/install/laserscan_to_point_publisher/lib/python3.10/site-packages:/root/M3Pro_ws/install/largemodel_arm/lib/python3.10/site-packages:/root/M3Pro_ws/install/largemodel/lib/python3.10/site-packages:/root/M3Pro_ws/install/interfaces/local/lib/python3.10/dist-packages:/root/M3Pro_ws/install/ekf_bringup/lib/python3.10/site-packages:/root/M3Pro_ws/install/calibration/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_nav:/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_description:/root/yahboomcar_ws/install/yahboomcar_msgs:/root/yahboomcar_ws/install/M3Pro_config:/root/yahboomcar_ws/install/test_config:/root/yahboomcar_ws/install/orbbec_description:/root/yahboomcar_ws/install/orbbec_camera:/root/yahboomcar_ws/install/orbbec_camera_msgs:/root/yahboomcar_ws/install/arm_msgs:/root/yahboomcar_ws/install/arm_kin:/root/yahboomcar_ws/install/M3Pro_KCF:/root/yahboomcar_ws/install/arm_interface:/root/M3Pro_ws/install/yahboom_web_savmap_interfaces:/root/M3Pro_ws/install/yahboom_mapping:/root/M3Pro_ws/install/yahboom_laser_filter:/root/M3Pro_ws/install/updatecostmap:/root/M3Pro_ws/install/slam_mapping:/root/M3Pro_ws/install/slam_gmapping:/root/M3Pro_ws/install/imu_tools:/root/M3Pro_ws/install/rviz_imu_plugin:/root/M3Pro_ws/install/robot_pose_publisher_ros2:/root/M3Pro_ws/install/openslam_gmapping:/root/M3Pro_ws/install/ira_laser_tools:/root/M3Pro_ws/install/interfaces:/root/M3Pro_ws/install/imu_filter_madgwick:/root/M3Pro_ws/install/imu_complementary_filter:/root/M3Pro_ws/install/M3Pro_navigation:/root/M3Pro_ws/install/M3Pro_KCF:/root/M3Pro_ws/install/M3Pro'}, 'shell': False}
+[5.343133] (-) TimerEvent: {}
+[5.443731] (-) TimerEvent: {}
+[5.544455] (-) TimerEvent: {}
+[5.645142] (-) TimerEvent: {}
+[5.745716] (-) TimerEvent: {}
+[5.846298] (-) TimerEvent: {}
+[5.946939] (-) TimerEvent: {}
+[6.047589] (-) TimerEvent: {}
+[6.148178] (-) TimerEvent: {}
+[6.248767] (-) TimerEvent: {}
+[6.349450] (-) TimerEvent: {}
+[6.450030] (-) TimerEvent: {}
+[6.550594] (-) TimerEvent: {}
+[6.651207] (-) TimerEvent: {}
+[6.751776] (-) TimerEvent: {}
+[6.852350] (-) TimerEvent: {}
+[6.941341] (m3pro_teacher_vision) StdoutLine: {'line': b'running develop\n'}
+[6.942606] (m3pro_teacher_vision) StderrLine: {'line': b'/usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.\n'}
+[6.943383] (m3pro_teacher_vision) StderrLine: {'line': b'  warnings.warn(\n'}
+[6.950901] (m3pro_teacher_vision) StderrLine: {'line': b'/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.\n'}
+[6.951510] (m3pro_teacher_vision) StderrLine: {'line': b'  warnings.warn(\n'}
+[6.952483] (-) TimerEvent: {}
+[7.053134] (-) TimerEvent: {}
+[7.153712] (-) TimerEvent: {}
+[7.254382] (-) TimerEvent: {}
+[7.354977] (-) TimerEvent: {}
+[7.455631] (-) TimerEvent: {}
+[7.556299] (-) TimerEvent: {}
+[7.657068] (-) TimerEvent: {}
+[7.757790] (-) TimerEvent: {}
+[7.858471] (-) TimerEvent: {}
+[7.959108] (-) TimerEvent: {}
+[8.059690] (-) TimerEvent: {}
+[8.106731] (m3pro_teacher_vision) StdoutLine: {'line': b'running egg_info\n'}
+[8.108248] (m3pro_teacher_vision) StdoutLine: {'line': b'writing m3pro_teacher_vision.egg-info/PKG-INFO\n'}
+[8.109127] (m3pro_teacher_vision) StdoutLine: {'line': b'writing dependency_links to m3pro_teacher_vision.egg-info/dependency_links.txt\n'}
+[8.109986] (m3pro_teacher_vision) StdoutLine: {'line': b'writing entry points to m3pro_teacher_vision.egg-info/entry_points.txt\n'}
+[8.110524] (m3pro_teacher_vision) StdoutLine: {'line': b'writing requirements to m3pro_teacher_vision.egg-info/requires.txt\n'}
+[8.110998] (m3pro_teacher_vision) StdoutLine: {'line': b'writing top-level names to m3pro_teacher_vision.egg-info/top_level.txt\n'}
+[8.119550] (m3pro_teacher_vision) StdoutLine: {'line': b"reading manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'\n"}
+[8.123170] (m3pro_teacher_vision) StdoutLine: {'line': b"writing manifest file 'm3pro_teacher_vision.egg-info/SOURCES.txt'\n"}
+[8.132426] (m3pro_teacher_vision) StdoutLine: {'line': b'running build_ext\n'}
+[8.133423] (m3pro_teacher_vision) StdoutLine: {'line': b'Creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/lib/python3.10/site-packages/m3pro-teacher-vision.egg-link (link to .)\n'}
+[8.136827] (m3pro_teacher_vision) StdoutLine: {'line': b'Installing camera_obstacle_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin\n'}
+[8.137403] (m3pro_teacher_vision) StdoutLine: {'line': b'Installing mission_executor_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin\n'}
+[8.137812] (m3pro_teacher_vision) StdoutLine: {'line': b'Installing object_detector_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin\n'}
+[8.138251] (m3pro_teacher_vision) StdoutLine: {'line': b'Installing pick_and_place_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin\n'}
+[8.138723] (m3pro_teacher_vision) StdoutLine: {'line': b'Installing qr_code_reader_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_vision/bin\n'}
+[8.139566] (m3pro_teacher_vision) StdoutLine: {'line': b'\n'}
+[8.140005] (m3pro_teacher_vision) StdoutLine: {'line': b'Installed /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_vision\n'}
+[8.140336] (m3pro_teacher_vision) StdoutLine: {'line': b'running install_data\n'}
+[8.159934] (-) TimerEvent: {}
+[8.260638] (-) TimerEvent: {}
+[8.286858] (m3pro_teacher_vision) CommandEnded: {'returncode': 0}
+[8.361190] (-) TimerEvent: {}
+[8.462217] (-) TimerEvent: {}
+[8.563764] (-) TimerEvent: {}
+[8.664325] (-) TimerEvent: {}
+[8.765002] (-) TimerEvent: {}
+[8.865701] (-) TimerEvent: {}
+[8.967078] (-) TimerEvent: {}
+[8.982927] (m3pro_teacher_vision) JobEnded: {'identifier': 'm3pro_teacher_vision', 'rc': 0}
+[8.986135] (-) EventReactorShutdown: {}

@@ -1,0 +1,8 @@
+[console_scripts]
+arm_joint_state_bridge_demo = m3pro_teacher_demos.arm_joint_state_bridge_demo:main
+arm_manual_control_node = m3pro_teacher_demos.arm_manual_control_node:main
+frontier_explorer_demo = m3pro_teacher_demos.frontier_explorer_demo:main
+odom_raw_bridge = m3pro_teacher_demos.odom_raw_bridge:main
+sensor_fusion_rgb_demo = m3pro_teacher_demos.sensor_fusion_rgb_demo:main
+tf2_sensor_frames_demo = m3pro_teacher_demos.tf2_sensor_frames_demo:main
+

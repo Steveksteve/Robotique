@@ -1,0 +1,4 @@
+source;share/m3pro_teacher_nav/local_setup.bash
+source;share/m3pro_teacher_nav/local_setup.dsv
+source;share/m3pro_teacher_nav/local_setup.sh
+source;share/m3pro_teacher_nav/local_setup.zsh

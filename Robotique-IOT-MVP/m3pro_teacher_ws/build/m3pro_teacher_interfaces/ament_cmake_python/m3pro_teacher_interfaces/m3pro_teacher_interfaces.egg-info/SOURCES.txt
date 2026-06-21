@@ -1,0 +1,6 @@
+setup.py
+m3pro_teacher_interfaces/__init__.py
+m3pro_teacher_interfaces.egg-info/PKG-INFO
+m3pro_teacher_interfaces.egg-info/SOURCES.txt
+m3pro_teacher_interfaces.egg-info/dependency_links.txt
+m3pro_teacher_interfaces.egg-info/top_level.txt

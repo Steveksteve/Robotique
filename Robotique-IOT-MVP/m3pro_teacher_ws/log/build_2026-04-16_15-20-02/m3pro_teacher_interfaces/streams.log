@@ -1,0 +1,253 @@
+[1.195s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake /root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces
+[2.690s] -- The C compiler identification is GNU 11.4.0
+[3.743s] -- The CXX compiler identification is GNU 11.4.0
+[3.776s] -- Detecting C compiler ABI info
+[4.121s] -- Detecting C compiler ABI info - done
+[4.155s] -- Check for working C compiler: /usr/bin/cc - skipped
+[4.157s] -- Detecting C compile features
+[4.161s] -- Detecting C compile features - done
+[4.174s] -- Detecting CXX compiler ABI info
+[4.485s] -- Detecting CXX compiler ABI info - done
+[4.519s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[4.521s] -- Detecting CXX compile features
+[4.524s] -- Detecting CXX compile features - done
+[4.596s] -- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+[5.825s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+[6.238s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[7.073s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[7.161s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[7.305s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[7.876s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[8.335s] -- Found std_msgs: 4.2.3 (/opt/ros/humble/share/std_msgs/cmake)
+[10.354s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[11.660s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[13.205s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[13.342s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[13.389s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[13.558s] -- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[13.558s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[13.559s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[13.559s] -- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so
+[13.683s] -- Found PythonExtra: .so  
+[14.115s] -- Configuring done
+[14.259s] -- Generating done
+[14.269s] -- Build files have been written to: /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces
+[14.294s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake /root/Robotique-IOT/m3pro_teacher_ws/src/m3pro_teacher_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces
+[14.298s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake --build /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces -- -j4 -l4
+[14.446s] [  2%] [34m[1mGenerating C code for ROS interfaces[0m
+[14.486s] [  4%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[14.520s] [  4%] Built target ament_cmake_python_symlink_m3pro_teacher_interfaces
+[16.186s] running egg_info
+[16.189s] creating m3pro_teacher_interfaces.egg-info
+[16.191s] writing m3pro_teacher_interfaces.egg-info/PKG-INFO
+[16.191s] writing dependency_links to m3pro_teacher_interfaces.egg-info/dependency_links.txt
+[16.192s] writing top-level names to m3pro_teacher_interfaces.egg-info/top_level.txt
+[16.193s] writing manifest file 'm3pro_teacher_interfaces.egg-info/SOURCES.txt'
+[16.205s] reading manifest file 'm3pro_teacher_interfaces.egg-info/SOURCES.txt'
+[16.208s] writing manifest file 'm3pro_teacher_interfaces.egg-info/SOURCES.txt'
+[16.348s] [  4%] Built target ament_cmake_python_build_m3pro_teacher_interfaces_egg
+[16.950s] [  4%] Built target m3pro_teacher_interfaces__cpp
+[17.018s] [  6%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[17.032s] [  8%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[17.096s] [ 10%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[17.287s] [ 12%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_c.dir/rosidl_generator_c/m3pro_teacher_interfaces/srv/detail/set_joint__functions.c.o[0m
+[17.890s] [ 14%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_c.dir/rosidl_generator_c/m3pro_teacher_interfaces/srv/detail/set_joints__functions.c.o[0m
+[18.183s] [ 17%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_c.dir/rosidl_generator_c/m3pro_teacher_interfaces/srv/detail/home__functions.c.o[0m
+[18.460s] [ 19%] [32m[1mLinking C shared library libm3pro_teacher_interfaces__rosidl_generator_c.so[0m
+[18.646s] [ 19%] Built target m3pro_teacher_interfaces__rosidl_generator_c
+[18.714s] [ 21%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[19.087s] [ 23%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/m3pro_teacher_interfaces/srv/set_joint__type_support.cpp.o[0m
+[19.464s] [ 25%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.cpp.o[0m
+[19.596s] [ 27%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/m3pro_teacher_interfaces/srv/detail/dds_fastrtps/set_joint__type_support.cpp.o[0m
+[20.696s] [ 29%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/m3pro_teacher_interfaces/srv/set_joints__type_support.cpp.o[0m
+[21.404s] [ 31%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/m3pro_teacher_interfaces/srv/detail/set_joint__type_support_c.cpp.o[0m
+[21.577s] [ 34%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.cpp.o[0m
+[21.794s] [ 36%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/m3pro_teacher_interfaces/srv/detail/dds_fastrtps/set_joints__type_support.cpp.o[0m
+[22.052s] [ 38%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/m3pro_teacher_interfaces/srv/home__type_support.cpp.o[0m
+[23.235s] [ 40%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/m3pro_teacher_interfaces/srv/detail/set_joints__type_support_c.cpp.o[0m
+[23.395s] [ 42%] [32m[1mLinking CXX shared library libm3pro_teacher_interfaces__rosidl_typesupport_cpp.so[0m
+[23.590s] [ 42%] Built target m3pro_teacher_interfaces__rosidl_typesupport_cpp
+[23.642s] [ 46%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/m3pro_teacher_interfaces/srv/detail/home__type_support.cpp.o[0m
+[23.643s] [ 46%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[24.310s] [ 48%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/m3pro_teacher_interfaces/srv/detail/dds_fastrtps/home__type_support.cpp.o[0m
+[25.033s] [ 51%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/m3pro_teacher_interfaces/srv/detail/home__type_support_c.cpp.o[0m
+[25.600s] [ 53%] [32m[1mLinking CXX shared library libm3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.so[0m
+[25.986s] [ 53%] Built target m3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp
+[26.031s] [ 55%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[26.294s] [ 57%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.c.o[0m
+[26.491s] [ 59%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.c.o[0m
+[26.553s] [ 61%] [32m[1mLinking CXX shared library libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.so[0m
+[26.678s] [ 63%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/m3pro_teacher_interfaces/srv/detail/home__type_support.c.o[0m
+[26.851s] [ 65%] [32m[1mLinking C shared library libm3pro_teacher_interfaces__rosidl_typesupport_introspection_c.so[0m
+[26.869s] [ 68%] [32m[1mLinking CXX shared library libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.so[0m
+[26.903s] [ 68%] Built target m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp
+[27.006s] [ 68%] Built target m3pro_teacher_interfaces__rosidl_typesupport_introspection_c
+[27.175s] [ 68%] Built target m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c
+[27.853s] [ 72%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/m3pro_teacher_interfaces/srv/set_joint__type_support.cpp.o[0m
+[27.854s] [ 72%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/m3pro_teacher_interfaces/srv/set_joints__type_support.cpp.o[0m
+[27.855s] [ 74%] [32mBuilding CXX object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/m3pro_teacher_interfaces/srv/home__type_support.cpp.o[0m
+[27.998s] [ 76%] [32m[1mLinking CXX shared library libm3pro_teacher_interfaces__rosidl_typesupport_c.so[0m
+[28.143s] [ 76%] Built target m3pro_teacher_interfaces__rosidl_typesupport_c
+[28.219s] [ 76%] Built target m3pro_teacher_interfaces
+[28.296s] [ 78%] [34m[1mGenerating Python code for ROS interfaces[0m
+[31.883s] [ 78%] Built target m3pro_teacher_interfaces__py
+[31.958s] [ 80%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_py.dir/rosidl_generator_py/m3pro_teacher_interfaces/srv/_set_joint_s.c.o[0m
+[31.959s] [ 82%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_py.dir/rosidl_generator_py/m3pro_teacher_interfaces/srv/_set_joints_s.c.o[0m
+[31.974s] [ 85%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_generator_py.dir/rosidl_generator_py/m3pro_teacher_interfaces/srv/_home_s.c.o[0m
+[32.619s] [ 87%] [32m[1mLinking C shared library rosidl_generator_py/m3pro_teacher_interfaces/libm3pro_teacher_interfaces__rosidl_generator_py.so[0m
+[32.777s] [ 87%] Built target m3pro_teacher_interfaces__rosidl_generator_py
+[32.862s] [ 89%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[32.871s] [ 91%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[32.874s] [ 93%] [32mBuilding C object CMakeFiles/m3pro_teacher_interfaces__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_c.c.o[0m
+[33.385s] [ 95%] [32m[1mLinking C shared library rosidl_generator_py/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so[0m
+[33.393s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so[0m
+[33.416s] [100%] [32m[1mLinking C shared library rosidl_generator_py/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so[0m
+[33.566s] [100%] Built target m3pro_teacher_interfaces__rosidl_typesupport_c__pyext
+[33.584s] [100%] Built target m3pro_teacher_interfaces__rosidl_typesupport_introspection_c__pyext
+[33.596s] [100%] Built target m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[33.636s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake --build /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces -- -j4 -l4
+[34.022s] Invoking command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake --install /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces
+[34.050s] -- Install configuration: ""
+[34.052s] -- Execute custom install script
+[34.053s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/ament_index/resource_index/rosidl_interfaces/m3pro_teacher_interfaces
+[34.086s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/msg/rosidl_generator_c__visibility_control.h
+[34.116s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__functions.h
+[34.146s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__struct.h
+[34.176s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__type_support.h
+[34.207s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__functions.h
+[34.238s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__struct.h
+[34.268s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__type_support.h
+[34.298s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__functions.h
+[34.327s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__struct.h
+[34.357s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__type_support.h
+[34.388s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/home.h
+[34.421s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/set_joint.h
+[34.451s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/set_joints.h
+[34.482s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/library_path.sh
+[34.512s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/library_path.dsv
+[34.544s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[34.574s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__rosidl_typesupport_fastrtps_c.h
+[34.604s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__rosidl_typesupport_fastrtps_c.h
+[34.634s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__rosidl_typesupport_fastrtps_c.h
+[34.665s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[34.694s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__rosidl_typesupport_introspection_c.h
+[34.724s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__rosidl_typesupport_introspection_c.h
+[34.753s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__rosidl_typesupport_introspection_c.h
+[34.785s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__builder.hpp
+[34.816s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__struct.hpp
+[34.846s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__traits.hpp
+[34.876s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__builder.hpp
+[34.906s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__struct.hpp
+[34.936s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__traits.hpp
+[34.967s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__builder.hpp
+[34.999s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__struct.hpp
+[35.029s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__traits.hpp
+[35.058s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/home.hpp
+[35.088s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/set_joint.hpp
+[35.118s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/set_joints.hpp
+[35.152s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[35.182s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__rosidl_typesupport_fastrtps_cpp.hpp
+[35.212s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__rosidl_typesupport_fastrtps_cpp.hpp
+[35.243s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__rosidl_typesupport_fastrtps_cpp.hpp
+[35.273s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/home__rosidl_typesupport_introspection_cpp.hpp
+[35.304s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joint__rosidl_typesupport_introspection_cpp.hpp
+[35.341s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/include/m3pro_teacher_interfaces/m3pro_teacher_interfaces/srv/detail/set_joints__rosidl_typesupport_introspection_cpp.hpp
+[35.372s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/pythonpath.sh
+[35.403s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/pythonpath.dsv
+[35.434s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces-0.1.0-py3.10.egg-info/PKG-INFO
+[35.464s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces-0.1.0-py3.10.egg-info/SOURCES.txt
+[35.494s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces-0.1.0-py3.10.egg-info/dependency_links.txt
+[35.525s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces-0.1.0-py3.10.egg-info/top_level.txt
+[35.560s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/__init__.py
+[35.593s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_c.c
+[35.622s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[35.652s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/_m3pro_teacher_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[35.684s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/libm3pro_teacher_interfaces__rosidl_generator_py.so
+[35.716s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[35.746s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[35.776s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[35.807s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/__init__.py
+[35.837s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_home.py
+[35.867s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_home_s.c
+[35.898s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joint.py
+[35.929s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joint_s.c
+[35.959s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joints.py
+[35.989s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joints_s.c
+[36.021s] -- Up-to-date symlink: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[36.022s] -- Up-to-date symlink: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[36.023s] -- Up-to-date symlink: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/m3pro_teacher_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[36.024s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoint.idl
+[36.056s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoints.idl
+[36.087s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/Home.idl
+[36.117s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoint.srv
+[36.150s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoint_Request.msg
+[36.183s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoint_Response.msg
+[36.216s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoints.srv
+[36.249s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoints_Request.msg
+[36.280s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/SetJoints_Response.msg
+[36.314s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/Home.srv
+[36.345s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/Home_Request.msg
+[36.374s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/srv/Home_Response.msg
+[36.405s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/ament_index/resource_index/package_run_dependencies/m3pro_teacher_interfaces
+[36.440s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/ament_index/resource_index/parent_prefix_path/m3pro_teacher_interfaces
+[36.474s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/ament_prefix_path.sh
+[36.504s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/ament_prefix_path.dsv
+[36.534s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/path.sh
+[36.564s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/environment/path.dsv
+[36.595s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/local_setup.bash
+[36.626s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/local_setup.sh
+[36.656s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/local_setup.zsh
+[36.686s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/local_setup.dsv
+[36.717s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/package.dsv
+[36.748s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/ament_index/resource_index/packages/m3pro_teacher_interfaces
+[36.780s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/rosidl_cmake-extras.cmake
+[36.815s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[36.846s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[36.876s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[36.906s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[36.936s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[36.968s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[36.998s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfacesConfig.cmake
+[37.028s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfacesConfig-version.cmake
+[37.058s] -- Symlinking: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/package.xml
+[37.088s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_generator_c.so
+[37.089s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_generator_c.so" to ""
+[37.090s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.so
+[37.091s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_c.so" to ""
+[37.092s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_introspection_c.so
+[37.093s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_introspection_c.so" to ""
+[37.093s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_c.so
+[37.094s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_c.so" to ""
+[37.095s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[37.096s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cpp.so" to ""
+[37.097s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.so
+[37.098s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_introspection_cpp.so" to ""
+[37.099s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_cpp.so
+[37.100s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_typesupport_cpp.so" to ""
+[37.328s] Listing '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces'...
+[37.329s] Compiling '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/__init__.py'...
+[37.329s] Listing '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv'...
+[37.330s] Compiling '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/__init__.py'...
+[37.331s] Compiling '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_home.py'...
+[37.331s] Compiling '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joint.py'...
+[37.331s] Compiling '/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/local/lib/python3.10/dist-packages/m3pro_teacher_interfaces/srv/_set_joints.py'...
+[37.352s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_generator_py.so
+[37.354s] -- Set runtime path of "/root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/lib/libm3pro_teacher_interfaces__rosidl_generator_py.so" to ""
+[37.354s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_generator_cExport.cmake
+[37.354s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_generator_cExport-noconfig.cmake
+[37.355s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[37.356s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[37.357s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[37.357s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[37.358s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_cExport.cmake
+[37.359s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[37.360s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_generator_cppExport.cmake
+[37.360s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[37.361s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[37.362s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[37.362s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[37.363s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_cppExport.cmake
+[37.364s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/m3pro_teacher_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[37.364s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_generator_pyExport.cmake
+[37.365s] -- Installing: /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_interfaces/share/m3pro_teacher_interfaces/cmake/export_m3pro_teacher_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[37.372s] Invoked command in '/root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/yahboomcar_ws/install/yahboomcar_mediapipe:/root/yahboomcar_ws/install/yahboomcar_ctrl:/root/yahboomcar_ws/install/yahboom_M3Pro_laser:/root/yahboomcar_ws/install/yahboom_M3Pro_description:/root/yahboomcar_ws/install/yahboom_M3Pro_DepthCam:/root/yahboomcar_ws/install/arm_driver:/root/yahboomcar_ws/install/M3Pro_demo:/root/yahboomcar_ws/install/M3Pro_MoveIt_demo:/root/M3Pro_ws/install/yahboom_multi:/root/M3Pro_ws/install/yahboom_app_save_map:/root/M3Pro_ws/install/text_chat:/root/M3Pro_ws/install/patrol:/root/M3Pro_ws/install/laserscan_to_point_publisher:/root/M3Pro_ws/install/largemodel_arm:/root/M3Pro_ws/install/largemodel:/root/M3Pro_ws/install/ekf_bringup:/root/M3Pro_ws/install/calibration:/opt/ros/humble /usr/bin/cmake --install /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_interfaces

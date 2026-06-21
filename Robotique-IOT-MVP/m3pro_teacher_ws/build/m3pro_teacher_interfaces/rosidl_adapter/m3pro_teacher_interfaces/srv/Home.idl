@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from m3pro_teacher_interfaces/srv/Home.srv
+// generated code does not contain a copyright notice
+
+
+module m3pro_teacher_interfaces {
+  module srv {
+    struct Home_Request {
+      uint8 structure_needs_at_least_one_member;
+    };
+    struct Home_Response {
+      boolean success;
+
+      string message;
+    };
+  };
+};

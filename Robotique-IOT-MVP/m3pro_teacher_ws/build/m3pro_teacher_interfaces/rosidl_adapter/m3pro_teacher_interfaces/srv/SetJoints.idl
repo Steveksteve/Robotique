@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from m3pro_teacher_interfaces/srv/SetJoints.srv
+// generated code does not contain a copyright notice
+
+
+module m3pro_teacher_interfaces {
+  module srv {
+    struct SetJoints_Request {
+      sequence<double> values;
+    };
+    struct SetJoints_Response {
+      boolean success;
+
+      string message;
+    };
+  };
+};

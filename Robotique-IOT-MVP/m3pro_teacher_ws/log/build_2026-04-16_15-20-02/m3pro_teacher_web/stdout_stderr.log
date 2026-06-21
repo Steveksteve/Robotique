@@ -1,0 +1,30 @@
+running develop
+/usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+running egg_info
+creating m3pro_teacher_web.egg-info
+writing m3pro_teacher_web.egg-info/PKG-INFO
+writing dependency_links to m3pro_teacher_web.egg-info/dependency_links.txt
+writing entry points to m3pro_teacher_web.egg-info/entry_points.txt
+writing requirements to m3pro_teacher_web.egg-info/requires.txt
+writing top-level names to m3pro_teacher_web.egg-info/top_level.txt
+writing manifest file 'm3pro_teacher_web.egg-info/SOURCES.txt'
+reading manifest file 'm3pro_teacher_web.egg-info/SOURCES.txt'
+writing manifest file 'm3pro_teacher_web.egg-info/SOURCES.txt'
+running build_ext
+Creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/lib/python3.10/site-packages/m3pro-teacher-web.egg-link (link to .)
+Installing web_server_node script to /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/lib/m3pro_teacher_web
+
+Installed /root/Robotique-IOT/m3pro_teacher_ws/build/m3pro_teacher_web
+running install_data
+creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/ament_index
+creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/ament_index/resource_index
+creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/ament_index/resource_index/packages
+copying resource/m3pro_teacher_web -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/ament_index/resource_index/packages
+copying package.xml -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/m3pro_teacher_web
+creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/m3pro_teacher_web/launch
+copying launch/web_dashboard.launch.py -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/m3pro_teacher_web/launch
+creating /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/m3pro_teacher_web/web
+copying web/index.html -> /root/Robotique-IOT/m3pro_teacher_ws/install/m3pro_teacher_web/share/m3pro_teacher_web/web
