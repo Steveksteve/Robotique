@@ -17,8 +17,10 @@ CREATE TABLE missions (
         'CREATED',
         'ASSIGNED',
         'NAVIGATING_TO_PICKUP',
+        'SCANNING_QR',
         'PICKING_UP',
         'NAVIGATING_TO_DROP',
+        'DROPPING_OFF',
         'COMPLETED',
         'ERROR'
     ) DEFAULT 'CREATED',

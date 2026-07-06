@@ -9,8 +9,10 @@ class MissionController
         "CREATED",
         "ASSIGNED",
         "NAVIGATING_TO_PICKUP",
+        "SCANNING_QR",
         "PICKING_UP",
         "NAVIGATING_TO_DROP",
+        "DROPPING_OFF",
         "COMPLETED",
         "ERROR"
     ];
@@ -18,9 +20,11 @@ class MissionController
     private $allowedTransitions = [
         "CREATED" => ["ASSIGNED", "ERROR"],
         "ASSIGNED" => ["NAVIGATING_TO_PICKUP", "ERROR"],
-        "NAVIGATING_TO_PICKUP" => ["PICKING_UP", "ERROR"],
+        "NAVIGATING_TO_PICKUP" => ["SCANNING_QR", "PICKING_UP", "ERROR"],
+        "SCANNING_QR" => ["PICKING_UP", "ERROR"],
         "PICKING_UP" => ["NAVIGATING_TO_DROP", "ERROR"],
-        "NAVIGATING_TO_DROP" => ["COMPLETED", "ERROR"],
+        "NAVIGATING_TO_DROP" => ["DROPPING_OFF", "COMPLETED", "ERROR"],
+        "DROPPING_OFF" => ["COMPLETED", "ERROR"],
         "COMPLETED" => [],
         "ERROR" => []
     ];

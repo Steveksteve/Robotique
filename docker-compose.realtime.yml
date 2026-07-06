@@ -14,7 +14,7 @@ services:
       retries: 10
 
   api:
-    image: robotique-main-api:latest
+    image: robotique-monorepo-api:latest
     build:
       context: ./apps/server
       dockerfile: Dockerfile
@@ -28,9 +28,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$f=@fopen(\"http://localhost/\", \"r\"); exit($$f ? 0 : 1);'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   realtime:
-    image: robotique-main-realtime:latest
+    image: robotique-monorepo-websocket:latest
     build:
       context: ./apps/server/realtime
       dockerfile: Dockerfile

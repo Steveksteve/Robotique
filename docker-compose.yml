@@ -1,0 +1,159 @@
+name: robotique-monorepo
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-raa_db}
+      MYSQL_USER: ${MYSQL_USER:-raa}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-raapass}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./apps/server/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - raa_network
+
+  api:
+    image: robotique-monorepo-api:latest
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE:-raa_db}
+      DB_USER: ${MYSQL_USER:-raa}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-raapass}
+    ports:
+      - "${API_PORT:-8000}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$f=@fopen(\"http://localhost/\", \"r\"); exit($$f ? 0 : 1);'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - raa_network
+
+  websocket:
+    image: robotique-monorepo-websocket:latest
+    build:
+      context: ./apps/server/realtime
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE:-raa_db}
+      DB_USER: ${MYSQL_USER:-raa}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-raapass}
+      WS_HOST: 0.0.0.0
+      WS_PORT: 8765
+    ports:
+      - "${WS_PORT:-8765}:8765"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - raa_network
+
+  iot_base:
+    image: m3pro_teacher_ws:humble
+    build:
+      context: ./ros/m3pro_teacher_ws
+      dockerfile: Dockerfile
+    profiles: ["iot-build"]
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash
+      && source /root/m3pro_teacher_ws/install/setup.bash
+      && ros2 pkg list | grep m3pro_teacher"
+    environment: &ros_environment
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-30}
+      ROS_DISTRO: humble
+      FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+    networks:
+      - raa_network
+
+  ros_core:
+    image: m3pro_teacher_ws:humble
+    build:
+      context: ./ros/m3pro_teacher_ws
+      dockerfile: Dockerfile
+    environment: *ros_environment
+    command: bash -lc "sleep infinity"
+    restart: unless-stopped
+    networks:
+      - raa_network
+
+  rosbridge:
+    image: m3pro_teacher_ws:humble
+    environment: *ros_environment
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+    ports:
+      - "${ROSBRIDGE_PORT:-9090}:9090"
+    depends_on:
+      - ros_core
+    restart: unless-stopped
+    networks:
+      - raa_network
+
+  iot_dashboard:
+    image: m3pro_teacher_ws:humble
+    environment: *ros_environment
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 run m3pro_teacher_web web_server_node --ros-args -p port:=8080"
+    ports:
+      - "${IOT_DASHBOARD_PORT:-8080}:8080"
+    depends_on:
+      - rosbridge
+      - arm_control
+    restart: unless-stopped
+    networks:
+      - raa_network
+
+  arm_control:
+    image: m3pro_teacher_ws:humble
+    environment: *ros_environment
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /root/m3pro_teacher_ws/install/setup.bash && ros2 run m3pro_teacher_demos arm_manual_control_node --ros-args -p arm_control_topic:=/arm6_joints"
+    depends_on:
+      - ros_core
+    restart: unless-stopped
+    networks:
+      - raa_network
+
+  mission_qr:
+    image: m3pro_teacher_ws:humble
+    profiles: ["mission"]
+    environment:
+      <<: *ros_environment
+      API_BASE: http://api
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash
+      && source /root/m3pro_teacher_ws/install/setup.bash
+      && ros2 launch m3pro_teacher_vision mission_mvp.launch.py
+      api_base:=http://api
+      robot_id:=${ROBOT_ID:-raa-robot-01}
+      dry_run:=${MISSION_DRY_RUN:-true}
+      camera_topic:=${QR_CAMERA_TOPIC:-/camera/color/image_raw/compressed}
+      simulated_qr:=${SIMULATED_QR:-a}"
+    depends_on:
+      api:
+        condition: service_healthy
+      ros_core:
+        condition: service_started
+      arm_control:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - raa_network
+
+volumes:
+  mysql-data:
+
+networks:
+  raa_network:
+    driver: bridge

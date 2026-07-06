@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh *)",
+      "Bash(CONTAINER=sleepy_williamson bash *)",
+      "Bash(chmod +x *)",
+      "WebFetch(domain:www.yahboom.net)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:openelab.io)",
+      "Bash(ping *)",
+      "Bash(osascript -e 'display dialog \"Enter the SSH password for jetson@192.168.55.1:\" default answer \"\" with hidden answer with title \"Jetson SSH Password\"' -e 'text returned of result')",
+      "Bash(brew list *)",
+      "Bash(expect -c ' *)",
+      "Bash(networksetup -listallhardwareports)",
+      "Bash(route -n get default)",
+      "Bash(sysctl net.inet.ip.forwarding)",
+      "Bash(sudo sysctl *)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -L -o nvidia-l4t-core.deb \"https://repo.download.nvidia.com/jetson/common/pool/main/n/nvidia-l4t-core/nvidia-l4t-core_32.6.1-20210726122000_arm64.deb\")",
+      "WebFetch(domain:repo.download.nvidia.com)",
+      "Bash(curl -L -o nvidia-l4t-core.deb \"https://repo.download.nvidia.com/jetson/t210/pool/main/n/nvidia-l4t-core/nvidia-l4t-core_32.6.1-20210726122000_arm64.deb\")",
+      "Bash(scp *)",
+      "Bash(curl -L -o nvidia-l4t-3d-core.deb \"https://repo.download.nvidia.com/jetson/t210/pool/main/n/nvidia-l4t-3d-core/nvidia-l4t-3d-core_32.6.1-20210726122000_arm64.deb\")",
+      "Bash(mkdir -p l4t-3d-check)",
+      "Bash(dpkg-deb -x nvidia-l4t-3d-core.deb l4t-3d-check/)",
+      "Bash(md5 l4t-3d-check/usr/lib/xorg/modules/drivers/nvidia_drv.so)",
+      "Bash(osascript -e 'display dialog \"Enter the SSH password for jetson@192.168.50.103:\" default answer \"\" with hidden answer with title \"Jetson SSH Password\"' -e 'text returned of result')",
+      "Read(//Users/sean/.ssh/**)"
+    ]
+  }
+}

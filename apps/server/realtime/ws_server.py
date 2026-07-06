@@ -25,8 +25,10 @@ MISSION_FLOW = [
     "CREATED",
     "ASSIGNED",
     "NAVIGATING_TO_PICKUP",
+    "SCANNING_QR",
     "PICKING_UP",
     "NAVIGATING_TO_DROP",
+    "DROPPING_OFF",
     "COMPLETED",
 ]
 
@@ -86,8 +88,10 @@ def get_active_missions():
                 WHERE status IN (
                     'ASSIGNED',
                     'NAVIGATING_TO_PICKUP',
+                    'SCANNING_QR',
                     'PICKING_UP',
-                    'NAVIGATING_TO_DROP'
+                    'NAVIGATING_TO_DROP',
+                    'DROPPING_OFF'
                 )
                 ORDER BY id ASC
                 """

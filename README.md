@@ -1,42 +1,66 @@
-# Robot d’Assistance Autonome (RAA)
+# Robotique Monorepo
 
-## Vision
-Développer une plateforme robotique low-cost (< 500€) destinée à l’optimisation logistique en centre SAV et à l’assistance en environnement professionnel.
+Monorepo fusionne pour le Robot d'Assistance Autonome.
 
----
+## Structure
 
-## Objectifs (MVP)
-  **Navigation**
-   Autonomie via ROS 2, Nav2 et cartographie Lidar.
-  **Manipulation**
-   Saisie d’objets à l’aide d’un bras motorisé et d’une cinématique inverse.
-  **Interface**
-   Dashboard opérateur en React.
-  **Sécurité**
-   Vitesse maximale de 0.3 m/s et arrêt d’urgence matériel et logiciel.
-
----
-
-## Architecture (Monorepo)
-```
-apps/web            → Interface React & TypeScript
-apps/server         → API REST, MySQL, WebSockets
-apps/robot          → Packages ROS 2 et gestion hardware
-packages/shared     → Types et schémas partagés
+```text
+apps/server              API PHP/MySQL missions
+apps/server/realtime     Serveur WebSocket temps reel
+apps/robot               Client robot/simulation API
+frontend                 Dashboard React/Vite
+ros/m3pro_teacher_ws     Workspace ROS2 Yahboom M3 Pro
+tests                    Tests integration et outils manuels
+docs                     Documentation projet
 ```
 
----
+## Demarrage rapide
 
-## Hardware
-  Base : Yahboom Transbot
-  Calcul : Jetson Nano
-  Capteurs : Lidar et caméra RealSense
+API, WebSocket et IoT ROS2:
 
----
+```bash
+docker compose up --build
+```
 
-## Workflow Mission
-  CREATED → ASSIGNED → NAVIGATING → INTERACTING → COMPLETED
+Verifier uniquement l'image IoT:
 
----
+```bash
+docker compose --profile iot-build up --build iot_base
+```
 
-Projet HETIC – Février 2026
+Lancer aussi l'executeur de mission QR:
+
+```bash
+docker compose --profile mission up --build
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Workspace ROS2:
+
+```bash
+cd ros/m3pro_teacher_ws
+docker compose up --build
+```
+
+Flux mission QR ROS2:
+
+```bash
+cd ros/m3pro_teacher_ws
+ros2 launch m3pro_teacher_vision mission_mvp.launch.py
+```
+
+Vision et pick-and-place ROS2:
+
+```bash
+cd ros/m3pro_teacher_ws
+ros2 launch m3pro_teacher_vision detect_and_pick.launch.py
+```
+
+Les decisions et conflits de fusion sont documentes dans `MERGE_NOTES.md`.

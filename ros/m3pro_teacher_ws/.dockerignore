@@ -1,0 +1,12 @@
+.git
+.DS_Store
+.claude
+build
+install
+log
+__pycache__
+*.pyc
+*.pyo
+*.swp
+**/maps/*.pgm
+**/maps/*.yaml
