@@ -1,0 +1,59 @@
+CAHIER DES CHARGES 
+Robot d’Assistance Autonome (RAA) 
+Domaine : Logistique SAV 
+Équipe : RAA – HETIC 
+Date : Février 2026 
+
+
+1. Vision du Projet 
+   RAA est un robot d’assistance autonome destiné à optimiser les flux logistiques internes dans les centres SAV et environnements professionnels. 
+  L’objectif est d’automatiser les déplacements entre zones de stockage et postes de travail afin d’améliorer la productivité et la fluidité des opérations. 
+  Le projet vise à démontrer la viabilité d’une solution robotique modulaire, évolutive et industrialisable. 
+
+2. Contexte et Enjeux 
+
+  Dans un centre SAV : 
+   Les techniciens effectuent de nombreux déplacements internes. 
+   Les flux logistiques ne sont pas automatisés. 
+   Les interruptions impactent le temps de traitement. 
+  RAA vise à améliorer l’organisation interne et réduire les frictions opérationnelles. 
+
+3. Contraintes Projet
+
+  Budget matériel limité pour le prototype. 
+  Environnement réel avec circulation humaine. 
+  Contraintes d’espace. 
+  Communication réseau potentiellement instable. 
+  Architecture modulaire et maintenable. 
+
+4. Organisation de l’Ingénierie 
+
+  Front-end : interface opérateur. 
+  Back-end : gestion des missions et base de données. 
+  IoT / Robotique : navigation, capteurs et actionneurs. 
+  Travail centralisé en monorepo avec gestion de branches par pôle. 
+
+5. Conventions Git 
+
+  Pattern : 
+   ing/<pole>/<feature> 
+  Branche principale protégée avec validation avant fusion. 
+
+6. Structure Monorepo 
+
+  raa-project/
+  ├── apps/web/              → Front-end React
+  ├── apps/server/           → Back-end Express/PHP
+  ├── apps/robot/            → Packages ROS 2 (Python)
+  ├── packages/shared/       → Types TypeScript partagés
+  ├── docs/                  → openapi.yaml, ADRs, schémas
+  │   └── uml/               → Fichiers .puml PlantUML
+  ├── scripts/               → Scripts de déploiement, setup
+  └── .github/workflows/     → CI/CD
+
+7. Sécurité 
+
+  Vitesse limitée. 
+  Arrêt d’urgence matériel et logiciel. 
+  Surveillance des obstacles. 
+  Mode dégradé en cas de perte réseau. 

@@ -1,0 +1,12 @@
+{
+  "name": "raa-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "web:dev": "npm --prefix frontend run dev",
+    "web:build": "npm --prefix frontend run build",
+    "web:lint": "npm --prefix frontend run lint",
+    "test:integration": "python -m pytest tests/integration/ -q",
+    "ci:local": "./scripts/run_ci_local.sh"
+  }
+}

@@ -1,0 +1,34 @@
+MVP
+Robot d’Assistance Autonome (RAA)
+
+1. Objectif
+  Démontrer que le robot est capable d’effectuer une mission logistique simple de manière autonome.
+
+2. Capacités minimales
+  Déplacement
+   * Peut se déplacer d’un point A à un point B.
+   * Peut éviter un obstacle simple.
+   * Peut s’arrêter en cas de situation anormale.
+
+  Manipulation
+  * Peut utiliser sa pince.
+  * Peut saisir un objet léger.
+  * Peut transporter un objet d’un point à un autre.
+  * Peut déposer l’objet à l’emplacement prévu.
+
+Interface
+  * Permet de déclencher une mission.
+  * Affiche l’état de la mission.
+
+3. Workflow minimal
+  CREATED
+  NAVIGATING
+  COMPLETED
+  ERROR
+
+4. Conditions de validation
+  Le MVP est considéré comme validé si :
+   *Le robot se déplace correctement entre deux points.
+   *Le robot utilise sa pince pour saisir un objet.
+   *Le robot transporte et dépose l’objet.
+   *L’interface affiche correctement l’état de la mission.
