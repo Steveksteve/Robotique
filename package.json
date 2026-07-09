@@ -6,6 +6,7 @@
     "web:dev": "npm --prefix frontend run dev",
     "web:build": "npm --prefix frontend run build",
     "web:lint": "npm --prefix frontend run lint",
+    "test:unit": "python -m pytest tests/unit/iot -q",
     "test:integration": "python -m pytest tests/integration/ -q",
     "ci:local": "./scripts/run_ci_local.sh"
   }

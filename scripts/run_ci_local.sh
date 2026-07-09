@@ -39,5 +39,6 @@ done
 
 python -m pip install -r tests/integration/requirements-test.txt
 mkdir -p reports
+python -m pytest tests/unit/iot -q --junitxml=reports/junit-unit.xml
 API_BASE="$API_BASE" WS_URL="$WS_URL" WEB_BASE="$WEB_BASE" \
   python -m pytest tests/integration/ -q --junitxml=reports/junit.xml

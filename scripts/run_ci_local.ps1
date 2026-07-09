@@ -46,6 +46,7 @@ try {
 
     python -m pip install -r tests/integration/requirements-test.txt
     New-Item -ItemType Directory -Force -Path reports | Out-Null
+    python -m pytest tests/unit/iot -q --junitxml=reports/junit-unit.xml
     $env:API_BASE = $ApiBase
     $env:WS_URL = $WsUrl
     $env:WEB_BASE = $WebBase
