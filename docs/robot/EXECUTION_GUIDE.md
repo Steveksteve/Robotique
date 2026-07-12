@@ -394,4 +394,3 @@ ps aux | grep -E 'slam_toolbox|rviz2|rosbridge' | grep -v grep
 
 ---
 
-**Auteur**: Assistant Copilot | **Date**: May 2026 | **Version**: 1.0

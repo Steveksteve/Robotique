@@ -25,7 +25,7 @@ CREATED
 
 Aucun autre état terminal n’est persisté dans le MVP.
 
-La définition détaillée des transitions se trouve dans [`docs/STATE_MACHINE.md`](docs/STATE_MACHINE.md). Les diagrammes correspondants se trouvent dans [`docs/uml/diagrammes-uml-RAA.md`](docs/uml/diagrammes-uml-RAA.md).
+La définition détaillée des transitions se trouve dans [`docs/architecture/STATE_MACHINE.md`](docs/architecture/STATE_MACHINE.md). Les diagrammes correspondants se trouvent dans [`docs/uml/diagrammes-uml-RAA.md`](docs/uml/diagrammes-uml-RAA.md).
 
 ## Architecture
 
@@ -119,7 +119,7 @@ Pour répéter une démonstration sans mouvement réel :
 ros2 launch m3pro_teacher_vision mission_mvp.launch.py dry_run:=true simulated_qr:=a
 ```
 
-L’état réel des essais, y compris la limite actuelle liée au flux caméra et à la lecture QR, est documenté dans [`docs/ROBOT_FINAL_PIPELINE_STATUS.md`](docs/ROBOT_FINAL_PIPELINE_STATUS.md).
+L’état réel des essais, y compris la limite actuelle liée au flux caméra et à la lecture QR, est documenté dans [`docs/robot/ROBOT_FINAL_PIPELINE_STATUS.md`](docs/robot/ROBOT_FINAL_PIPELINE_STATUS.md).
 
 ## CI/CD
 
@@ -150,13 +150,13 @@ Paramètres optionnels :
 
 ## Éthique, RGPD et usage de l’IA
 
-La politique du projet concernant les données techniques, la durée de conservation, la sécurité et l’usage déclaré d’outils d’intelligence artificielle est décrite dans [`docs/ETHIQUE_RGPD_IA.md`](docs/ETHIQUE_RGPD_IA.md).
+La politique du projet concernant les données techniques, la durée de conservation, la sécurité et l’usage déclaré d’outils d’intelligence artificielle est décrite dans [`docs/qualite/ETHIQUE_RGPD_IA.md`](docs/qualite/ETHIQUE_RGPD_IA.md).
 
 ## Documentation principale
 
-- [`docs/STATE_MACHINE.md`](docs/STATE_MACHINE.md) : machine à états de référence
+- [`docs/architecture/STATE_MACHINE.md`](docs/architecture/STATE_MACHINE.md) : machine à états de référence
 - [`docs/uml/diagrammes-uml-RAA.md`](docs/uml/diagrammes-uml-RAA.md) : diagrammes UML
-- [`docs/PIPELINE.md`](docs/PIPELINE.md) : pipeline CI/CD
-- [`docs/WEBSOCKET.md`](docs/WEBSOCKET.md) : protocole temps réel
-- [`docs/ETHIQUE_RGPD_IA.md`](docs/ETHIQUE_RGPD_IA.md) : éthique, RGPD et usage de l’IA
-- [`docs/ROBOT_FINAL_PIPELINE_STATUS.md`](docs/ROBOT_FINAL_PIPELINE_STATUS.md) : état réel des essais robot
+- [`docs/architecture/PIPELINE.md`](docs/architecture/PIPELINE.md) : pipeline CI/CD
+- [`docs/architecture/WEBSOCKET.md`](docs/architecture/WEBSOCKET.md) : protocole temps réel
+- [`docs/qualite/ETHIQUE_RGPD_IA.md`](docs/qualite/ETHIQUE_RGPD_IA.md) : éthique, RGPD et usage de l’IA
+- [`docs/robot/ROBOT_FINAL_PIPELINE_STATUS.md`](docs/robot/ROBOT_FINAL_PIPELINE_STATUS.md) : état réel des essais robot

@@ -1,6 +1,5 @@
 .git
 .DS_Store
-.claude
 build
 install
 log

@@ -46,7 +46,7 @@ Pour l’environnement pédagogique et de démonstration :
 - les données de test peuvent être supprimées plus tôt après une répétition ou une soutenance ;
 - les sauvegardes temporaires doivent suivre la même durée maximale.
 
-La purge peut être exécutée avec le script SQL [`scripts/purge_old_data.sql`](../scripts/purge_old_data.sql). Dans le MVP actuel, cette purge est une opération d’administration et n’est pas planifiée automatiquement.
+La purge peut être exécutée avec le script SQL [`scripts/purge_old_data.sql`](../../scripts/purge_old_data.sql). Dans le MVP actuel, cette purge est une opération d’administration et n’est pas planifiée automatiquement.
 
 ## Mesures de sécurité
 
