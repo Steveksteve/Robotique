@@ -1,0 +1,182 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  publish-images:
+    if: >
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_ref: ${{ steps.vars.outputs.deploy_ref }}
+      deploy_branch: ${{ steps.vars.outputs.deploy_branch }}
+      api_image: ${{ steps.refs.outputs.api_image }}
+      realtime_image: ${{ steps.refs.outputs.realtime_image }}
+      web_image: ${{ steps.refs.outputs.web_image }}
+      robot_image: ${{ steps.refs.outputs.robot_image }}
+    steps:
+      - name: Resolve ref and image namespace
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DEPLOY_REF="${{ github.ref_name }}"
+            DEPLOY_BRANCH="${{ github.ref_name }}"
+          else
+            DEPLOY_REF="${{ github.event.workflow_run.head_sha }}"
+            DEPLOY_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          fi
+          IMAGE_BASE="$(echo '${{ env.REGISTRY }}/${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          echo "deploy_ref=$DEPLOY_REF" >> "$GITHUB_OUTPUT"
+          echo "deploy_branch=$DEPLOY_BRANCH" >> "$GITHUB_OUTPUT"
+          if [ "$DEPLOY_BRANCH" = "main" ]; then
+            CHANNEL_TAG="latest"
+          else
+            CHANNEL_TAG="staging"
+          fi
+          echo "image_base=$IMAGE_BASE" >> "$GITHUB_OUTPUT"
+          echo "channel_tag=$CHANNEL_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.deploy_ref }}
+
+      - name: Resolve checked out commit SHA
+        id: commit
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/server
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.vars.outputs.image_base }}/api:sha-${{ steps.commit.outputs.sha }}
+            ${{ steps.vars.outputs.image_base }}/api:${{ steps.vars.outputs.channel_tag }}
+
+      - name: Build and push realtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/server/realtime
+          file: ./apps/server/realtime/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.vars.outputs.image_base }}/realtime:sha-${{ steps.commit.outputs.sha }}
+            ${{ steps.vars.outputs.image_base }}/realtime:${{ steps.vars.outputs.channel_tag }}
+
+      - name: Build and push web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_BASE=/api
+            VITE_WS_URL=
+          tags: |
+            ${{ steps.vars.outputs.image_base }}/web:sha-${{ steps.commit.outputs.sha }}
+            ${{ steps.vars.outputs.image_base }}/web:${{ steps.vars.outputs.channel_tag }}
+
+      - name: Build and push robot image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/robot
+          file: ./apps/robot/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.vars.outputs.image_base }}/robot:sha-${{ steps.commit.outputs.sha }}
+            ${{ steps.vars.outputs.image_base }}/robot:${{ steps.vars.outputs.channel_tag }}
+
+      - name: Expose immutable image references
+        id: refs
+        shell: bash
+        run: |
+          echo "api_image=${{ steps.vars.outputs.image_base }}/api:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
+          echo "realtime_image=${{ steps.vars.outputs.image_base }}/realtime:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
+          echo "web_image=${{ steps.vars.outputs.image_base }}/web:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
+          echo "robot_image=${{ steps.vars.outputs.image_base }}/robot:sha-${{ steps.commit.outputs.sha }}" >> "$GITHUB_OUTPUT"
+
+  deploy-staging:
+    needs: publish-images
+    if: needs.publish-images.outputs.deploy_branch == 'main'
+    runs-on: ubuntu-latest
+    env:
+      HAS_STAGING_SECRETS: ${{ secrets.STAGING_HOST != '' && secrets.STAGING_SSH_USER != '' && secrets.STAGING_SSH_KEY != '' && secrets.GHCR_TOKEN != '' }}
+    steps:
+      - name: Skip when staging secrets are missing
+        if: env.HAS_STAGING_SECRETS != 'true'
+        run: echo "Staging secrets are not configured; images were published but deployment was skipped."
+
+      - name: Checkout target ref
+        if: env.HAS_STAGING_SECRETS == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.publish-images.outputs.deploy_ref }}
+
+      - name: Prepare SSH key
+        if: env.HAS_STAGING_SECRETS == 'true'
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/staging_key
+          chmod 600 ~/.ssh/staging_key
+
+      - name: Upload deployment files
+        if: env.HAS_STAGING_SECRETS == 'true'
+        shell: bash
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_SSH_PORT: ${{ secrets.STAGING_SSH_PORT || '22' }}
+          STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR || '/opt/robotique' }}
+        run: |
+          ssh -i ~/.ssh/staging_key -p "$STAGING_SSH_PORT" -o StrictHostKeyChecking=no "$STAGING_SSH_USER@$STAGING_HOST" "mkdir -p '$STAGING_APP_DIR'"
+          scp -i ~/.ssh/staging_key -P "$STAGING_SSH_PORT" -o StrictHostKeyChecking=no \
+            deploy/docker-compose.staging.yml \
+            deploy/.env.staging.example \
+            apps/server/database/schema.sql \
+            scripts/deploy_staging.sh \
+            "$STAGING_SSH_USER@$STAGING_HOST:$STAGING_APP_DIR/"
+
+      - name: Run remote deployment
+        if: env.HAS_STAGING_SECRETS == 'true'
+        shell: bash
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_SSH_PORT: ${{ secrets.STAGING_SSH_PORT || '22' }}
+          STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR || '/opt/robotique' }}
+          API_IMAGE: ${{ needs.publish-images.outputs.api_image }}
+          REALTIME_IMAGE: ${{ needs.publish-images.outputs.realtime_image }}
+          WEB_IMAGE: ${{ needs.publish-images.outputs.web_image }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME || github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          API_PORT: ${{ vars.API_PORT || '8000' }}
+          WEB_PORT: ${{ vars.WEB_PORT || '8080' }}
+        run: |
+          ssh -i ~/.ssh/staging_key -p "$STAGING_SSH_PORT" -o StrictHostKeyChecking=no "$STAGING_SSH_USER@$STAGING_HOST" \
+            "APP_DIR='$STAGING_APP_DIR' API_IMAGE='$API_IMAGE' REALTIME_IMAGE='$REALTIME_IMAGE' WEB_IMAGE='$WEB_IMAGE' GHCR_USERNAME='$GHCR_USERNAME' GHCR_TOKEN='$GHCR_TOKEN' API_PORT='$API_PORT' WEB_PORT='$WEB_PORT' bash '$STAGING_APP_DIR/deploy_staging.sh'"

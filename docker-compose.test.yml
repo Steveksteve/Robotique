@@ -1,0 +1,85 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: raa_db
+      MYSQL_USER: raa
+      MYSQL_PASSWORD: raapass
+    volumes:
+      - ./apps/server/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: robotique-main-api:latest
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: raa_db
+      DB_USER: raa
+      DB_PASSWORD: raapass
+    ports:
+      - "8000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  realtime:
+    image: robotique-main-realtime:latest
+    build:
+      context: ./apps/server/realtime
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: raa_db
+      DB_USER: raa
+      DB_PASSWORD: raapass
+      WS_HOST: 0.0.0.0
+      WS_PORT: 8765
+      HEARTBEAT_TIMEOUT_SECONDS: 30
+    ports:
+      - "8765:8765"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('localhost', 8765), 2); s.close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    image: robotique-main-web:latest
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      args:
+        VITE_API_BASE: /api
+        VITE_WS_URL: ""
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      realtime:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+networks:
+  default:
+    driver: bridge
