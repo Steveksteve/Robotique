@@ -25,10 +25,11 @@ if ($uri === "" || $uri === false) {
     $uri = "/";
 }
 
-if ($uri === "/" && $method === "GET") {
+if (($uri === "/" || $uri === "/health") && $method === "GET") {
     echo json_encode([
         "status" => "ok",
-        "service" => "api"
+        "service" => "raa-api",
+        "version" => "mvp-final"
     ]);
     exit;
 }
@@ -59,25 +60,16 @@ if (preg_match("#^/missions/(\d+)$#", $uri, $matches) && $method === "DELETE") {
 }
 
 if ($uri === "/logs" && $method === "GET") {
-
-    $stmt = $pdo->query("
-        SELECT
-            rl.id,
-            rl.mission_id,
-            rl.robot_x,
-            rl.robot_y,
-            rl.timestamp,
-            m.status
-        FROM robot_logs rl
-        INNER JOIN missions m
-            ON m.id = rl.mission_id
-        ORDER BY rl.timestamp DESC
-    ");
-
-    echo json_encode($stmt->fetchAll());
-
+    $controller->logs();
     exit;
 }
+
+if ($uri === "/map-points" && $method === "GET") {
+    $controller->mapPoints();
+    exit;
+}
+
+http_response_code(404);
 echo json_encode([
     "error" => "Route not found",
     "method" => $method,

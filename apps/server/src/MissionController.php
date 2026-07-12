@@ -3,176 +3,226 @@ require_once __DIR__ . "/Logger.php";
 
 class MissionController
 {
-    private $pdo;
+    private PDO $pdo;
 
-    private $allowedStatuses = [
+    private array $allowedStatuses = [
         "CREATED",
         "ASSIGNED",
         "NAVIGATING_TO_PICKUP",
+        "SCANNING_QR",
         "PICKING_UP",
         "NAVIGATING_TO_DROP",
+        "DROPPING_OFF",
         "COMPLETED",
         "ERROR"
     ];
 
-    private $allowedTransitions = [
+    private array $allowedTransitions = [
         "CREATED" => ["ASSIGNED", "ERROR"],
         "ASSIGNED" => ["NAVIGATING_TO_PICKUP", "ERROR"],
-        "NAVIGATING_TO_PICKUP" => ["PICKING_UP", "ERROR"],
+        "NAVIGATING_TO_PICKUP" => ["SCANNING_QR", "ERROR"],
+        "SCANNING_QR" => ["PICKING_UP", "ERROR"],
         "PICKING_UP" => ["NAVIGATING_TO_DROP", "ERROR"],
-        "NAVIGATING_TO_DROP" => ["COMPLETED", "ERROR"],
+        "NAVIGATING_TO_DROP" => ["DROPPING_OFF", "ERROR"],
+        "DROPPING_OFF" => ["COMPLETED", "ERROR"],
         "COMPLETED" => [],
         "ERROR" => []
     ];
 
-    public function __construct($pdo)
+    public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
         header("Content-Type: application/json");
     }
 
-    public function index()
+    private function json($payload, int $status = 200): void
     {
-        $stmt = $this->pdo->query("SELECT * FROM missions ORDER BY id DESC");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        http_response_code($status);
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
-    public function show($id)
+    private function body(): array
+    {
+        $decoded = json_decode(file_get_contents("php://input"), true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    private function nullableFloat(array $data, string $key): ?float
+    {
+        if (!array_key_exists($key, $data) || $data[$key] === "" || $data[$key] === null) {
+            return null;
+        }
+        return (float) $data[$key];
+    }
+
+    private function sanitizeText(array $data, string $key, ?string $default = null): ?string
+    {
+        if (!array_key_exists($key, $data) || $data[$key] === null) {
+            return $default;
+        }
+        $value = trim((string) $data[$key]);
+        return $value === "" ? $default : $value;
+    }
+
+    private function findMission(int $id): ?array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
         $stmt->execute([$id]);
-
         $mission = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $mission ?: null;
+    }
+
+    public function index(): void
+    {
+        $stmt = $this->pdo->query("SELECT * FROM missions ORDER BY id DESC");
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function show($id): void
+    {
+        $mission = $this->findMission((int) $id);
 
         if (!$mission) {
-            http_response_code(404);
-            echo json_encode(["error" => "Mission not found"]);
+            $this->json(["error" => "Mission not found"], 404);
             return;
         }
 
-        echo json_encode($mission);
+        $this->json($mission);
     }
 
-    public function store()
+    public function store(): void
     {
-        $data = json_decode(file_get_contents("php://input"), true);
+        $data = $this->body();
 
-        if (
-            !isset($data["origin"]) ||
-            !isset($data["destination"]) ||
-            !isset($data["object"])
-        ) {
-            http_response_code(400);
-            echo json_encode([
-                "error" => "origin, destination and object are required"
-            ]);
+        $origin = $this->sanitizeText($data, "origin");
+        $destination = $this->sanitizeText($data, "destination");
+        $object = $this->sanitizeText($data, "object");
+        $expectedQr = $this->sanitizeText($data, "expected_qr", "a");
+
+        if (!$origin || !$destination || !$object) {
+            $this->json(["error" => "origin, destination and object are required"], 400);
             return;
         }
 
         $stmt = $this->pdo->prepare("
-            INSERT INTO missions (origin, destination, object, status)
-            VALUES (?, ?, ?, 'CREATED')
+            INSERT INTO missions (
+                origin, destination, object, expected_qr,
+                pickup_x, pickup_y, pickup_theta,
+                dropoff_x, dropoff_y, dropoff_theta,
+                status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CREATED')
         ");
 
         $stmt->execute([
-            $data["origin"],
-            $data["destination"],
-            $data["object"]
+            $origin,
+            $destination,
+            $object,
+            $expectedQr,
+            $this->nullableFloat($data, "pickup_x"),
+            $this->nullableFloat($data, "pickup_y"),
+            $this->nullableFloat($data, "pickup_theta"),
+            $this->nullableFloat($data, "dropoff_x"),
+            $this->nullableFloat($data, "dropoff_y"),
+            $this->nullableFloat($data, "dropoff_theta"),
         ]);
 
         $missionId = (int) $this->pdo->lastInsertId();
+        $mission = $this->findMission($missionId);
 
-        $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
-        $stmt->execute([$missionId]);
-
-        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        http_response_code(201);
-        echo json_encode([
-            "mission_id" => $missionId,
-            "mission" => $mission
-        ]);
+        $this->json(["mission_id" => $missionId, "mission" => $mission], 201);
     }
 
-    public function updateStatus($id)
+    public function updateStatus($id): void
     {
-        $data = json_decode(file_get_contents("php://input"), true);
+        $missionId = (int) $id;
+        $data = $this->body();
         $newStatus = $data["status"] ?? null;
 
         if (!in_array($newStatus, $this->allowedStatuses, true)) {
-            http_response_code(400);
-            echo json_encode(["error" => "Invalid status"]);
+            $this->json(["error" => "Invalid status", "status" => $newStatus], 400);
             return;
         }
 
-        $stmt = $this->pdo->prepare("SELECT status FROM missions WHERE id = ?");
-        $stmt->execute([$id]);
+        $mission = $this->findMission($missionId);
 
-        $current = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$current) {
-            http_response_code(404);
-            echo json_encode(["error" => "Mission not found"]);
+        if (!$mission) {
+            $this->json(["error" => "Mission not found"], 404);
             return;
         }
 
-        $currentStatus = $current["status"];
+        $currentStatus = $mission["status"];
 
-        if (!in_array($newStatus, $this->allowedTransitions[$currentStatus], true)) {
-            http_response_code(409);
-            echo json_encode([
+        if ($newStatus !== $currentStatus && !in_array($newStatus, $this->allowedTransitions[$currentStatus], true)) {
+            $this->json([
                 "error" => "Invalid transition",
                 "from" => $currentStatus,
                 "to" => $newStatus
-            ]);
+            ], 409);
             return;
         }
 
+        $errorReason = $newStatus === "ERROR" ? ($data["error_reason"] ?? "Mission stopped") : null;
+
         $stmt = $this->pdo->prepare("
             UPDATE missions
-            SET status = ?
+            SET status = ?, error_reason = ?
             WHERE id = ?
         ");
-
-        $stmt->execute([$newStatus, $id]);
-
-        $robotX = isset($data["robot_x"]) ? (float) $data["robot_x"] : 0;
-        $robotY = isset($data["robot_y"]) ? (float) $data["robot_y"] : 0;
+        $stmt->execute([$newStatus, $errorReason, $missionId]);
 
         Logger::logRobotEvent(
             $this->pdo,
-            (int) $id,
-            $robotX,
-            $robotY
+            $missionId,
+            $data["robot_id"] ?? null,
+            isset($data["robot_x"]) ? (float) $data["robot_x"] : null,
+            isset($data["robot_y"]) ? (float) $data["robot_y"] : null,
+            $newStatus,
+            $errorReason
         );
 
-        $stmt = $this->pdo->prepare("SELECT * FROM missions WHERE id = ?");
-        $stmt->execute([$id]);
-
-        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        echo json_encode([
-            "success" => true,
-            "mission" => $mission
-        ]);
+        $this->json(["success" => true, "mission" => $this->findMission($missionId)]);
     }
 
-    public function delete($id)
+    public function delete($id): void
     {
-        $stmt = $this->pdo->prepare("SELECT id FROM missions WHERE id = ?");
-        $stmt->execute([$id]);
-
-        $mission = $stmt->fetch(PDO::FETCH_ASSOC);
+        $missionId = (int) $id;
+        $mission = $this->findMission($missionId);
 
         if (!$mission) {
-            http_response_code(404);
-            echo json_encode(["error" => "Mission not found"]);
+            $this->json(["error" => "Mission not found"], 404);
             return;
         }
 
         $stmt = $this->pdo->prepare("DELETE FROM missions WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt->execute([$missionId]);
 
-        echo json_encode(["success" => true]);
+        $this->json(["success" => true]);
+    }
+
+    public function logs(): void
+    {
+        $stmt = $this->pdo->query("
+            SELECT
+                rl.id,
+                rl.mission_id,
+                rl.robot_id,
+                rl.robot_x,
+                rl.robot_y,
+                rl.status,
+                rl.message,
+                rl.timestamp,
+                m.status AS mission_status
+            FROM robot_logs rl
+            LEFT JOIN missions m ON m.id = rl.mission_id
+            ORDER BY rl.timestamp DESC
+            LIMIT 200
+        ");
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function mapPoints(): void
+    {
+        $stmt = $this->pdo->query("SELECT * FROM map_points ORDER BY name ASC");
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 }

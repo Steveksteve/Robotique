@@ -1,24 +1,25 @@
-# 5. Diagrammes UML — RAA
+# Diagrammes UML — RAA
 
----
-
-## 5.1 Diagramme de Use Case
+## Diagramme de cas d’utilisation
 
 ```mermaid
 flowchart LR
-    Operateur(["Operateur"])
-    Robot(["Robot (automatique)"])
+    Operateur(["Opérateur"])
+    Robot(["Robot autonome"])
 
-    subgraph RAA ["Systeme RAA"]
+    subgraph RAA ["Système RAA"]
         direction TB
-        UC1["UC1 - Creer une mission"]
-        UC2["UC2 - Suivre une mission en temps reel"]
-        UC3["UC3 - Declencher l'arret d'urgence"]
-        UC4["UC4 - Annuler une mission"]
-        UC5["UC5 - Consulter l'historique des missions"]
-        UC6["UC6 - Monitorer l'etat du robot"]
-        UC7["UC7 - Naviguer vers destination"]
-        UC8["UC8 - Pick-up et Drop-off objet"]
+        UC1["Créer une mission"]
+        UC2["Affecter une mission au robot"]
+        UC3["Suivre la mission en temps réel"]
+        UC4["Consulter les missions et les logs"]
+        UC5["Demander un arrêt d’urgence"]
+        UC6["Naviguer vers le point de prise"]
+        UC7["Lire et valider le QR"]
+        UC8["Prendre l’objet"]
+        UC9["Naviguer vers le point de dépôt"]
+        UC10["Déposer l’objet"]
+        UC11["Signaler une erreur"]
     end
 
     Operateur --> UC1
@@ -26,91 +27,116 @@ flowchart LR
     Operateur --> UC3
     Operateur --> UC4
     Operateur --> UC5
-    Operateur --> UC6
 
+    Robot --> UC6
     Robot --> UC7
     Robot --> UC8
-    Robot --> UC3
+    Robot --> UC9
+    Robot --> UC10
+    Robot --> UC11
 ```
 
----
+L’arrêt d’urgence est un événement de sécurité. Il place la mission dans l’état persistant `ERROR` et ne crée pas de statut terminal supplémentaire.
 
-## 5.2 Diagramme d'Etats — Machine a Etats Mission
+## Diagramme d’états — Mission
 
 ```mermaid
 stateDiagram-v2
+    [*] --> CREATED : POST /missions
 
-    [*] --> CREATED : POST /api/missions
+    CREATED --> ASSIGNED : affectation au robot
+    ASSIGNED --> NAVIGATING_TO_PICKUP : démarrage Nav2 vers A
+    NAVIGATING_TO_PICKUP --> SCANNING_QR : arrivée au point A
+    SCANNING_QR --> PICKING_UP : QR validé
+    PICKING_UP --> NAVIGATING_TO_DROP : objet saisi
+    NAVIGATING_TO_DROP --> DROPPING_OFF : arrivée au point B
+    DROPPING_OFF --> COMPLETED : objet déposé
 
-    CREATED      --> ASSIGNED             : Robot disponible
-    ASSIGNED     --> NAVIGATING_TO_PICKUP : Nav2 goal envoye
-    NAVIGATING_TO_PICKUP --> PICKING_UP   : Arrivee point A
-    PICKING_UP   --> NAVIGATING_TO_DROP   : Pick-up confirme
-    NAVIGATING_TO_DROP   --> DROPPING_OFF : Arrivee point B
-    DROPPING_OFF --> COMPLETED            : Drop-off confirme
-    COMPLETED    --> [*]
+    CREATED --> ERROR : erreur ou arrêt de sécurité
+    ASSIGNED --> ERROR : erreur ou arrêt de sécurité
+    NAVIGATING_TO_PICKUP --> ERROR : erreur ou arrêt de sécurité
+    SCANNING_QR --> ERROR : erreur ou arrêt de sécurité
+    PICKING_UP --> ERROR : erreur ou arrêt de sécurité
+    NAVIGATING_TO_DROP --> ERROR : erreur ou arrêt de sécurité
+    DROPPING_OFF --> ERROR : erreur ou arrêt de sécurité
 
-    CREATED              --> CANCELLED         : Annulation utilisateur
-    ASSIGNED             --> CANCELLED         : Annulation utilisateur
-    NAVIGATING_TO_PICKUP --> FAILED            : Erreur irrecuperable
-    PICKING_UP           --> FAILED            : Erreur irrecuperable
-    NAVIGATING_TO_DROP   --> FAILED            : Erreur irrecuperable
-    NAVIGATING_TO_PICKUP --> EMERGENCY_STOPPED : Arret d'urgence
-    NAVIGATING_TO_DROP   --> EMERGENCY_STOPPED : Arret d'urgence
-
-    CANCELLED         --> [*]
-    FAILED            --> [*]
-    EMERGENCY_STOPPED --> [*]
+    COMPLETED --> [*]
+    ERROR --> [*]
 ```
 
----
-
-## 5.3 Diagramme de Sequence — Mission Complete
+## Diagramme de séquence — Mission complète
 
 ```mermaid
 sequenceDiagram
-    actor      Operateur
-    participant Front   as Front-End (React)
-    participant API     as Serveur (API REST)
-    participant DB      as Base de donnees (MySQL)
-    participant Robot   as Robot (ROS 2)
+    actor Operateur
+    participant Front as Frontend React
+    participant WS as Serveur WebSocket
+    participant API as API REST
+    participant DB as MySQL
+    participant Robot as Robot ROS 2
 
-    rect rgb(240, 245, 255)
-        Note over Operateur, Robot: 1. Creation de la mission
-        Operateur ->> Front : Selectionne origine, destination et objet
-        Front     ->> API   : POST /api/missions
-        API       ->> DB    : INSERT mission — statut CREATED
-        API      -->> Front : WS mission:created
-        API      -->> Robot : WS mission:assign
+    Operateur ->> Front : Saisit origine, destination, objet et QR
+    Front ->> API : POST /missions
+    API ->> DB : INSERT status = CREATED
+    API -->> Front : Mission créée
+
+    Front ->> WS : mission:assign
+    WS ->> DB : UPDATE status = ASSIGNED
+    WS -->> Robot : mission:assigned
+    WS -->> Front : mission:assigned
+
+    Robot ->> WS : mission:updated NAVIGATING_TO_PICKUP
+    WS ->> DB : UPDATE status
+    WS -->> Front : mission:updated
+
+    Robot ->> Robot : Navigation Nav2 vers le point A
+    Robot ->> WS : robot:position
+    WS -->> Front : robot:position
+
+    Robot ->> WS : mission:updated SCANNING_QR
+    WS ->> DB : UPDATE status
+    Robot ->> Robot : Lecture et validation du QR
+
+    Robot ->> WS : mission:updated PICKING_UP
+    WS ->> DB : UPDATE status
+    Robot ->> Robot : Séquence de prise du bras
+
+    Robot ->> WS : mission:updated NAVIGATING_TO_DROP
+    WS ->> DB : UPDATE status
+    Robot ->> Robot : Navigation Nav2 vers le point B
+
+    Robot ->> WS : mission:updated DROPPING_OFF
+    WS ->> DB : UPDATE status
+    Robot ->> Robot : Séquence de dépose
+
+    Robot ->> WS : mission:completed COMPLETED
+    WS ->> DB : UPDATE status = COMPLETED
+    WS -->> Front : mission:completed
+    Front -->> Operateur : Mission terminée
+```
+
+## Diagramme de séquence — Erreur ou arrêt de sécurité
+
+```mermaid
+sequenceDiagram
+    actor Operateur
+    participant Front as Frontend React
+    participant WS as Serveur WebSocket
+    participant DB as MySQL
+    participant Robot as Robot ROS 2
+
+    alt erreur détectée par le robot
+        Robot ->> WS : mission:updated status = ERROR
+    else arrêt demandé depuis le dashboard
+        Operateur ->> Front : Clique sur Stop
+        Front ->> WS : robot:emergency_stop
+        WS -->> Robot : robot:emergency_stop
+    else heartbeat expiré
+        WS ->> WS : Détection du timeout
     end
 
-    rect rgb(240, 255, 245)
-        Note over Operateur, Robot: 2. Navigation vers le point A
-        Robot    -->> API   : WS robot:heartbeat
-        Robot     ->> Robot : Nav2 goal — point A
-        Robot    -->> API   : WS status NAVIGATING_TO_PICKUP
-        API      -->> Front : WS robot:position (toutes les 500ms)
-    end
-
-    rect rgb(255, 250, 235)
-        Note over Operateur, Robot: 3. Pick-up de l'objet
-        Robot     ->> Robot : Execution de la sequence de saisie du bras
-        Robot    -->> API   : WS status PICKING_UP
-    end
-
-    rect rgb(240, 255, 245)
-        Note over Operateur, Robot: 4. Navigation vers le point B
-        Robot    -->> API   : WS status NAVIGATING_TO_DROP
-        Robot     ->> Robot : Nav2 goal — point B
-        API      -->> Front : WS robot:position (toutes les 500ms)
-    end
-
-    rect rgb(255, 240, 245)
-        Note over Operateur, Robot: 5. Drop-off et confirmation de livraison
-        Robot    -->> API   : WS status DROPPING_OFF
-        Robot    -->> API   : WS status COMPLETED
-        API       ->> DB    : UPDATE statut = COMPLETED
-        API      -->> Front : WS mission:completed
-        Front    -->> Operateur : Affichage notification de livraison
-    end
+    WS ->> DB : UPDATE status = ERROR et error_reason
+    WS ->> DB : INSERT robot_log
+    WS -->> Front : mission:updated / robot:emergency_stop / robot.timeout
+    Front -->> Operateur : Mission interrompue avec motif
 ```

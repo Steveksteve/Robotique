@@ -7,14 +7,21 @@ services:
       MYSQL_USER: raa
       MYSQL_PASSWORD: raapass
     volumes:
+      - raa-mysql-data:/var/lib/mysql
       - ./apps/server/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
       interval: 5s
-      retries: 10
+      timeout: 3s
+      retries: 20
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
 
   api:
-    image: robotique-main-api:latest
     build:
       context: ./apps/server
       dockerfile: Dockerfile
@@ -28,9 +35,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   realtime:
-    image: robotique-main-realtime:latest
     build:
       context: ./apps/server/realtime
       dockerfile: Dockerfile
@@ -39,11 +50,31 @@ services:
       DB_NAME: raa_db
       DB_USER: raa
       DB_PASSWORD: raapass
+      WS_HOST: 0.0.0.0
+      WS_PORT: 8765
     ports:
       - "8765:8765"
     depends_on:
       db:
         condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      args:
+        VITE_API_BASE: /api
+        VITE_WS_URL: ""
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      realtime:
+        condition: service_started
+
+volumes:
+  raa-mysql-data:
 
 networks:
   default:

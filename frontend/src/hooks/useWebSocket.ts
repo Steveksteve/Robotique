@@ -72,7 +72,7 @@ type IncomingEvent =
   | SafetyEvent
   | ServerEvent;
 
-const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:8765";
+const WS_URL = import.meta.env.VITE_WS_URL || `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 const MAX_TRAIL = 24;
 const MAX_EVENTS = 16;
@@ -122,7 +122,15 @@ function upsertMission(update: Partial<Mission> & Pick<Mission, "id">) {
           origin: update.origin ?? "Unknown",
           destination: update.destination ?? "Unknown",
           object: update.object,
+          expected_qr: update.expected_qr,
+          pickup_x: update.pickup_x,
+          pickup_y: update.pickup_y,
+          pickup_theta: update.pickup_theta,
+          dropoff_x: update.dropoff_x,
+          dropoff_y: update.dropoff_y,
+          dropoff_theta: update.dropoff_theta,
           status: update.status ?? "CREATED",
+          error_reason: update.error_reason,
           created_at: update.created_at,
           updated_at: update.updated_at,
         };
@@ -155,7 +163,15 @@ function updateMissionFromPayload(payload: MissionUpdatedEvent | SafetyEvent) {
     origin: missionPayload.origin,
     destination: missionPayload.destination,
     object: missionPayload.object,
+    expected_qr: missionPayload.expected_qr,
+    pickup_x: missionPayload.pickup_x,
+    pickup_y: missionPayload.pickup_y,
+    pickup_theta: missionPayload.pickup_theta,
+    dropoff_x: missionPayload.dropoff_x,
+    dropoff_y: missionPayload.dropoff_y,
+    dropoff_theta: missionPayload.dropoff_theta,
     status: resolvedStatus,
+    error_reason: missionPayload.error_reason,
     created_at: missionPayload.created_at,
     updated_at: missionPayload.updated_at,
   });
@@ -181,13 +197,14 @@ async function loadInitialMissions() {
       ...current,
       missions: missions
         .map((mission) => ({
+          ...mission,
           id: Number(mission.id),
-          origin: mission.origin,
-          destination: mission.destination,
-          object: mission.object,
-          status: mission.status,
-          created_at: mission.created_at,
-          updated_at: mission.updated_at,
+          pickup_x: mission.pickup_x == null ? null : Number(mission.pickup_x),
+          pickup_y: mission.pickup_y == null ? null : Number(mission.pickup_y),
+          pickup_theta: mission.pickup_theta == null ? null : Number(mission.pickup_theta),
+          dropoff_x: mission.dropoff_x == null ? null : Number(mission.dropoff_x),
+          dropoff_y: mission.dropoff_y == null ? null : Number(mission.dropoff_y),
+          dropoff_theta: mission.dropoff_theta == null ? null : Number(mission.dropoff_theta),
         }))
         .sort((a, b) => b.id - a.id),
     }));

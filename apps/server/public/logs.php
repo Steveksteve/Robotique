@@ -1,23 +1,25 @@
 <?php
 
-header("Content-Type: application/json");
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 
-require_once __DIR__ . "/../src/database.php";
+require_once __DIR__ . '/../src/Database.php';
 
+$pdo = Database::connect();
 $query = $pdo->query("
     SELECT
         rl.id,
         rl.mission_id,
+        rl.robot_id,
         rl.robot_x,
         rl.robot_y,
+        rl.status,
+        rl.message,
         rl.timestamp,
-        m.status
+        m.status AS mission_status
     FROM robot_logs rl
-    INNER JOIN missions m
-        ON m.id = rl.mission_id
+    LEFT JOIN missions m ON m.id = rl.mission_id
     ORDER BY rl.timestamp DESC
 ");
 
-$logs = $query->fetchAll(PDO::FETCH_ASSOC);
-
-echo json_encode($logs);
+echo json_encode($query->fetchAll(PDO::FETCH_ASSOC));

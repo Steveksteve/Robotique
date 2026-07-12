@@ -11,7 +11,8 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
       interval: 5s
-      retries: 10
+      timeout: 3s
+      retries: 20
 
   api:
     image: robotique-main-api:latest
@@ -29,9 +30,10 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 5s
-      retries: 12
+      timeout: 3s
+      retries: 20
 
   realtime:
     image: robotique-main-realtime:latest
@@ -45,11 +47,38 @@ services:
       DB_PASSWORD: raapass
       WS_HOST: 0.0.0.0
       WS_PORT: 8765
+      HEARTBEAT_TIMEOUT_SECONDS: 30
     ports:
       - "8765:8765"
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('localhost', 8765), 2); s.close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    image: robotique-main-web:latest
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      args:
+        VITE_API_BASE: /api
+        VITE_WS_URL: ""
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      realtime:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
 networks:
   default:

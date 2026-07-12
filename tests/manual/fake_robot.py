@@ -73,11 +73,17 @@ async def main():
                 await update_status(ws, current_mission_id, "NAVIGATING_TO_PICKUP")
                 await send_position(ws, current_mission_id, 5)
 
+                await update_status(ws, current_mission_id, "SCANNING_QR")
+                await asyncio.sleep(1)
+
                 await update_status(ws, current_mission_id, "PICKING_UP")
                 await asyncio.sleep(2)
 
                 await update_status(ws, current_mission_id, "NAVIGATING_TO_DROP")
                 await send_position(ws, current_mission_id, 5)
+
+                await update_status(ws, current_mission_id, "DROPPING_OFF")
+                await asyncio.sleep(1)
 
                 await update_status(ws, current_mission_id, "COMPLETED")
 

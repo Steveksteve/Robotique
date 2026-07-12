@@ -1,30 +1,56 @@
-Param()
+$ErrorActionPreference = "Stop"
 
-$ErrorActionPreference = 'Stop'
-$composeFile = "docker-compose.test.yml"
+$ComposeFile = "docker-compose.test.yml"
+$ApiBase = if ($env:API_BASE) { $env:API_BASE } else { "http://localhost:8000" }
+$WsUrl = if ($env:WS_URL) { $env:WS_URL } else { "ws://localhost:8765" }
+$WebBase = if ($env:WEB_BASE) { $env:WEB_BASE } else { "http://localhost:8080" }
 
-Write-Host "Building & starting services..."
-docker compose -f $composeFile up --build -d
-
-Write-Host "Waiting for API at http://localhost:8000/ ..."
-for ($i = 0; $i -lt 60; $i++) {
-    try {
-        $r = Invoke-WebRequest -Uri http://localhost:8000/ -UseBasicParsing -TimeoutSec 2
-        if ($r.StatusCode -eq 200) { Write-Host "API available"; break }
-    } catch { }
-    Start-Sleep -Seconds 1
+function Cleanup {
+    docker compose -f $ComposeFile down -v | Out-Null
 }
 
-Write-Host "Installing test deps (if needed)..."
-python -m pip install --upgrade pip
-python -m pip install -r tests/integration/requirements-test.txt
+try {
+    docker compose -f $ComposeFile up --build -d
 
-Write-Host "Running integration tests..."
-if (-not (Test-Path -Path reports)) { New-Item -ItemType Directory -Path reports | Out-Null }
-python -m pytest tests/integration/ -q --junitxml=reports/junit.xml
-$exit = $LASTEXITCODE
+    $apiReady = $false
+    for ($i = 1; $i -le 90; $i++) {
+        try {
+            Invoke-WebRequest -Uri "$ApiBase/health" -UseBasicParsing | Out-Null
+            $apiReady = $true
+            Write-Host "API ready"
+            break
+        } catch {
+            Start-Sleep -Seconds 1
+        }
+    }
+    if (-not $apiReady) {
+        docker compose -f $ComposeFile logs api
+        throw "API not ready"
+    }
 
-Write-Host "Tearing down..."
-docker compose -f $composeFile down -v
+    $webReady = $false
+    for ($i = 1; $i -le 90; $i++) {
+        try {
+            Invoke-WebRequest -Uri "$WebBase/" -UseBasicParsing | Out-Null
+            $webReady = $true
+            Write-Host "Web ready"
+            break
+        } catch {
+            Start-Sleep -Seconds 1
+        }
+    }
+    if (-not $webReady) {
+        docker compose -f $ComposeFile logs web
+        throw "Web not ready"
+    }
 
-exit $exit
+    python -m pip install -r tests/integration/requirements-test.txt
+    New-Item -ItemType Directory -Force -Path reports | Out-Null
+    $env:API_BASE = $ApiBase
+    $env:WS_URL = $WsUrl
+    $env:WEB_BASE = $WebBase
+    python -m pytest tests/integration/ -q --junitxml=reports/junit.xml
+}
+finally {
+    Cleanup
+}

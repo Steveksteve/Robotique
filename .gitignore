@@ -22,6 +22,7 @@ composer.lock
 
 *.sql
 !apps/server/database/schema.sql
+!scripts/purge_old_data.sql
 
 __pycache__/
 *.pyc
@@ -38,3 +39,5 @@ log/
 
 *.bak
 *.old
+
+frontend/.vite/

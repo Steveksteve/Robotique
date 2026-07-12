@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>m3pro_teacher_interfaces</name>
+  <version>0.1.0</version>
+  <description>ROS2 service definitions for M3 Pro teacher arm control</description>
+  <maintainer email="teacher@example.com">Teacher</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>rosidl_default_generators</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

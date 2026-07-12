@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
 import type { Mission } from "../types/mission";
+import { MISSION_STATUS_LABELS } from "../types/mission";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
@@ -17,6 +18,7 @@ export default function Missions() {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [objectName, setObjectName] = useState("");
+  const [expectedQr, setExpectedQr] = useState("a");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -49,7 +51,7 @@ export default function Missions() {
   async function createMission(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!origin.trim() || !destination.trim() || !objectName.trim()) {
+    if (!origin.trim() || !destination.trim() || !objectName.trim() || !expectedQr.trim()) {
       setError("Tous les champs sont obligatoires.");
       return;
     }
@@ -68,6 +70,7 @@ export default function Missions() {
           origin: origin.trim(),
           destination: destination.trim(),
           object: objectName.trim(),
+          expected_qr: expectedQr.trim(),
         }),
       });
 
@@ -80,6 +83,7 @@ export default function Missions() {
       setOrigin("");
       setDestination("");
       setObjectName("");
+      setExpectedQr("a");
 
       await fetchMissions();
 
@@ -184,6 +188,17 @@ export default function Missions() {
           />
         </label>
 
+        <label style={label}>
+          QR attendu
+          <input
+            style={input}
+            type="text"
+            placeholder="Ex : a"
+            value={expectedQr}
+            onChange={(event) => setExpectedQr(event.target.value)}
+          />
+        </label>
+
         <button style={button} type="submit" disabled={loading}>
           {loading ? "Création..." : "Créer + envoyer au robot"}
         </button>
@@ -219,6 +234,7 @@ export default function Missions() {
                 <div style={meta}>
                   Mission #{mission.id}
                   {mission.object ? ` - ${mission.object}` : ""}
+                  {mission.expected_qr ? ` - QR: ${mission.expected_qr}` : ""}
                 </div>
               </div>
 
@@ -245,7 +261,7 @@ export default function Missions() {
                   </button>
                 )}
 
-                <div style={statusStyle(mission.status)}>{mission.status}</div>
+                <div style={statusStyle(mission.status)}>{MISSION_STATUS_LABELS[mission.status] ?? mission.status}</div>
               </div>
             </div>
           ))

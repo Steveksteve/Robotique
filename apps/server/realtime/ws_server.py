@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 from datetime import datetime, timezone
+from typing import Any, Dict, Optional, Tuple
 
 import pymysql
 import websockets
@@ -11,31 +12,41 @@ from websockets.exceptions import ConnectionClosed
 
 WS_HOST = os.getenv("WS_HOST", "0.0.0.0")
 WS_PORT = int(os.getenv("WS_PORT", "8765"))
+HEARTBEAT_TIMEOUT_SECONDS = int(os.getenv("HEARTBEAT_TIMEOUT_SECONDS", "20"))
+HEARTBEAT_WATCH_INTERVAL_SECONDS = int(os.getenv("HEARTBEAT_WATCH_INTERVAL_SECONDS", "5"))
 
 DB_HOST = os.getenv("DB_HOST", "db")
 DB_NAME = os.getenv("DB_NAME", "raa_db")
 DB_USER = os.getenv("DB_USER", "raa")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "raapass")
 
+# Connected clients. Keys are websocket objects.
 dashboards = set()
-robots = {}
-clients = {}
+robots: Dict[Any, Dict[str, Any]] = {}
+clients: Dict[Any, Dict[str, Any]] = {}
 
 MISSION_FLOW = [
     "CREATED",
     "ASSIGNED",
     "NAVIGATING_TO_PICKUP",
+    "SCANNING_QR",
     "PICKING_UP",
     "NAVIGATING_TO_DROP",
+    "DROPPING_OFF",
     "COMPLETED",
 ]
 
 TERMINAL_STATUSES = {"COMPLETED", "ERROR"}
 ALLOWED_STATUSES = set(MISSION_FLOW + ["ERROR"])
+ACTIVE_STATUSES = tuple(status for status in MISSION_FLOW if status not in {"CREATED", "COMPLETED"})
 
 
-def now():
+def now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def now_ts() -> float:
+    return datetime.now(timezone.utc).timestamp()
 
 
 def db():
@@ -50,16 +61,24 @@ def db():
     )
 
 
-def to_int(value):
+def to_int(value) -> Optional[int]:
     try:
         return int(value)
     except (TypeError, ValueError):
         return None
 
 
-def get_mission(mission_id):
-    mission_id = to_int(mission_id)
+def to_float(value) -> Optional[float]:
+    try:
+        if value is None:
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
+
+def get_mission(mission_id) -> Optional[Dict[str, Any]]:
+    mission_id = to_int(mission_id)
     if mission_id is None:
         return None
 
@@ -67,7 +86,7 @@ def get_mission(mission_id):
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT id, origin, destination, object, status, created_at, updated_at
+                SELECT *
                 FROM missions
                 WHERE id = %s
                 """,
@@ -79,39 +98,39 @@ def get_mission(mission_id):
 def get_active_missions():
     with db() as connection:
         with connection.cursor() as cursor:
+            placeholders = ",".join(["%s"] * len(ACTIVE_STATUSES))
             cursor.execute(
-                """
-                SELECT id, origin, destination, object, status, created_at, updated_at
+                f"""
+                SELECT *
                 FROM missions
-                WHERE status IN (
-                    'ASSIGNED',
-                    'NAVIGATING_TO_PICKUP',
-                    'PICKING_UP',
-                    'NAVIGATING_TO_DROP'
-                )
+                WHERE status IN ({placeholders})
                 ORDER BY id ASC
-                """
+                """,
+                ACTIVE_STATUSES,
             )
             return cursor.fetchall()
 
 
-def set_mission_status(mission_id, status):
+def set_mission_status(mission_id, status: str, error_reason: Optional[str] = None):
     mission_id = to_int(mission_id)
-
     if mission_id is None:
         return None
 
     with db() as connection:
         with connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE missions SET status = %s WHERE id = %s",
-                (status, mission_id),
+                """
+                UPDATE missions
+                SET status = %s, error_reason = %s
+                WHERE id = %s
+                """,
+                (status, error_reason if status == "ERROR" else None, mission_id),
             )
 
     return get_mission(mission_id)
 
 
-def transition_mission(mission_id, target_status):
+def transition_mission(mission_id, target_status: str, error_reason: Optional[str] = None) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
     mission = get_mission(mission_id)
 
     if not mission:
@@ -126,7 +145,7 @@ def transition_mission(mission_id, target_status):
         return None, f"mission already terminal: {current_status}"
 
     if target_status == "ERROR":
-        return set_mission_status(mission_id, "ERROR"), None
+        return set_mission_status(mission_id, "ERROR", error_reason or "Mission stopped"), None
 
     if target_status not in MISSION_FLOW or current_status not in MISSION_FLOW:
         return None, f"invalid transition: {current_status} -> {target_status}"
@@ -134,31 +153,32 @@ def transition_mission(mission_id, target_status):
     current_index = MISSION_FLOW.index(current_status)
     target_index = MISSION_FLOW.index(target_status)
 
-    if target_index <= current_index:
+    if target_index != current_index + 1:
         return None, f"invalid transition: {current_status} -> {target_status}"
 
-    mission_after_update = mission
-
-    for status in MISSION_FLOW[current_index + 1 : target_index + 1]:
-        mission_after_update = set_mission_status(mission_id, status)
-
-    return mission_after_update, None
+    return set_mission_status(mission_id, target_status), None
 
 
-def insert_robot_log(mission_id, x, y):
+def insert_robot_log(
+    mission_id=None,
+    x=None,
+    y=None,
+    robot_id: Optional[str] = None,
+    status: Optional[str] = None,
+    message: Optional[str] = None,
+):
     mission_id = to_int(mission_id)
-
-    if mission_id is None:
-        return
+    x = to_float(x)
+    y = to_float(y)
 
     with db() as connection:
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO robot_logs (mission_id, robot_x, robot_y)
-                VALUES (%s, %s, %s)
+                INSERT INTO robot_logs (mission_id, robot_id, robot_x, robot_y, status, message)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                (mission_id, x, y),
+                (mission_id, robot_id, x, y, status, message),
             )
 
 
@@ -167,10 +187,14 @@ async def safe_send(websocket, payload):
         await websocket.send(json.dumps(payload, default=str))
         return True
     except ConnectionClosed:
+        await cleanup(websocket)
+        return False
+    except Exception:
+        await cleanup(websocket)
         return False
 
 
-async def send_error(websocket, message):
+async def send_error(websocket, message: str):
     await safe_send(
         websocket,
         {
@@ -191,7 +215,7 @@ async def broadcast_to_dashboards(payload):
     )
 
 
-async def send_to_robots(payload, robot_id=None):
+async def send_to_robots(payload, robot_id: Optional[str] = None) -> int:
     sent_count = 0
 
     for websocket, robot_data in list(robots.items()):
@@ -199,20 +223,20 @@ async def send_to_robots(payload, robot_id=None):
             continue
 
         ok = await safe_send(websocket, payload)
-
         if ok:
             sent_count += 1
 
     return sent_count
 
 
-async def publish_mission_update(mission, robot_id=None, event_type="mission:updated"):
+async def publish_mission_update(mission, robot_id=None, event_type="mission:updated", message=None):
     payload = {
         "type": event_type,
         "robot_id": robot_id,
         "mission_id": mission["id"],
         "status": mission["status"],
         "mission": mission,
+        "message": message,
         "timestamp": now(),
     }
 
@@ -236,7 +260,6 @@ async def identify_client(websocket, payload):
             "client_type": "dashboard",
             "robot_id": None,
         }
-
         dashboards.add(websocket)
 
     elif client_type == "robot":
@@ -248,10 +271,10 @@ async def identify_client(websocket, payload):
             "client_type": "robot",
             "robot_id": robot_id,
         }
-
         robots[websocket] = {
             "robot_id": robot_id,
-            "last_seen": now(),
+            "last_seen": now_ts(),
+            "last_seen_iso": now(),
             "active_mission_id": payload.get("mission_id"),
         }
 
@@ -263,9 +286,7 @@ async def identify_client(websocket, payload):
             }
         )
 
-        active_missions = get_active_missions()
-
-        for mission in active_missions:
+        for mission in get_active_missions():
             await safe_send(
                 websocket,
                 {
@@ -304,16 +325,9 @@ async def handle_dashboard_event(websocket, payload):
             return
 
         mission, error = transition_mission(mission_id, "ASSIGNED")
-
         if error:
             await send_error(websocket, error)
             return
-
-        await publish_mission_update(
-            mission,
-            robot_id=robot_id,
-            event_type="mission:assigned",
-        )
 
         robot_payload = {
             "type": "mission:assigned",
@@ -322,20 +336,14 @@ async def handle_dashboard_event(websocket, payload):
             "mission": mission,
             "timestamp": now(),
         }
-
         sent_count = await send_to_robots(robot_payload, robot_id)
 
-        await broadcast_to_dashboards(
-            {
-                "type": "mission:assigned",
-                "robot_id": robot_id,
-                "mission_id": mission_id,
-                "mission": mission,
-                "message": f"Mission #{mission_id} envoyée à {sent_count} robot(s)",
-                "timestamp": now(),
-            }
+        await publish_mission_update(
+            mission,
+            robot_id=robot_id,
+            event_type="mission:assigned",
+            message=f"Mission #{mission_id} envoyée à {sent_count} robot(s)",
         )
-
         return
 
     if event_type == "robot:emergency_stop":
@@ -349,17 +357,15 @@ async def handle_robot_event(websocket, payload):
     event_type = payload.get("type")
     client = clients.get(websocket, {})
     robot_id = client.get("robot_id")
-
     payload.setdefault("robot_id", robot_id)
 
     if websocket in robots:
-        robots[websocket]["last_seen"] = now()
+        robots[websocket]["last_seen"] = now_ts()
+        robots[websocket]["last_seen_iso"] = now()
 
     if event_type == "robot.heartbeat":
         if websocket in robots:
-            robots[websocket]["active_mission_id"] = (
-                payload.get("mission_id") or robots[websocket].get("active_mission_id")
-            )
+            robots[websocket]["active_mission_id"] = payload.get("mission_id") or robots[websocket].get("active_mission_id")
 
         await broadcast_to_dashboards(
             {
@@ -369,20 +375,18 @@ async def handle_robot_event(websocket, payload):
                 "timestamp": now(),
             }
         )
-
         return
 
-    if event_type == "robot:position":
+    if event_type in {"robot:position", "robot.position_updated"}:
         mission_id = to_int(payload.get("mission_id"))
-        x = payload.get("x")
-        y = payload.get("y")
+        x = to_float(payload.get("x"))
+        y = to_float(payload.get("y"))
 
         if x is None or y is None:
             await send_error(websocket, "x and y required")
             return
 
-        if mission_id is not None:
-            insert_robot_log(mission_id, x, y)
+        insert_robot_log(mission_id, x, y, robot_id=robot_id, status="POSITION")
 
         await broadcast_to_dashboards(
             {
@@ -394,16 +398,11 @@ async def handle_robot_event(websocket, payload):
                 "timestamp": now(),
             }
         )
-
         return
 
-    if event_type in ["mission:updated", "mission.status_updated", "mission:completed", "mission.completed"]:
+    if event_type in {"mission:updated", "mission.status_updated", "mission:completed", "mission.completed"}:
         mission_id = to_int(payload.get("mission_id"))
-
-        if event_type in ["mission:completed", "mission.completed"]:
-            target_status = "COMPLETED"
-        else:
-            target_status = payload.get("status")
+        target_status = "COMPLETED" if event_type in {"mission:completed", "mission.completed"} else payload.get("status")
 
         if mission_id is None or not target_status:
             await send_error(websocket, "mission_id and status required")
@@ -413,17 +412,22 @@ async def handle_robot_event(websocket, payload):
             await send_error(websocket, f"invalid status: {target_status}")
             return
 
-        mission, error = transition_mission(mission_id, target_status)
-
+        mission, error = transition_mission(mission_id, target_status, payload.get("error_reason"))
         if error:
             await send_error(websocket, error)
             return
 
-        if websocket in robots:
-            robots[websocket]["active_mission_id"] = mission_id
+        insert_robot_log(
+            mission_id=mission_id,
+            x=payload.get("x"),
+            y=payload.get("y"),
+            robot_id=robot_id,
+            status=mission["status"],
+            message=payload.get("message") or payload.get("error_reason"),
+        )
 
-            if mission["status"] in TERMINAL_STATUSES:
-                robots[websocket]["active_mission_id"] = None
+        if websocket in robots:
+            robots[websocket]["active_mission_id"] = None if mission["status"] in TERMINAL_STATUSES else mission_id
 
         await publish_mission_update(mission, robot_id=robot_id)
         return
@@ -445,12 +449,11 @@ async def handle_emergency_stop(websocket, payload):
         mission_id = to_int(robots[websocket].get("active_mission_id"))
 
     mission = None
-
     if mission_id is not None:
         current_mission = get_mission(mission_id)
-
         if current_mission and current_mission["status"] not in TERMINAL_STATUSES:
-            mission, _ = transition_mission(mission_id, "ERROR")
+            mission, _ = transition_mission(mission_id, "ERROR", reason)
+            insert_robot_log(mission_id=mission_id, robot_id=robot_id, status="ERROR", message=reason)
 
     event = {
         "type": "robot:emergency_stop",
@@ -467,7 +470,39 @@ async def handle_emergency_stop(websocket, payload):
     await broadcast_to_dashboards(event)
 
     if mission:
-        await publish_mission_update(mission, robot_id=robot_id)
+        await publish_mission_update(mission, robot_id=robot_id, message=reason)
+
+
+async def heartbeat_watchdog():
+    while True:
+        await asyncio.sleep(HEARTBEAT_WATCH_INTERVAL_SECONDS)
+        threshold = now_ts() - HEARTBEAT_TIMEOUT_SECONDS
+        for websocket, robot in list(robots.items()):
+            if robot.get("last_seen", 0) >= threshold:
+                continue
+
+            robot_id = robot.get("robot_id")
+            mission_id = to_int(robot.get("active_mission_id"))
+            reason = f"Heartbeat timeout > {HEARTBEAT_TIMEOUT_SECONDS}s"
+            mission = None
+
+            if mission_id is not None:
+                current_mission = get_mission(mission_id)
+                if current_mission and current_mission["status"] not in TERMINAL_STATUSES:
+                    mission, _ = transition_mission(mission_id, "ERROR", reason)
+                    insert_robot_log(mission_id=mission_id, robot_id=robot_id, status="ERROR", message=reason)
+
+            await broadcast_to_dashboards(
+                {
+                    "type": "robot.timeout",
+                    "robot_id": robot_id,
+                    "mission_id": mission_id,
+                    "mission": mission,
+                    "message": reason,
+                    "timestamp": now(),
+                }
+            )
+            await cleanup(websocket)
 
 
 async def cleanup(websocket):
@@ -500,7 +535,6 @@ async def handler(websocket):
                 continue
 
             client = clients.get(websocket)
-
             if not client:
                 await send_error(websocket, "identify required before events")
                 continue
@@ -511,15 +545,16 @@ async def handler(websocket):
                 await handle_robot_event(websocket, payload)
             else:
                 await send_error(websocket, "unknown client type")
-
     finally:
         await cleanup(websocket)
 
 
 async def main():
-    async with websockets.serve(handler, WS_HOST, WS_PORT):
-        print(f"WebSocket server listening on ws://{WS_HOST}:{WS_PORT}")
+    watchdog_task = asyncio.create_task(heartbeat_watchdog())
+    async with websockets.serve(handler, WS_HOST, WS_PORT, ping_interval=20, ping_timeout=20):
+        print(f"RAA realtime server listening on ws://{WS_HOST}:{WS_PORT}")
         await asyncio.Future()
+    watchdog_task.cancel()
 
 
 if __name__ == "__main__":
