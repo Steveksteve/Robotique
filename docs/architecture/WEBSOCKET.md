@@ -1,50 +1,32 @@
-# Protocole WebSocket RAA
+# Protocole WebSocket
 
-Adresse locale :
+Le serveur temps réel écoute localement sur `ws://localhost:8765`. Depuis le frontend servi par Nginx, la connexion passe par `/ws`.
 
-```text
-ws://localhost:8765
-```
-
-Depuis le front Docker/Nginx :
-
-```text
-/ws
-```
+Les exemples ci-dessous correspondent aux messages réellement utilisés par le MVP.
 
 ## Identification
 
 Dashboard :
 
 ```json
-{
-  "type": "identify",
-  "client_type": "dashboard"
-}
+{"type":"identify","client_type":"dashboard"}
 ```
 
 Robot :
 
 ```json
-{
-  "type": "identify",
-  "client_type": "robot",
-  "robot_id": "raa-robot-01"
-}
+{"type":"identify","client_type":"robot","robot_id":"raa-robot-01"}
 ```
 
-Réponse serveur :
+Le serveur confirme l’identification avec :
 
 ```json
-{
-  "type": "server.ack",
-  "message": "identified"
-}
+{"type":"server.ack","message":"identified"}
 ```
 
-## Dashboard → serveur
+## Affectation d’une mission
 
-Affecter une mission :
+Dashboard vers serveur :
 
 ```json
 {
@@ -54,19 +36,7 @@ Affecter une mission :
 }
 ```
 
-Arrêt d’urgence :
-
-```json
-{
-  "type": "robot:emergency_stop",
-  "mission_id": 12,
-  "reason": "Arrêt demandé depuis le dashboard"
-}
-```
-
-## Serveur → robot
-
-Mission assignée :
+Serveur vers robot :
 
 ```json
 {
@@ -80,7 +50,7 @@ Mission assignée :
 }
 ```
 
-## Robot → serveur
+## Messages envoyés par le robot
 
 Heartbeat :
 
@@ -104,7 +74,7 @@ Position :
 }
 ```
 
-Statut mission :
+Changement d’état :
 
 ```json
 {
@@ -125,24 +95,27 @@ Fin de mission :
 }
 ```
 
-## États mission
+## Arrêt d’urgence
 
-```text
-CREATED
-ASSIGNED
-NAVIGATING_TO_PICKUP
-SCANNING_QR
-PICKING_UP
-NAVIGATING_TO_DROP
-DROPPING_OFF
-COMPLETED
-ERROR
+Dashboard vers serveur :
+
+```json
+{
+  "type": "robot:emergency_stop",
+  "mission_id": 12,
+  "reason": "Arrêt demandé depuis le dashboard"
+}
 ```
 
-Le serveur accepte uniquement la transition normale suivante, ou un passage à `ERROR` depuis un état non terminal. Il refuse les sauts d’étape, les retours arrière et les transitions depuis un état terminal.
+Le serveur diffuse l’arrêt au robot et passe la mission à `ERROR`.
 
-## Sécurité
+## Contrôles réalisés par le serveur
 
-- `robot:emergency_stop` passe la mission active en `ERROR`.
-- Un watchdog heartbeat diffuse `robot.timeout` si un robot ne donne plus signe de vie.
-- Les positions et statuts sont persistés dans `robot_logs`.
+- seules les transitions décrites dans [`STATE_MACHINE.md`](STATE_MACHINE.md) sont acceptées ;
+- les positions et changements d’état sont enregistrés dans `robot_logs` ;
+- un watchdog émet `robot.timeout` si le heartbeat du robot expire ;
+- le frontend recharge les missions depuis l’API lors de sa première connexion.
+
+## Limites du MVP
+
+L’identification WebSocket repose actuellement sur un message déclaratif. Il n’y a pas encore d’authentification forte ni de chiffrement WSS dans l’environnement local. Le service ne doit donc pas être exposé tel quel sur Internet.

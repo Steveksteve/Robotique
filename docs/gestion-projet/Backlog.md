@@ -1,65 +1,48 @@
-# Backlog — Robot d’Assistance Autonome (RAA)
+# Backlog du projet RAA
 
-# P0 — MVP (Sprints 0 à 2)
+Légende : ✅ terminé · 🟡 partiel ou à revalider · ❌ non réalisé.
 
-Objectif : contrôler le robot avec une manette de PlayStation 3 pour prendre un objet au point A et l’amener au point B.
+Les estimations `S`, `M` et `L` sont relatives au projet, pas des durées contractuelles.
 
-| Tâche                           | Priorité | Owner | DoD (Definition of Done)        | Dépendances | Estimation |
-| ------------------------------- | -------- | ----- | ------------------------------- | ----------- | ---------- |
-| Connexion manette PS3 → robot   | P0       | IoT   | Robot contrôlé via manette      | —           | M          |
-| Mapping contrôles (déplacement) | P0       | IoT   | Joysticks contrôlent mouvements | Connexion   | M          |
-| Commande pince via manette      | P0       | IoT   | Boutons ouvrent/ferment pince   | Connexion   | M          |
-| Prise en main objet au point A  | P0       | IoT   | Objet saisi sans chute          | Pince       | M          |
-| Déplacement manuel A → B        | P0       | IoT   | Robot atteint point B contrôlé  | Mapping     | M          |
-| Dépose objet au point B         | P0       | IoT   | Objet déposé correctement       | Déplacement | M          |
-| Test mission complète manuelle  | P0       | Tous  | A→B réussi avec objet           | Toutes P0   | M          |
+## Socle full stack
 
----
+| Tâche | Pôle | Priorité | État | Critère de validation | Taille |
+| --- | --- | --- | --- | --- | --- |
+| Structurer le monorepo | Tous | P0 | ✅ | Front, serveur, robot, tests et docs séparés | S |
+| Créer l’API des missions | Backend | P0 | ✅ | Création, lecture, mise à jour du statut et suppression | M |
+| Persister missions, logs et points | Backend | P0 | ✅ | Schéma MySQL et endpoints consultables | M |
+| Définir la machine à états | Backend/IoT | P0 | ✅ | Transitions identiques dans le code et les tests | M |
+| Créer le dashboard opérateur | Frontend | P0 | ✅ | Création, affectation, suivi et arrêt d’une mission | M |
+| Synchroniser par WebSocket | Backend/Frontend | P0 | ✅ | Missions, positions et heartbeat visibles en direct | L |
+| Ajouter le faux robot | IoT | P0 | ✅ | Scénario automatique jusqu’à `COMPLETED` | S |
+| Ajouter les tests d’intégration | Tous | P0 | ✅ | Stack Docker testée par `pytest` | M |
 
-## P1 — Autonomie & Fonctionnalités avancées (Sprints 3 à 7)
+## Robot et sécurité
 
-Objectif : transformer le robot manuel en robot autonome.
+| Tâche | Pôle | Priorité | État | Critère de validation | Taille |
+| --- | --- | --- | --- | --- | --- |
+| Déployer le workspace sur la Jetson | IoT | P0 | ✅ | Packages construits et détectés par ROS 2 | M |
+| Connecter le robot au serveur | IoT/Backend | P0 | ✅ | Identification, heartbeat et réception d’une mission | M |
+| Exécuter une mission en `dry_run` | IoT | P0 | ✅ | Tous les statuts sont parcourus depuis le dashboard | M |
+| Configurer SLAM et Nav2 | IoT | P0 | ✅ | Navigation réelle entre les zones de la mission | L |
+| Lire le QR depuis la caméra | IoT | P0 | ✅ | QR attendu lu pendant la mission réelle | L |
+| Commander la prise et la dépose | IoT | P0 | ✅ | Prise et dépose validées après calibrage de la pince | L |
+| Gérer l’arrêt d’urgence logiciel | Tous | P0 | ✅ | Mission passée à `ERROR` et ordre diffusé au robot | M |
+| Détecter la perte de heartbeat | Backend | P0 | ✅ | Événement `robot.timeout` et mission en `ERROR` | M |
+| Reconnecter automatiquement le dashboard | Frontend | P1 | ✅ | Nouvelle tentative après une coupure WebSocket | S |
+| Reprendre automatiquement une mission robot | IoT | P1 | ❌ | Reprise contrôlée après coupure réseau | L |
+| Ajouter une file de missions | Backend | P2 | ❌ | Plusieurs missions ordonnées et attribuées | L |
+| Automatiser le lancement de tous les nœuds | IoT | P1 | 🟡 | Une seule commande de démarrage reste à finaliser | M |
+| Externaliser le calibrage de la pince | IoT | P1 | 🟡 | Valeur encore ajustée avant chaque démonstration | S |
 
-| Tâche                                   | Priorité | Owner    | DoD (Definition of Done)                             | Dépendances         | Estimation |
-| --------------------------------------- | -------- | -------- | ---------------------------------------------------- | ------------------- | ---------- |
-| Setup repo + environnements             | P1       | Tous     | Projet prêt à coder                                  | —                   | S          |
-| Architecture missions + workflow        | P1       | Backend  | Machine à états complète implémentée et testée (voir `docs/STATE_MACHINE.md`) | Setup               | M          |
-| API missions + DB                       | P1       | Backend  | CRUD missions + gestion des états                    | Architecture        | M          |
-| Client robot ↔ API                      | P1       | IoT      | Robot reçoit mission et renvoie état                 | API                 | M          |
-| Navigation autonome A→B                 | P1       | IoT      | Robot atteint destination seul                       | Client robot        | L          |
-| Arrêt sécurité situation anormale       | P1       | IoT      | Robot s’arrête si erreur détectée                    | Navigation          | M          |
-| Évitement obstacle simple               | P1       | IoT      | Robot contourne obstacle                             | Navigation          | L          |
-| Contrôle pince (ouvrir/fermer) autonome | P1       | IoT      | Commandes fonctionnelles                             | —                   | M          |
-| Saisie objet léger autonome             | P1       | IoT      | Objet saisi sans chute                               | Pince               | M          |
-| Transport objet A→B autonome            | P1       | IoT      | Objet déplacé avec robot                             | Saisie + Navigation | L          |
-| Dépose objet emplacement cible          | P1       | IoT      | Objet déposé correctement                            | Transport           | M          |
-| UI déclenchement mission                | P1       | Frontend | Bouton lancer mission OK                             | API missions        | M          |
-| Dashboard état mission                  | P1       | Frontend | États affichés                                       | Client robot        | M          |
-| Synchronisation état réel ↔ interface   | P1       | Backend  | Interface reflète robot en temps réel                | API/WebSocket       | M          |
-| Gestion erreurs + logs                  | P1       | Backend  | Logs exploitables                                    | API                 | M          |
-| Reconnexion robot                       | P1       | IoT      | Mission reprend après perte                          | Client robot        | M          |
-| Détection situations anormales avancées | P1       | IoT      | Passage automatique état ERROR                       | Navigation          | M          |
-| File d’attente missions                 | P1       | Backend  | Queue fonctionnelle                                  | API                 | L          |
-| Tests mission complète autonome         | P1       | Tous     | Runs stables                                         | Toutes P1           | L          |
-| Optimisation vitesse mission            | P1       | IoT      | Mission plus fluide                                  | Tests               | M          |
+## Qualité et rendu
 
----
-
-# P2 — Préparation jury (Sprint final)
-
-Objectif : sécuriser la soutenance.
-
-| Tâche                       | Priorité | Owner   | DoD                    | Dépendances    | Estimation |
-| --------------------------- | -------- | ------- | ---------------------- | -------------- | ---------- |
-| Répétitions démo            | P2       | Tous    | 10 runs réussis        | Version stable | L          |
-| Scénario secours manuel     | P2       | Tous    | Procédure écrite       | Répétitions    | S          |
-| Vidéo backup                | P2       | Tous    | Vidéo prête            | Répétitions    | S          |
-| Code freeze                 | P2       | CTO     | Version finale figée   | Toutes         | S          |
-
----
-
-# Légende
-
-S = Small (3–4 jours)
-M = Medium (4–6 jours)
-L = Large (7–8 jours)
+| Tâche | Pôle | Priorité | État | Critère de validation | Taille |
+| --- | --- | --- | --- | --- | --- |
+| Mettre en place la CI | Tous | P0 | ✅ | PHP, frontend, robot et intégration contrôlés | M |
+| Publier les images Docker | DevOps | P1 | ✅ | Images `api`, `realtime`, `web` et `robot` | M |
+| Documenter l’état réel des essais | Tous | P0 | ✅ | Réussites et limites séparées clairement | S |
+| Préparer une vidéo de secours | Tous | P0 | 🟡 | Utile en cas de temps de redémarrage des nœuds | M |
+| Répéter la démonstration réelle | Tous | P0 | ✅ | Mission physique complète reproduite après mise en route | L |
+| Ajouter l’authentification et HTTPS/WSS | Backend | P2 | ❌ | Accès protégé hors environnement local | L |
+| Automatiser la purge des données | Backend | P2 | ❌ | Tâche planifiée et vérifiée | S |

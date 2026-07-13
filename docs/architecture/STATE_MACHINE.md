@@ -1,26 +1,24 @@
 # Machine à états des missions
 
-## Rôle du document
+Cette page est la référence commune au frontend, à l’API, au serveur WebSocket, au robot et aux tests.
 
-Ce document constitue la référence fonctionnelle pour les statuts de mission. Le frontend, l’API REST, le serveur WebSocket, le robot ROS 2, les tests et les diagrammes UML doivent utiliser exactement les mêmes valeurs et les mêmes transitions.
+## États
 
-## États autorisés
-
-| État | Signification |
+| État | Rôle |
 | --- | --- |
-| `CREATED` | Mission créée dans l’API, pas encore affectée au robot |
-| `ASSIGNED` | Mission affectée à un robot |
-| `NAVIGATING_TO_PICKUP` | Navigation vers le point de prise |
-| `SCANNING_QR` | Lecture et validation du QR attendu |
-| `PICKING_UP` | Prise de l’objet par le bras |
-| `NAVIGATING_TO_DROP` | Navigation vers le point de dépôt |
+| `CREATED` | Mission créée, pas encore affectée |
+| `ASSIGNED` | Mission envoyée à un robot |
+| `NAVIGATING_TO_PICKUP` | Déplacement vers le point de prise |
+| `SCANNING_QR` | Lecture du QR attendu |
+| `PICKING_UP` | Prise de l’objet |
+| `NAVIGATING_TO_DROP` | Déplacement vers le point de dépôt |
 | `DROPPING_OFF` | Dépose de l’objet |
-| `COMPLETED` | Mission terminée avec succès |
-| `ERROR` | Mission interrompue à la suite d’une erreur ou d’un arrêt de sécurité |
+| `COMPLETED` | Mission terminée |
+| `ERROR` | Mission arrêtée à la suite d’une erreur ou d’un arrêt de sécurité |
 
-## Transitions autorisées
+## Transitions acceptées
 
-| État courant | État suivant autorisé |
+| État courant | État suivant |
 | --- | --- |
 | `CREATED` | `ASSIGNED` ou `ERROR` |
 | `ASSIGNED` | `NAVIGATING_TO_PICKUP` ou `ERROR` |
@@ -29,35 +27,24 @@ Ce document constitue la référence fonctionnelle pour les statuts de mission. 
 | `PICKING_UP` | `NAVIGATING_TO_DROP` ou `ERROR` |
 | `NAVIGATING_TO_DROP` | `DROPPING_OFF` ou `ERROR` |
 | `DROPPING_OFF` | `COMPLETED` ou `ERROR` |
-| `COMPLETED` | aucune transition |
-| `ERROR` | aucune transition |
+| `COMPLETED` | aucune |
+| `ERROR` | aucune |
 
-## Règles
+## Règles appliquées
 
-1. `COMPLETED` et `ERROR` sont des états terminaux.
-2. Une mission terminée ne peut pas reprendre sans création d’une nouvelle mission.
-3. Les transitions normales suivent l’ordre défini dans le tableau.
-4. `ERROR` peut être atteint depuis tout état non terminal.
-5. Un arrêt d’urgence ou un timeout de heartbeat est un événement de sécurité, pas un statut distinct. Il entraîne le passage de la mission à `ERROR` et renseigne `error_reason`.
-6. Aucun statut supplémentaire ne doit être introduit sans mise à jour coordonnée de tous les composants et des tests.
-7. Toute transition invalide doit être rejetée par le serveur.
+1. `COMPLETED` et `ERROR` sont terminaux.
+2. Les étapes normales doivent être suivies dans l’ordre.
+3. Un état non terminal peut passer directement à `ERROR`.
+4. Un arrêt d’urgence et un timeout de heartbeat ne sont pas des statuts supplémentaires : ils font passer la mission à `ERROR` et renseignent `error_reason`.
+5. L’API et le serveur WebSocket refusent les sauts d’étape et les retours arrière.
+6. Toute modification de cette liste doit être reportée dans les composants et les tests.
 
-## Correspondance avec les événements
+## Emplacements dans le code
 
-| Événement | Effet sur la mission |
-| --- | --- |
-| `mission:assign` | `CREATED` vers `ASSIGNED` |
-| `mission:updated` | transition vers le prochain état normal annoncé par le robot |
-| `mission:completed` | `DROPPING_OFF` vers `COMPLETED` |
-| `robot:emergency_stop` | état non terminal vers `ERROR` |
-| `robot.timeout` | état non terminal vers `ERROR` |
-
-## Sources dans le code
-
-- API REST : `apps/server/src/MissionController.php`
-- Serveur WebSocket : `apps/server/realtime/ws_server.py`
-- Schéma MySQL : `apps/server/database/schema.sql`
-- Robot ROS 2 : `apps/robot/src/m3pro_teacher_vision/m3pro_teacher_vision/mission_executor_node.py`
-- Types frontend : `frontend/src/types/mission.ts`
+- API : `apps/server/src/MissionController.php`
+- WebSocket : `apps/server/realtime/ws_server.py`
+- Base de données : `apps/server/database/schema.sql`
+- Robot : `apps/robot/src/m3pro_teacher_vision/m3pro_teacher_vision/mission_executor_node.py`
+- Frontend : `frontend/src/types/mission.ts`
 - Types partagés : `packages/shared/mission.ts`
 - Tests : `tests/integration/test_missions.py` et `tests/integration/test_websocket.py`

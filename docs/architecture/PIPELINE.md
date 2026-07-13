@@ -1,107 +1,49 @@
-# Pipeline final CI/CD — RAA
+# CI et publication Docker
 
-## Objectif
+Les workflows GitHub Actions se trouvent dans `.github/workflows/`.
 
-La pipeline finalise l’intégration des trois briques du projet :
+## Intégration continue
 
-- site opérateur React ;
-- API REST + MySQL ;
-- communication temps réel WebSocket ;
-- workspace robot ROS 2 Humble.
+Le workflow `.github/workflows/ci.yml` s’exécute sur les branches `main` et `develop`, lors d’un push, d’une pull request ou d’un lancement manuel.
 
-Elle matérialise le chemin complet : commit → vérifications → build full stack → tests d’intégration → publication d’images → déploiement staging.
+Il contient quatre contrôles :
 
-## CI
+1. **PHP** : vérification syntaxique de tous les fichiers PHP du serveur.
+2. **Frontend** : installation des dépendances, ESLint et build Vite.
+3. **Robot** : compilation syntaxique des sources Python et présence des manifests ROS 2 principaux.
+4. **Intégration** : démarrage de MySQL, de l’API, du WebSocket et du frontend avec Docker Compose, puis exécution des tests `pytest`.
 
-Workflow : `.github/workflows/ci.yml`.
+Les tests d’intégration couvrent notamment :
 
-Déclencheurs : `push`, `pull_request` sur `main` et `develop`, et lancement manuel.
+- la création et la lecture des missions ;
+- le workflow `CREATED` jusqu’à `COMPLETED` ;
+- le refus d’une transition invalide ;
+- l’écriture des logs ;
+- la présence des points de prise et de dépôt ;
+- le service du frontend ;
+- l’affectation et la progression d’une mission par WebSocket.
 
-Jobs :
+Un scan Trivy est aussi exécuté sur l’image de l’API. Il est informatif et ne bloque pas la CI.
 
-1. `php-syntax`
-   - installe PHP CLI ;
-   - vérifie tous les fichiers PHP de `apps/server`.
+## Publication des images
 
-2. `web-build`
-   - installe les dépendances du front ;
-   - lance ESLint ;
-   - produit le build Vite.
-
-3. `robot-static-checks`
-   - compile les sources Python ROS 2 ;
-   - vérifie la présence des manifests ROS indispensables.
-
-4. `integration-tests`
-   - démarre `db`, `api`, `realtime`, `web` avec `docker-compose.test.yml` ;
-   - attend l’API et le front ;
-   - exécute les tests pytest ;
-   - publie les rapports ;
-   - collecte les logs Docker en cas d’échec ;
-   - lance un scan Trivy en warning-only.
-
-## Scénarios validés
-
-Les tests d’intégration couvrent :
-
-- création et lecture d’une mission ;
-- workflow complet `CREATED → COMPLETED` ;
-- rejet d’une transition invalide ;
-- logs robot persistants ;
-- points `pickup_default` et `dropoff_default` ;
-- page web servie par Nginx ;
-- affectation mission via WebSocket ;
-- progression robot via WebSocket jusqu’à `COMPLETED`.
-
-## CD
-
-Workflow : `.github/workflows/cd.yml`.
-
-Déclencheurs :
-
-- succès de la CI ;
-- lancement manuel.
-
-Images publiées dans GitHub Container Registry :
+Après une CI réussie, `.github/workflows/cd.yml` construit et publie quatre images dans GitHub Container Registry :
 
 ```text
-ghcr.io/<owner>/<repo>/api:<sha>
-ghcr.io/<owner>/<repo>/realtime:<sha>
-ghcr.io/<owner>/<repo>/web:<sha>
-ghcr.io/<owner>/<repo>/robot:<sha>
+api
+realtime
+web
+robot
 ```
 
-Tag canal :
+Chaque image reçoit un tag lié au commit ainsi qu’un tag de canal (`latest` pour `main`, `staging` sinon).
 
-- `latest` pour `main` ;
-- `staging` pour les autres branches déclenchées.
+## Déploiement de staging
 
-## Déploiement staging
+Le déploiement distant n’a lieu que sur `main` et seulement si les secrets SSH/GHCR ont été configurés. Il déploie la base, l’API, le WebSocket et le frontend, puis vérifie les endpoints de santé.
 
-Sur `main`, si les secrets sont présents, le job `deploy-staging` :
+L’image robot est publiée, mais elle n’est pas lancée sur le serveur de staging : son exécution dépend de la Jetson, des capteurs Yahboom et de ROS 2.
 
-1. copie `docker-compose.staging.yml`, `.env.staging.example`, `schema.sql` et `deploy_staging.sh` sur le serveur ;
-2. se connecte à GHCR ;
-3. tire les images immuables ;
-4. redémarre `db`, `api`, `realtime`, `web` ;
-5. vérifie `/health` côté API et `/` côté web.
+## Ce que la CI ne prouve pas
 
-## Secrets requis
-
-Minimum pour le déploiement :
-
-- `STAGING_HOST`
-- `STAGING_SSH_USER`
-- `STAGING_SSH_KEY`
-- `GHCR_TOKEN`
-
-Optionnels :
-
-- `STAGING_SSH_PORT` défaut `22`
-- `STAGING_APP_DIR` défaut `/opt/robotique`
-- `GHCR_USERNAME` défaut `github.actor`
-- variables GitHub `API_PORT`, `WEB_PORT`
-
-## Limite assumée
-
-Le robot est buildé et publié en image Docker, mais il n’est pas lancé sur le serveur staging cloud : il doit être lancé sur la Jetson / le robot réel, car il dépend du hardware Yahboom, des capteurs et du réseau ROS 2.
+La CI vérifie le code et le scénario full stack simulé. Elle ne valide pas le déplacement physique, la caméra, le lidar ou le bras du robot réel. Ces essais sont suivis séparément dans [`../robot/ROBOT_FINAL_PIPELINE_STATUS.md`](../robot/ROBOT_FINAL_PIPELINE_STATUS.md).

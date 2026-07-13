@@ -1,5 +1,7 @@
 # Diagrammes UML — RAA
 
+Ces diagrammes décrivent le MVP actuellement implémenté. Ils ne représentent pas une architecture industrielle complète.
+
 ## Diagramme de cas d’utilisation
 
 ```mermaid

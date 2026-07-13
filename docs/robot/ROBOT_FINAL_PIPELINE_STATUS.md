@@ -1,131 +1,97 @@
-# RAA - État du pipeline robot final
+# État des essais sur le robot
 
-## Ce qui fonctionne
+Cette page décrit le résultat réellement obtenu sur le robot et les opérations nécessaires pour reproduire la démonstration.
 
-- Docker PC OK
-- API OK sur http://localhost:8000/health
-- Web OK sur http://localhost:8080
-- WebSocket OK sur ws://localhost:8765
-- Fake robot OK
-- Vrai robot connecté au serveur PC OK
-- Workspace ROS 2 déployé sur le robot
-- Build colcon OK
-- Mission en dry_run validée jusqu'à COMPLETED depuis le dashboard
+## Résultat validé
 
-## Robot
+| Élément | État | Observation |
+| --- | --- | --- |
+| Stack Docker sur le PC | ✅ Validé | API, frontend et WebSocket accessibles |
+| Faux robot | ✅ Validé | Mission complète jusqu’à `COMPLETED` |
+| Connexion du robot réel au PC | ✅ Validé | Le client ROS 2 communique avec le WebSocket |
+| Build du workspace ROS 2 | ✅ Validé | Les packages sont construits et disponibles |
+| Mission sur robot en `dry_run` | ✅ Validé | Scénario complet sans mouvement physique |
+| Navigation réelle Nav2 | ✅ Validé | Déplacement entre les zones de prise et de dépose |
+| Lecture du QR réel | ✅ Validé | Le QR attendu est lu pendant la mission |
+| Prise et dépose réelles | ✅ Validé | Le bras saisit puis dépose l’objet après calibrage de la pince |
+| Mission réelle complète | ✅ Validé | Navigation, QR, prise, transport et dépose jusqu’à `COMPLETED` |
 
-Conteneur ROS 2 utilisé :
+## Contraintes de préparation
 
-peaceful_ride
+Le système fonctionne de bout en bout, mais son démarrage n’est pas encore entièrement automatisé.
 
-Robot testé :
+Avant chaque démonstration, il faut :
 
-Yahboom ROSMASTER M3 Pro Jetson Nano
+1. démarrer la stack Docker sur le PC ;
+2. relancer les nœuds ROS 2 nécessaires sur le robot, notamment le bringup, la caméra, Nav2, le contrôle du bras et l’exécuteur de mission ;
+3. vérifier que les topics et services attendus sont disponibles ;
+4. ajuster la valeur de fermeture de la pince selon l’objet utilisé ;
+5. effectuer un court test de prise avant de lancer la mission complète.
 
-## IP utilisées pendant les tests
+Ces opérations sont des étapes de mise en route et de calibrage. Elles ne signifient pas que la mission est partielle ou bloquée.
 
-PC serveur :
+## Vérifications rapides avant une mission
 
-10.10.220.67
+```bash
+ros2 node list
+ros2 topic list
+ros2 service list | grep /arm
+ros2 topic hz /camera/color/image_raw/compressed
+```
 
-Robot :
+La chaîne TF attendue est :
 
-10.10.220.79
+```text
+map → odom → base_link
+```
 
-Ces IP peuvent changer selon le réseau.
+## Calibrage de la pince
 
-## Commande mission dry_run validée
+La pince est commandée en degrés de servomoteur. Dans le code actuel, la fermeture est notamment définie par :
 
-Dans le conteneur robot :
+- le paramètre `gripper_close` du nœud de contrôle manuel ;
+- le paramètre `gripper_close_value` du nœud de prise et dépose.
 
-source /opt/ros/humble/setup.bash
-source /root/yahboomcar_ws/install/setup.bash 2>/dev/null || true
-source /root/M3Pro_ws/install/setup.bash 2>/dev/null || true
-source /root/m3pro_teacher_ws/install/setup.bash
+La valeur par défaut est proche de `75`, mais elle doit être adaptée à la taille, à la rigidité et à la position de l’objet. Une valeur trop faible ne maintient pas correctement l’objet ; une valeur trop forte peut faire forcer le servomoteur.
 
+Exemple de test manuel :
+
+```bash
+ros2 service call /arm/set_gripper \
+  m3pro_teacher_interfaces/srv/SetJoint \
+  "{value: 75.0}"
+```
+
+Il faut commencer avec une valeur prudente, observer la prise, puis modifier progressivement la valeur retenue pour la démonstration.
+
+## Lancement de la mission
+
+Mode de contrôle sans mouvement :
+
+```bash
 ros2 launch m3pro_teacher_vision mission_mvp.launch.py \
-  api_base:=http://10.10.220.67:8000 \
-  ws_url:=ws://10.10.220.67:8765 \
+  api_base:=http://<IP_DU_PC>:8000 \
+  ws_url:=ws://<IP_DU_PC>:8765 \
   robot_id:=raa-robot-01 \
   dry_run:=true \
   simulated_qr:=a
+```
 
-Résultat :
+Mode réel :
 
-Mission COMPLETED depuis le dashboard.
+```bash
+ros2 launch m3pro_teacher_vision mission_mvp.launch.py \
+  api_base:=http://<IP_DU_PC>:8000 \
+  ws_url:=ws://<IP_DU_PC>:8765 \
+  robot_id:=raa-robot-01 \
+  dry_run:=false \
+  camera_topic:=/camera/color/image_raw/compressed
+```
 
-## Problème en cours : QR code / caméra
+Pendant l’essai, une personne doit conserver un accès immédiat à l’arrêt matériel et au bouton **Stop** du dashboard.
 
-Le paquet pyzbar a été installé dans le conteneur :
+## Améliorations prévues
 
-apt update
-apt install -y python3-pip libzbar0
-python3 -m pip install pyzbar
-
-Test pyzbar OK :
-
-python3 - <<'PY'
-from pyzbar.pyzbar import decode
-print("pyzbar OK")
-PY
-
-Le node QR démarre avec :
-
-ros2 run m3pro_teacher_vision qr_code_reader_node \
-  --ros-args -p camera_topic:=/camera/rgb/image_raw/compressed
-
-Logs obtenus :
-
-QR reader ready: camera=/camera/rgb/image_raw/compressed, output=/qr_code, service=/qr/read
-
-Mais le QR n'est pas détecté.
-
-Le service répond :
-
-success=False, message='No QR code detected yet'
-
-Problème constaté :
-
-ros2 topic hz /camera/color/image_raw
-
-ne donne aucun résultat.
-
-À vérifier :
-
-- si la caméra publie vraiment des images ;
-- si /camera/color/image_raw a un publisher ;
-- si le topic compressed reçoit des frames ;
-- si app_camera.launch.py est bien lancé ;
-- vérifier /dev/video* ;
-- tester rqt_image_view ou RViz Image.
-
-Commandes utiles :
-
-ros2 topic list | grep camera
-ros2 topic info /camera/color/image_raw -v
-ros2 topic hz /camera/color/image_raw --qos-profile sensor_data
-ros2 topic hz /camera/rgb/image_raw/compressed
-ls -l /dev/video*
-ros2 node list | grep -i camera
-
-## SLAM / Nav2
-
-Anciennes maps déplacées dans :
-
-/root/maps_backup/
-
-Le dossier maps a été nettoyé.
-
-Relance SLAM :
-
-ros2 launch m3pro_teacher_nav slam_online.launch.py
-
-Sauvegarde nouvelle map :
-
-ros2 run nav2_map_server map_saver_cli -f /root/m3pro_teacher_ws/src/m3pro_teacher_nav/maps/salle_jury
-
-Relance Nav2 :
-
-ros2 launch m3pro_teacher_nav navigation.launch.py \
-  map:=/root/m3pro_teacher_ws/src/m3pro_teacher_nav/maps/salle_jury.yaml \
-  rviz:=true
+- regrouper le lancement des nœuds dans une seule commande ou un fichier `launch` principal ;
+- charger la valeur de fermeture de la pince depuis une configuration propre à l’objet ;
+- ajouter une vérification automatique des topics et services avant le départ de la mission.
